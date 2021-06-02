@@ -1,3 +1,6 @@
+export const VIRTUAL_WIDTH = 640;
+export const VIRTUAL_HEIGHT = 480;
+
 export var element;
 
 export function resize() {
@@ -7,11 +10,11 @@ export function resize() {
     var width;
     var height;
 
-    if (600 * (viewportWidth / 800) < viewportHeight) {
+    if (VIRTUAL_HEIGHT * (viewportWidth / VIRTUAL_WIDTH) < viewportHeight) {
         width = viewportWidth;
-        height = 600 * (viewportWidth / 800);
+        height = VIRTUAL_HEIGHT * (viewportWidth / VIRTUAL_WIDTH);
     } else {
-        width = 800 * (viewportHeight / 600);
+        width = VIRTUAL_WIDTH * (viewportHeight / VIRTUAL_HEIGHT);
         height = viewportHeight;
     }
 
