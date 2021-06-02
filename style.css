@@ -1,0 +1,15 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+canvas {
+    position: absolute;
+    background-color: #eeeeee;
+    border-radius: 10px;
+}
