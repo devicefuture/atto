@@ -22,7 +22,7 @@ export function drawText(text, x, y) {
     context.textAlign = "center";
 
     for (var i = 0; i < text.length; i++) {
-        context.fillText(text[i], x + ((i + 0.5) * CHAR_WIDTH * DISP_SCALE_FACTOR), CHAR_HEIGHT * DISP_SCALE_FACTOR / 2);
+        context.fillText(text[i], (x + ((i + 0.5) * CHAR_WIDTH)) * DISP_SCALE_FACTOR, (y + (CHAR_HEIGHT / 2)) * DISP_SCALE_FACTOR);
     }
 }
 
