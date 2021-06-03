@@ -66,6 +66,36 @@ export function fillRect(x1, y1, x2, y2) {
     context.fillRect(...twoPointsToPointSize(x1 * DISP_SCALE_FACTOR, y1 * DISP_SCALE_FACTOR, x2 * DISP_SCALE_FACTOR, y2 * DISP_SCALE_FACTOR));
 }
 
+function pathRoundedRect(x1, x2, y1, y2, radius) {
+    var [x, y, width, height] = twoPointsToPointSize(x1 * DISP_SCALE_FACTOR, x2 * DISP_SCALE_FACTOR, y1 * DISP_SCALE_FACTOR, y2 * DISP_SCALE_FACTOR);
+
+    radius = radius * DISP_SCALE_FACTOR;
+
+    context.beginPath();
+    context.moveTo(x + radius, y);
+    context.lineTo(x + width - radius, y);
+    context.quadraticCurveTo(x + width, y, x + width, y + radius);
+    context.lineTo(x + width, y + height - radius);
+    context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    context.lineTo(x + radius, y + height);
+    context.quadraticCurveTo(x, y + height, x, y + height - radius);
+    context.lineTo(x, y + radius);
+    context.quadraticCurveTo(x, y, x + radius, y);
+    context.closePath();
+}
+
+export function drawRoundedRect(x1, x2, y1, y2, radius) {
+    pathRoundedRect(x1, x2, y1, y2, radius);
+
+    context.stroke();
+}
+
+export function fillRoundedRect(x1, x2, y1, y2, radius) {
+    pathRoundedRect(x1, x2, y1, y2, radius);
+
+    context.fill();
+}
+
 function resize() {
     var viewportWidth = window.innerWidth - 40;
     var viewportHeight = window.innerHeight - 40;
