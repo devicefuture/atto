@@ -25,6 +25,51 @@ export class Colour {
     }
 }
 
+export var colourScheme = [
+    new Colour(0, 0, 0), // Black
+    new Colour(94, 52, 235), // Purple
+    new Colour(62, 181, 74), // Dark green
+    new Colour(28, 90, 189), // Dark blue
+    new Colour(237, 26, 58), // Red
+    new Colour(219, 29, 118), // Magenta
+    new Colour(199, 80, 20), // Brown
+    new Colour(238, 238, 238), // Light grey
+    new Colour(56, 56, 56), // Dark grey
+    new Colour(130, 134, 245), // Light purple
+    new Colour(96, 230, 110), // Light green
+    new Colour(80, 177, 242), // Light blue
+    new Colour(255, 97, 121), // Light red
+    new Colour(255, 71, 191), // Pink
+    new Colour(252, 218, 63), // Yellow
+    new Colour(255, 255, 255) // White
+];
+
+export const COLOUR_NAMES = {
+    "black": 0,
+    "purple": 1,
+    "darkgreen": 2,
+    "green": 2,
+    "darkblue": 3,
+    "blue": 3,
+    "red": 4,
+    "magenta": 5,
+    "brown": 6,
+    "lightgrey": 7,
+    "lightgray": 7,
+    "grey": 7,
+    "gray": 7,
+    "darkgrey": 8,
+    "darkgray": 8,
+    "lightpurple": 9,
+    "lightgreen": 10,
+    "lightblue": 11,
+    "cyan": 11,
+    "lightred": 12,
+    "pink": 13,
+    "yellow": 14,
+    "white": 15
+}
+
 function twoPointsToPointSize(x1, y1, x2, y2) {
     return [
         Math.min(x1, x2),
@@ -66,8 +111,8 @@ export function fillRect(x1, y1, x2, y2) {
     context.fillRect(...twoPointsToPointSize(x1 * DISP_SCALE_FACTOR, y1 * DISP_SCALE_FACTOR, x2 * DISP_SCALE_FACTOR, y2 * DISP_SCALE_FACTOR));
 }
 
-function pathRoundedRect(x1, x2, y1, y2, radius) {
-    var [x, y, width, height] = twoPointsToPointSize(x1 * DISP_SCALE_FACTOR, x2 * DISP_SCALE_FACTOR, y1 * DISP_SCALE_FACTOR, y2 * DISP_SCALE_FACTOR);
+function pathRoundedRect(x1, y1, x2, y2, radius) {
+    var [x, y, width, height] = twoPointsToPointSize(x1 * DISP_SCALE_FACTOR, y1 * DISP_SCALE_FACTOR, x2 * DISP_SCALE_FACTOR, y2 * DISP_SCALE_FACTOR);
 
     radius = radius * DISP_SCALE_FACTOR;
 
@@ -84,16 +129,40 @@ function pathRoundedRect(x1, x2, y1, y2, radius) {
     context.closePath();
 }
 
-export function drawRoundedRect(x1, x2, y1, y2, radius) {
-    pathRoundedRect(x1, x2, y1, y2, radius);
+export function drawRoundedRect(x1, y1, x2, y2, radius) {
+    pathRoundedRect(x1, y1, x2, y2, radius);
 
     context.stroke();
 }
 
-export function fillRoundedRect(x1, x2, y1, y2, radius) {
-    pathRoundedRect(x1, x2, y1, y2, radius);
+export function fillRoundedRect(x1, y1, x2, y2, radius) {
+    pathRoundedRect(x1, y1, x2, y2, radius);
 
     context.fill();
+}
+
+export function drawLine(x1, y1, x2, y2) {
+    context.beginPath();
+    context.moveTo(x1 * DISP_SCALE_FACTOR, y1 * DISP_SCALE_FACTOR);
+    context.lineTo(x2 * DISP_SCALE_FACTOR, y2 * DISP_SCALE_FACTOR);
+    context.closePath();
+    context.fill();
+}
+
+export function drawPolygon(points) {
+    context.beginPath();
+    context.moveTo(points[0][0] * DISP_SCALE_FACTOR, points[0][1] * DISP_SCALE_FACTOR);
+
+    for (var i = 1; i < points.length; i++) {
+        context.lineTo(points[i][0] * DISP_SCALE_FACTOR, points[i][1] * DISP_SCALE_FACTOR);
+    }
+
+    context.closePath();
+    context.fill();
+}
+
+export function clear() {
+    fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
 }
 
 function resize() {
@@ -127,6 +196,9 @@ window.addEventListener("load", function() {
     element.height = DISP_HEIGHT * DISP_SCALE_FACTOR;
 
     resize();
+
+    setColour(new Colour(238, 238, 238));
+    clear();
 
     setColour(new Colour(0, 0, 0));
     setStrokeWidth(1);
