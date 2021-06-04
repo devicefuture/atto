@@ -200,7 +200,6 @@ function resize() {
         height = viewportHeight;
     }
 
-    element.style.top = `${(window.innerHeight - height) / 2}px`;
     element.style.left = `${(window.innerWidth - width) / 2}px`;
     element.style.width = `${width}px`;
     element.style.height = `${height}px`;
