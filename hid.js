@@ -110,6 +110,7 @@ export class Input {
         this.scrollColumn = 0;
 
         this.render(false);
+        log(this.value);
         term.print("\n");
     }
 
