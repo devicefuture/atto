@@ -1,4 +1,5 @@
 import * as canvas from "./canvas.js";
+import * as hid from "./hid.js";
 
 export var backgroundColour = canvas.colourScheme[canvas.COLOUR_NAMES.lightgrey];
 export var foregroundColour = canvas.colourScheme[canvas.COLOUR_NAMES.black];
@@ -21,7 +22,7 @@ export function scrollUp() {
     canvas.clear();
     canvas.restoreFromBuffer(0, canvas.CHAR_HEIGHT);
 
-    scrollDelta++;
+    scrollDelta--;
 }
 
 export function scrollDown() {
@@ -30,7 +31,7 @@ export function scrollDown() {
     canvas.clear();
     canvas.restoreFromBuffer(0, -canvas.CHAR_HEIGHT);
 
-    scrollDelta--;
+    scrollDelta++;
 }
 
 export function up() {
@@ -113,5 +114,9 @@ export function print(text, notifyHid = true) {
                 right();
                 break;
         }
+    }
+
+    if (notifyHid) {
+        hid.log(text);
     }
 }

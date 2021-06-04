@@ -14,3 +14,14 @@ canvas {
     background-color: #eeeeee;
     border-radius: 10px;
 }
+
+#hidLog, #hidInput {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    white-space: pre;
+    opacity: 0;
+}

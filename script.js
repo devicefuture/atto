@@ -1,5 +1,6 @@
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
+import * as hid from "./hid.js";
 
 canvas.onReady(function() {
     term.print("Welcome to ");
@@ -36,4 +37,9 @@ canvas.onReady(function() {
             4
         );
     }
+
+    term.goto(0, 9);
+    hid.startInput().then(function(value) {
+        term.print("You said: " + value);
+    });
 });

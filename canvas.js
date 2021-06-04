@@ -24,6 +24,10 @@ export class Colour {
     toCss() {
         return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha})`;
     }
+
+    clone() {
+        return new Colour(this.red, this.green, this.blue, this.alpha);
+    }
 }
 
 export var colourScheme = [
@@ -45,6 +49,7 @@ export var colourScheme = [
     new Colour(255, 255, 255) // White
 ];
 
+// Colour names are lowercase since they are used in the language itself
 export const COLOUR_NAMES = {
     "black": 0,
     "purple": 1,
@@ -84,6 +89,10 @@ export function onReady(callback) {
     readyListeners.push(callback);
 }
 
+export function getElement() {
+    return element;
+}
+
 export function setColour(colour) {
     context.fillStyle = colour.toCss();
     context.strokeStyle = colour.toCss();
@@ -99,7 +108,7 @@ export function drawText(text, x, y) {
     context.textAlign = "center";
 
     for (var i = 0; i < text.length; i++) {
-        context.fillText(text[i], (x + ((i + 0.5) * CHAR_WIDTH)) * DISP_SCALE_FACTOR, (y + (CHAR_HEIGHT / 2)) * DISP_SCALE_FACTOR);
+        context.fillText(text[i], (x + ((i + 0.5) * CHAR_WIDTH)) * DISP_SCALE_FACTOR, ((y + (CHAR_HEIGHT / 2)) + 2) * DISP_SCALE_FACTOR);
     }
 }
 
@@ -197,7 +206,7 @@ function resize() {
     element.style.height = `${height}px`;
 }
 
-window.addEventListener("load", function() {
+export function init() {
     element = document.querySelector("canvas");
     context = element.getContext("2d");
 
@@ -220,6 +229,6 @@ window.addEventListener("load", function() {
     copyToBuffer();
 
     readyListeners.forEach((i) => i());
-});
+};
 
 window.addEventListener("resize", resize);
