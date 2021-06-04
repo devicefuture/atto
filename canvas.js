@@ -9,6 +9,7 @@ export const CHAR_HEIGHT = DISP_HEIGHT / TERM_ROWS;
 const TEXT_FONT = `${CHAR_HEIGHT * DISP_SCALE_FACTOR}px "Brass Mono", monospace`;
 
 var element;
+var buffer;
 var context;
 var readyListeners = [];
 
@@ -165,6 +166,14 @@ export function clear() {
     fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
 }
 
+export function copyToBuffer() {
+    buffer.getContext("2d").drawImage(element, 0, 0);
+}
+
+export function restoreFromBuffer(x = 0, y = 0) {
+    context.drawImage(buffer, x * DISP_SCALE_FACTOR, y * DISP_SCALE_FACTOR);
+}
+
 function resize() {
     var viewportWidth = window.innerWidth - 40;
     var viewportHeight = window.innerHeight - 40;
@@ -192,8 +201,13 @@ window.addEventListener("load", function() {
     element = document.querySelector("canvas");
     context = element.getContext("2d");
 
+    buffer = document.createElement("canvas");
+
     element.width = DISP_WIDTH * DISP_SCALE_FACTOR;
     element.height = DISP_HEIGHT * DISP_SCALE_FACTOR;
+
+    buffer.width = element.width;
+    buffer.height = element.height;
 
     resize();
 
@@ -202,6 +216,8 @@ window.addEventListener("load", function() {
 
     setColour(new Colour(0, 0, 0));
     setStrokeWidth(1);
+
+    copyToBuffer();
 
     readyListeners.forEach((i) => i());
 });
