@@ -1,23 +1,19 @@
 import * as canvas from "./canvas.js";
+import * as term from "./term.js";
 
 canvas.onReady(function() {
-    canvas.drawText("Welcome to ", 0, 0);
-    canvas.setColour(canvas.colourScheme[canvas.COLOUR_NAMES.blue]);
-    canvas.drawText("atto", canvas.CHAR_WIDTH * 11, 0);
+    term.print("Welcome to ");
+    term.foreground("blue");
+    term.print("atto\n");
+    term.foreground();
+    term.print("Type ");
+    term.foreground("green");
+    term.print("help");
+    term.foreground();
+    term.print(" to view the guide\n\n");
+    term.print("Ready\n");
+    term.print("10 print \"Hello, world!\"");
 
-    canvas.setColour(canvas.colourScheme[canvas.COLOUR_NAMES.black]);
-    canvas.drawText("Type ", 0, canvas.CHAR_HEIGHT);
-    canvas.setColour(canvas.colourScheme[canvas.COLOUR_NAMES.green]);
-    canvas.drawText("help", canvas.CHAR_WIDTH * 5, canvas.CHAR_HEIGHT);
-    canvas.setColour(canvas.colourScheme[canvas.COLOUR_NAMES.black]);
-    canvas.drawText(" to view the guide", canvas.CHAR_WIDTH * 9, canvas.CHAR_HEIGHT);
-
-    canvas.drawText("Ready", 0, canvas.CHAR_HEIGHT * 3);
-
-    canvas.setColour(canvas.colourScheme[canvas.COLOUR_NAMES.magenta]);
-    canvas.fillRoundedRect(2, canvas.CHAR_HEIGHT * 4, 6, (canvas.CHAR_HEIGHT * 5) - 4, 2);
-    canvas.setColour(canvas.colourScheme[canvas.COLOUR_NAMES.black]);
-    canvas.drawText("10 print \"Hello, world!\"", 0, canvas.CHAR_HEIGHT * 4);
 
     for (var i = 0; i < 8; i++) {
         canvas.setColour(canvas.colourScheme[i]);

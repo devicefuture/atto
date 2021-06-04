@@ -167,11 +167,11 @@ export function clear() {
 }
 
 export function copyToBuffer() {
-    buffer.getContext("2d").drawImage(element, 0, 0);
+    buffer.getContext("2d").drawImage(element, 0, 0, DISP_WIDTH * DISP_SCALE_FACTOR, DISP_HEIGHT * DISP_SCALE_FACTOR);
 }
 
 export function restoreFromBuffer(x = 0, y = 0) {
-    context.drawImage(buffer, x * DISP_SCALE_FACTOR, y * DISP_SCALE_FACTOR);
+    context.drawImage(buffer, x * DISP_SCALE_FACTOR, y * DISP_SCALE_FACTOR, DISP_WIDTH * DISP_SCALE_FACTOR, DISP_HEIGHT * DISP_SCALE_FACTOR);
 }
 
 function resize() {
