@@ -84,7 +84,6 @@ export function print(text, notifyHid = true) {
 
     for (var i = 0; i < text.length; i++) {
         switch (text[i]) {
-
             case "\n":
                 down();
                 // Don't break; continue to reset column

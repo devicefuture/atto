@@ -57,14 +57,6 @@ export class Input {
             (absoluteRow + 1) * canvas.CHAR_HEIGHT
         );
 
-        if (this.selectionEndPosition - this.scrollColumn < 0) {
-            this.scrollColumn = this.selectionEndPosition - Math.floor(canvas.TERM_COLS / 2);
-        }
-
-        if (this.selectionEndPosition - this.scrollColumn >= canvas.TERM_COLS) {
-            this.scrollColumn = this.selectionEndPosition + Math.floor(canvas.TERM_COLS / 2);
-        }
-
         if (this.scrollColumn < 0) {
             this.scrollColumn = 0;
         }
@@ -96,9 +88,9 @@ export class Input {
         if (annotations && this.selectionEndPosition - this.caretPosition > 0) {
             canvas.setColour(selectionColour);
             canvas.fillRoundedRect(
-                (this.caretPosition - this.scrollColumn) * canvas.CHAR_WIDTH,
+                Math.max(this.offset + this.caretPosition - this.scrollColumn, this.offset) * canvas.CHAR_WIDTH,
                 absoluteRow * canvas.CHAR_HEIGHT,
-                (this.selectionEndPosition - this.scrollColumn) * canvas.CHAR_WIDTH,
+                (this.offset + this.selectionEndPosition - this.scrollColumn) * canvas.CHAR_WIDTH,
                 ((absoluteRow + 1) * canvas.CHAR_HEIGHT) - 2,
                 4
             );
@@ -122,9 +114,21 @@ export class Input {
             return;
         }
 
+        if (event.key == "ArrowLeft" || event.key == "Backspace") {
+            if (this.caretPosition - this.scrollColumn <= 2) {
+                this.scrollColumn = this.caretPosition - Math.floor((canvas.TERM_COLS - this.offset) / 2);
+            }
+        } else {    
+            if (this.selectionEndPosition - this.scrollColumn >= canvas.TERM_COLS - this.offset - 2) {
+                this.scrollColumn = this.selectionEndPosition - Math.floor((canvas.TERM_COLS - this.offset) / 2);
+            }
+        }
+
         this.value = hidInput.value;
         this.caretPosition = hidInput.selectionStart;
         this.selectionEndPosition = hidInput.selectionEnd;
+
+        this.render();
     }
 }
 
@@ -132,10 +136,17 @@ export function log(text) {
     hidLog.textContent += text;
 }
 
-export function startInput(format = inputFormat.TEXT, scrollRow = term.scrollDelta + term.row, offset = term.col) {
+export function startInput(format = inputFormat.TEXT, relativeRow = term.scrollDelta + term.row, offset = term.col) {
     hidInput.value = "";
 
-    currentInput = new Input(format, scrollRow, "", offset);
+    if (canvas.TERM_COLS - offset < 10) {
+        term.down();
+
+        offset = 0;
+        relativeRow++;
+    }
+
+    currentInput = new Input(format, relativeRow, "", offset);
 
     return new Promise(function(resolve, reject) {
         currentInput.bindPromiseResolver(resolve);
