@@ -123,7 +123,7 @@ export class Input {
         this.scrollColumn = 0;
 
         this.render(false);
-        log(this.value);
+        log(this.value + "\n");
 
         if (addNewline) {
             term.print("\n");
