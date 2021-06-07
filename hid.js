@@ -1,6 +1,7 @@
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as basic from "./basic.js";
+import * as syntax from "./syntax.js";
 
 export var hidLog;
 export var hidInput;
@@ -85,8 +86,12 @@ export class Input {
             }
 
             if (i < this.value.length) {
-                term.goto(absoluteCol, absoluteRow);
-                term.print(this.value[i], false, false);
+                if (this.format == inputFormats.PROGRAM) {
+                    syntax.highlight(this.value, i, absoluteCol, absoluteRow);
+                } else {
+                    term.goto(absoluteCol, absoluteRow);
+                    term.print(this.value[i], false, false);
+                }
             }
 
             if (annotations && i == this.caretPosition) {    
@@ -104,7 +109,7 @@ export class Input {
         if (annotations && this.selectionEndPosition - this.caretPosition > 0) {
             canvas.setColour(selectionColour);
             canvas.fillRoundedRect(
-                Math.max(this.offset + this.caretPosition - this.scrollColumn, this.offset) * canvas.CHAR_WIDTH,
+                (Math.max(this.offset + this.caretPosition - this.scrollColumn, this.offset) * canvas.CHAR_WIDTH) + 1,
                 absoluteRow * canvas.CHAR_HEIGHT,
                 (this.offset + this.selectionEndPosition - this.scrollColumn) * canvas.CHAR_WIDTH,
                 ((absoluteRow + 1) * canvas.CHAR_HEIGHT) - 2,

@@ -16,6 +16,11 @@ export function foreground(colourName = "black") {
     foregroundColour = canvas.colourScheme[canvas.COLOUR_NAMES[colourName]];
 }
 
+export function setColours(background, foreground) {
+    backgroundColour = background;
+    foregroundColour = foreground;
+}
+
 export function scrollUp() {
     canvas.copyToBuffer();
     canvas.setColour(backgroundColour);
