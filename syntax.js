@@ -1,8 +1,8 @@
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 
-const RE_KEYWORD = /(?<![a-z])(?:print|input|goto|if|then|for|to|step|next)(?![a-z])/;
-const RE_STRING_LITERAL = /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/;
+const RE_KEYWORD = /(?<![a-z])(?:print|input|goto|if|then|else|end|for|to|step|next)(?![a-z])/i;
+const RE_STRING_LITERAL = /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/i;
 
 const RE_OR = /|/;
 
@@ -16,7 +16,9 @@ const KEYWORD_COLOURS = {
     "input": {background: "purple", foreground: "white"},
     "goto": {background: "blue", foreground: "white"},
     "if": {background: "blue", foreground: "white"},
+    "else": {background: "blue", foreground: "white"},
     "then": {background: "blue", foreground: "white"},
+    "end": {background: "blue", foreground: "white"},
     "for": {background: "blue", foreground: "white"},
     "to": {background: "blue", foreground: "white"},
     "step": {background: "blue", foreground: "white"},
