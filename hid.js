@@ -44,8 +44,8 @@ export class Input {
         this.offset = offset;
 
         this.scrollColumn = 0;
-        this.caretPosition = 0;
-        this.selectionEndPosition = 0;
+        this.caretPosition = value.length;
+        this.selectionEndPosition = value.length;
         this.callback = function() {};
         this.discarderCallback = function() {};
     }

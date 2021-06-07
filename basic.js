@@ -5,7 +5,11 @@ export var program = [];
 
 export function processCommand(value, movementOnly) {
     if (Number.isInteger(Number(value.split(" ")[0])) && value.trim().length > 0) {
-        program[Number(value.split(" ")[0])] = value;
+        if (value.split(" ").length == 1) {
+            delete program[Number(value)];
+        } else {
+            program[Number(value.split(" ")[0])] = value;
+        }
     }
 
     if (movementOnly) {
