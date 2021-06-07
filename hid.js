@@ -15,7 +15,7 @@ export const inputFormats = {
     TEXT: 1
 };
 
-function getCaretFormatColour(format) {
+function getCaretFormatColourInsensitive(format) {
     switch (format) {
         case inputFormats.PROGRAM:
             return canvas.colourScheme[canvas.COLOUR_NAMES.pink].clone();
@@ -23,6 +23,16 @@ function getCaretFormatColour(format) {
         default:
             return canvas.colourScheme[canvas.COLOUR_NAMES.darkblue].clone();
     }
+}
+
+function getCaretFormatColour(format) {
+    var colour = getCaretFormatColourInsensitive(format);
+
+    if (colour.matches(term.backgroundColour)) {
+        colour = canvas.colourScheme[canvas.COLOUR_NAMES.white].clone();
+    }
+
+    return colour;
 }
 
 export class Input {

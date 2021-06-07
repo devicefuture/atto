@@ -28,6 +28,10 @@ export class Colour {
     clone() {
         return new Colour(this.red, this.green, this.blue, this.alpha);
     }
+
+    matches(otherColour) {
+        return this.red == otherColour.red && this.green == otherColour.green && this.blue == otherColour.blue;
+    }
 }
 
 export var colourScheme = [

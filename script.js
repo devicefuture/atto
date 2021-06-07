@@ -15,7 +15,6 @@ canvas.onReady(function() {
     term.print("Ready\n");
     term.print("10 print \"Hello, world!\"");
 
-
     for (var i = 0; i < 8; i++) {
         canvas.setColour(canvas.colourScheme[i]);
         canvas.fillRoundedRect(
