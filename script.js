@@ -40,7 +40,13 @@ canvas.onReady(function() {
 
     term.goto(0, 9);
     term.print("Enter text: ");
-    hid.startInput().then(function(value) {
-        term.print("You said: " + value);
+    // hid.startInput().then(function(value) {
+    //     term.print("You said: " + value);
+    // });
+
+    hid.startProgramInput();
+
+    setInterval(function() {
+        window.scrollDelta = term.scrollDelta;        
     });
 });

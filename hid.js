@@ -1,5 +1,6 @@
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
+import * as basic from "./basic.js";
 
 export var hidLog;
 export var hidInput;
@@ -9,14 +10,14 @@ export var programInputs = [];
 
 export var lastHidInputLength = 0;
 
-export const inputFormat = {
+export const inputFormats = {
     PROGRAM: 0,
     TEXT: 1
 };
 
 function getCaretFormatColour(format) {
     switch (format) {
-        case inputFormat.PROGRAM:
+        case inputFormats.PROGRAM:
             return canvas.colourScheme[canvas.COLOUR_NAMES.pink].clone();
 
         default:
@@ -34,17 +35,22 @@ export class Input {
         this.scrollColumn = 0;
         this.caretPosition = 0;
         this.selectionEndPosition = 0;
-        this.promiseResolver = function() {};
+        this.callback = function() {};
+        this.discarderCallback = function() {};
     }
 
-    bindPromiseResolver(resolver) {
-        this.promiseResolver = resolver;
+    bindCallback(callback) {
+        this.callback = callback;
+    }
+
+    bindDiscarderCallback(callback) {
+        this.discarderCallback = callback;
     }
 
     render(annotations = true) {
         var absoluteRow = this.relativeRow - term.scrollDelta;
-        var caretColour = getCaretFormatColour();
-        var selectionColour = getCaretFormatColour();
+        var caretColour = getCaretFormatColour(this.format);
+        var selectionColour = getCaretFormatColour(this.format);
     
         caretColour.alpha = (Math.sin((new Date().getTime() / 500) * Math.PI) + 1) / 2;
         selectionColour.alpha = 0.5;
@@ -97,19 +103,86 @@ export class Input {
         }
     }
 
-    finish() {
+    finish(addNewline = true) {
         this.caretPosition = 0;
         this.scrollColumn = 0;
 
         this.render(false);
         log(this.value);
-        term.print("\n");
+
+        if (addNewline) {
+            term.print("\n");
+        }
+    }
+
+    resume(caretPosition = 0) {
+        this.discarderCallback(this.value);
+
+        if (caretPosition > this.value.length) {
+            caretPosition = this.value.length;
+        }
+
+        hidInput.value = this.value;
+        hidInput.selectionStart = caretPosition;
+        hidInput.selectionEnd = caretPosition;
+
+        this.caretPosition = caretPosition;
+        this.selectionEndPosition = caretPosition;
+    }
+
+    startSeek() {
+        this.finish(false);
+        this.callback(this.value, true);
+    }
+
+    seekPreviousProgramInput() {
+        var currentCaretPosition = this.caretPosition;
+
+        for (var i = this.relativeRow - 1; i >= 0; i--) {
+            if (programInputs[i] instanceof Input) {
+                if (programInputs[i].relativeRow - term.scrollDelta < 0) {
+                    term.scrollUp();
+
+                    programInputs[i].relativeRow = term.scrollDelta;
+                }
+
+                this.startSeek();
+
+                currentInput = programInputs[i];
+
+                currentInput.resume(currentCaretPosition);
+
+                return;
+            }
+        }
+    }
+
+    seekNextProgramInput() {
+        var currentCaretPosition = this.caretPosition;
+
+        for (var i = this.relativeRow + 1; i < programInputs.length; i++) {
+            if (programInputs[i] instanceof Input) {
+                if (programInputs[i].relativeRow - term.scrollDelta >= canvas.TERM_ROWS) {
+                    term.scrollDown();
+
+                    programInputs[i].relativeRow = term.scrollDelta + canvas.TERM_ROWS - 1;
+                }
+
+                this.startSeek();
+
+                currentInput = programInputs[i];
+
+                currentInput.resume(currentCaretPosition);
+
+                return;
+            }
+        }
     }
 
     readKey(event) {
         if (event.key == "Enter") {
             this.finish();
-            this.promiseResolver(this.value);
+            this.callback(this.value);
 
             return;
         }
@@ -121,6 +194,18 @@ export class Input {
         } else {    
             if (this.selectionEndPosition - this.scrollColumn >= canvas.TERM_COLS - this.offset - 2) {
                 this.scrollColumn = this.selectionEndPosition - Math.floor((canvas.TERM_COLS - this.offset) / 2);
+            }
+        }
+
+        if (this.format == inputFormats.PROGRAM) {
+            if (event.key == "ArrowUp") {
+                this.seekPreviousProgramInput();
+
+                return;
+            } else if (event.key == "ArrowDown") {
+                this.seekNextProgramInput();
+
+                return;
             }
         }
 
@@ -136,7 +221,7 @@ export function log(text) {
     hidLog.textContent += text;
 }
 
-export function startInput(format = inputFormat.TEXT, relativeRow = term.scrollDelta + term.row, offset = term.col) {
+export function startInput(format = inputFormats.TEXT, relativeRow = term.scrollDelta + term.row, offset = term.col) {
     hidInput.value = "";
 
     if (canvas.TERM_COLS - offset < 10) {
@@ -157,12 +242,34 @@ export function startInput(format = inputFormat.TEXT, relativeRow = term.scrollD
     });
 }
 
+export function startProgramInput(lineValue = "", immediateEdit = true, relativeRow = term.scrollDelta + term.row) {
+    hidInput.value = lineValue;
+
+    var newProgramInput = new Input(inputFormats.PROGRAM, relativeRow, lineValue);
+
+    currentInput = newProgramInput;
+    programInputs[relativeRow] = newProgramInput;
+
+    newProgramInput.bindCallback(function(value, movementOnly) {
+        basic.processCommand(value, movementOnly);
+    });
+
+    newProgramInput.bindDiscarderCallback(function(value) {
+        basic.discardCommand(value);
+    });
+
+    if (!immediateEdit) {
+        newProgramInput.finish();
+        console.log("Finish");
+    }
+}
+
 export function getFocusedInput() {
     if (currentInput != null) {
         return currentInput;
     }
 
-    return;
+    return null;
 }
 
 function dispatchInputEvent(event) {
