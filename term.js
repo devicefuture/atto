@@ -54,23 +54,27 @@ export function down() {
     }
 }
 
-export function left() {
+export function left(wrap = true) {
     col--;
 
     if (col < 0) {
         col = canvas.TERM_COLS - 1;
 
-        up();
+        if (wrap) {
+            up();
+        }
     }
 }
 
-export function right() {
+export function right(wrap = true) {
     col++;
 
     if (col >= canvas.TERM_COLS) {
         col = 0;
 
-        down();
+        if (wrap) {
+            down();
+        }
     }
 }
 
@@ -79,7 +83,7 @@ export function goto(newCol, newRow) {
     row = newRow;
 }
 
-export function print(text, notifyHid = true) {
+export function print(text, notifyHid = true, wrap = true) {
     text = String(text);
 
     for (var i = 0; i < text.length; i++) {
@@ -102,7 +106,7 @@ export function print(text, notifyHid = true) {
                 break;
 
             case "\b":
-                left();
+                left(wrap);
                 break;
 
             default:
@@ -110,7 +114,7 @@ export function print(text, notifyHid = true) {
                 canvas.fillRect(col * canvas.CHAR_WIDTH, row * canvas.CHAR_HEIGHT, (col + 1) * canvas.CHAR_WIDTH, (row + 1) * canvas.CHAR_HEIGHT);
                 canvas.setColour(foregroundColour);
                 canvas.drawText(text[i], col * canvas.CHAR_WIDTH, row * canvas.CHAR_HEIGHT);
-                right();
+                right(wrap);
                 break;
         }
     }

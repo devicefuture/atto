@@ -76,7 +76,7 @@ export class Input {
 
             if (i < this.value.length) {
                 term.goto(absoluteCol, absoluteRow);
-                term.print(this.value[i], false);
+                term.print(this.value[i], false, false);
             }
 
             if (annotations && i == this.caretPosition) {    
@@ -128,6 +128,14 @@ export class Input {
 
         this.caretPosition = caretPosition;
         this.selectionEndPosition = caretPosition;
+
+        if (this.caretPosition - this.scrollColumn <= 2) {
+            this.scrollColumn = this.caretPosition - Math.floor((canvas.TERM_COLS - this.offset) / 2);
+        }
+
+        if (this.caretPosition - this.scrollColumn >= canvas.TERM_COLS - this.offset - 2) {
+            this.scrollColumn = this.caretPosition - Math.floor((canvas.TERM_COLS - this.offset) / 2);
+        }
     }
 
     startSeek() {
