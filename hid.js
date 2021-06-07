@@ -268,7 +268,6 @@ export function startProgramInput(lineValue = "", immediateEdit = true, relative
 
     if (!immediateEdit) {
         newProgramInput.finish();
-        console.log("Finish");
     }
 }
 
