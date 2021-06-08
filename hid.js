@@ -30,7 +30,7 @@ function getCaretFormatColour(format) {
     var colour = getCaretFormatColourInsensitive(format);
 
     if (colour.matches(term.backgroundColour)) {
-        colour = canvas.colourScheme[canvas.COLOUR_NAMES.white].clone();
+        colour = canvas.colourScheme[canvas.COLOUR_NAMES.black].clone();
     }
 
     return colour;

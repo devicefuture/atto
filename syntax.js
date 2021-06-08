@@ -164,8 +164,14 @@ export function highlight(code, index, col, row) {
     var defaultForeground = term.foregroundColour;
     var match;
 
-    function clean() {
-        term.setColours(defaultBackground, defaultForeground);
+    function useForeground(name) {
+        var foregroundColour = canvas.colourScheme[canvas.COLOUR_NAMES[name]];
+
+        if (!foregroundColour.matches(defaultBackground)) {
+            term.setColours(defaultBackground, foregroundColour);
+        } else {
+            term.setColours(defaultBackground, canvas.colourScheme[canvas.COLOUR_NAMES.black]);
+        }
     }
 
     term.setColours(new canvas.Colour(0, 0, 0, 0), defaultForeground);
@@ -184,8 +190,7 @@ export function highlight(code, index, col, row) {
         term.setColours(new canvas.Colour(0, 0, 0, 0), defaultForeground);
 
         if (RE_STRING_LITERAL.exec(match)) {
-            clean();
-            term.foreground("green");
+            useForeground("green");
         } else if (RE_KEYWORD.exec(match)) {
             var keyword = match.toString().toLocaleLowerCase();
 
@@ -203,7 +208,7 @@ export function highlight(code, index, col, row) {
         term.print(code[index], false, false);
     }
 
-    clean();
+    term.setColours(defaultBackground, defaultForeground);
 }
 
 export function tokeniseLine(code, lineNumber = null) {
