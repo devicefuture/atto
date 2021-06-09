@@ -70,6 +70,8 @@ export class Token {
 
         this.children = [];
     }
+
+    parse() {}
 }
 
 export class StatementEnd extends Token {}
@@ -97,6 +99,10 @@ export class Expression extends Token {
 
     parse() {
         if (this.operator == null) {
+            this.children = this.tokens;
+
+            this.children.forEach((i) => i.parse());
+
             return; // This is a leaf expression
         }
 
@@ -141,6 +147,8 @@ export class SubtractionExpression extends Expression {
         for (var i = 0; i < this.tokens.length; i++) {
             if (this.tokens[i] instanceof Function) {
                 chosenFunction = this.tokens[i];
+
+                continue;
             }
 
             if (this.tokens[i] instanceof ExpressionBracket && this.tokens[i].isOpening()) {
@@ -158,9 +166,9 @@ export class SubtractionExpression extends Expression {
                     if (chosenFunction != null) {
                         chosenFunction.expression = expression;
 
-                        this.children.push(chosenFunction);
+                        this.children[this.children.length - 1].tokens.push(chosenFunction);
                     } else {
-                        this.children.push(expression);
+                        this.children[this.children.length - 1].tokens.push(expression);
                     }
 
                     chosenFunction = null;
