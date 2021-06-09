@@ -8,6 +8,7 @@ const RE_NUMERIC_LITERAL_BIN = /\b0(?:b|B)[01]+\b/;
 const RE_NUMERIC_LITERAL_OCT = /\b0(?:o|O)[0-7]+\b/;
 const RE_NUMERIC_LITERAL_SCI = /(?<![\w\.])(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?![\w\.])/;
 const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|then|else|end|for|to|step|next)(?![a-z])/i;
+const RE_FUNCTON_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln)(?![a-z])/i;
 const RE_IDENTIFIER = /[a-z][a-z0-9]+[$%!]?/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])(?:mod|and|or|xor)(?![a-z])/i;
@@ -25,6 +26,7 @@ const RE_ALL = new RegExp([
     RE_NUMERIC_LITERAL_OCT.source,
     RE_NUMERIC_LITERAL_SCI.source,
     RE_KEYWORD.source,
+    RE_FUNCTON_NAME.source,
     RE_IDENTIFIER.source,
     RE_EXPRESSION_BRACKET.source,
     RE_OPERATOR.source,
@@ -112,6 +114,18 @@ export class Expression extends Token {
     }
 }
 
+export class Function extends Token {
+    constructor(code, lineNumber = null, expression = null) {
+        super(code, lineNumber);
+
+        this.expression = expression;
+    }
+
+    parse() {
+        this.expression.parse();
+    }
+}
+
 export class SubtractionExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("-"), AdditionExpression, lineNumber);
@@ -122,8 +136,13 @@ export class SubtractionExpression extends Expression {
 
         var bracketLevel = 0;
         var bracketTokens = [];
+        var chosenFunction = null;
 
         for (var i = 0; i < this.tokens.length; i++) {
+            if (this.tokens[i] instanceof Function) {
+                chosenFunction = this.tokens[i];
+            }
+
             if (this.tokens[i] instanceof ExpressionBracket && this.tokens[i].isOpening()) {
                 bracketLevel++;
 
@@ -134,8 +153,17 @@ export class SubtractionExpression extends Expression {
                 bracketLevel--;
 
                 if (bracketLevel == 0) {
-                    this.children.push(new this.constructor(bracketTokens, this.lineNumber));
+                    var expression = new this.constructor(bracketTokens, this.lineNumber);
 
+                    if (chosenFunction != null) {
+                        chosenFunction.expression = expression;
+
+                        this.children.push(chosenFunction);
+                    } else {
+                        this.children.push(expression);
+                    }
+
+                    chosenFunction = null;
                     bracketTokens = [];
                 }
 
@@ -322,6 +350,12 @@ export function tokeniseLine(code, lineNumber = null) {
             RE_NUMERIC_LITERAL_SCI.exec(lineSymbols[i])
         ) {
             expressionTokens.push(new NumericLiteral(lineSymbols[i], lineNumber));
+
+            continue;
+        }
+
+        if (RE_FUNCTON_NAME.exec(lineSymbols[i])) {
+            expressionTokens.push(new Function(lineSymbols[i], lineNumber));
 
             continue;
         }
