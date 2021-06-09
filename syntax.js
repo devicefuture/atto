@@ -9,8 +9,11 @@ const RE_NUMERIC_LITERAL_OCT = /\b0(?:o|O)[0-7]+\b/;
 const RE_NUMERIC_LITERAL_SCI = /(?<![\w\.])(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?![\w\.])/;
 const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|then|else|end|for|to|step|next)(?![a-z])/i;
 const RE_IDENTIFIER = /[a-z][a-z0-9]+[$%!]?/i;
+const RE_EXPRESSION_BRACKET = /[()]/;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])(?:mod|and|or|xor)(?![a-z])/i;
-const RE_WHTIESPACE = /\w+/;;
+const RE_STRING_CONCAT = /;/;
+const RE_STATEMENT_SEPERATOR = /:/;
+const RE_WHTIESPACE = /\w+/;
 
 const RE_OR = /|/;
 
@@ -23,7 +26,10 @@ const RE_ALL = new RegExp([
     RE_NUMERIC_LITERAL_SCI.source,
     RE_KEYWORD.source,
     RE_IDENTIFIER.source,
+    RE_EXPRESSION_BRACKET.source,
     RE_OPERATOR.source,
+    RE_STRING_CONCAT.source,
+    RE_STATEMENT_SEPERATOR.source,
     RE_WHTIESPACE.source
 ].join(RE_OR.source), "gi");
 
@@ -70,6 +76,13 @@ export class NumericLiteral extends Token {}
 export class Keyword extends Token {}
 export class Identifier extends Token {}
 export class Operator extends Token {}
+export class StringConcat extends Token {}
+
+export class ExpressionBracket extends Token {
+    isOpening() {
+        return this.code == "(";
+    }
+}
 
 export class Expression extends Token {
     constructor(tokens, operator = null, childExpressionClass = null, lineNumber = null) {
@@ -102,6 +115,47 @@ export class Expression extends Token {
 export class SubtractionExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("-"), AdditionExpression, lineNumber);
+    }
+
+    parse() {
+        this.children = [new this.childExpressionClass([], this.lineNumber)];
+
+        var bracketLevel = 0;
+        var bracketTokens = [];
+
+        for (var i = 0; i < this.tokens.length; i++) {
+            if (this.tokens[i] instanceof ExpressionBracket && this.tokens[i].isOpening()) {
+                bracketLevel++;
+
+                continue;
+            }
+
+            if (this.tokens[i] instanceof ExpressionBracket) {
+                bracketLevel--;
+
+                if (bracketLevel == 0) {
+                    this.children.push(new this.constructor(bracketTokens, this.lineNumber));
+
+                    bracketTokens = [];
+                }
+
+                continue;
+            }
+
+            if (bracketLevel > 0) {
+                bracketTokens.push(this.tokens[i]);
+
+                continue;
+            }
+
+            if (this.tokens[i] instanceof Operator && this.tokens[i].code == this.operator.code) {
+                this.children.push(new this.childExpressionClass([], this.lineNumber));
+            } else {
+                this.children[this.children.length - 1].tokens.push(this.tokens[i]);
+            }
+        }
+
+        this.children.forEach((i) => i.parse());
     }
 }
 
@@ -226,7 +280,7 @@ export function tokeniseLine(code, lineNumber = null) {
             return;
         }
 
-        tokens.push(new AdditionExpression(expressionTokens, lineNumber));
+        tokens.push(new SubtractionExpression(expressionTokens, lineNumber));
         tokens[tokens.length - 1].parse();
 
         expressionTokens = [];
@@ -247,6 +301,20 @@ export function tokeniseLine(code, lineNumber = null) {
             continue;
         }
 
+        if (RE_STRING_CONCAT.exec(lineSymbols[i])) {
+            computeExpressionTokens();
+            expressionTokens.push(new StringConcat(lineSymbols[i], lineNumber));
+
+            continue;
+        }
+
+        if (RE_STATEMENT_SEPERATOR.exec(lineSymbols[i])) {
+            computeExpressionTokens();
+            expressionTokens.push(new StatementEnd(lineSymbols[i], lineNumber));
+
+            continue;
+        }
+
         if (
             RE_NUMERIC_LITERAL_HEX.exec(lineSymbols[i]) ||
             RE_NUMERIC_LITERAL_BIN.exec(lineSymbols[i]) ||
@@ -260,6 +328,12 @@ export function tokeniseLine(code, lineNumber = null) {
 
         if (RE_IDENTIFIER.exec(lineSymbols[i])) {
             expressionTokens.push(new Identifier(lineSymbols[i], lineNumber));
+
+            continue;
+        }
+
+        if (RE_EXPRESSION_BRACKET.exec(lineSymbols[i])) {
+            expressionTokens.push(new ExpressionBracket(lineSymbols[i], lineNumber));
 
             continue;
         }
@@ -288,4 +362,6 @@ export function tokenise(program) {
 
         tokens.push(new StatementEnd("", i));
     }
+
+    return tokens;
 }
