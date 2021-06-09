@@ -7,8 +7,8 @@ const RE_NUMERIC_LITERAL_HEX = /(?<![a-z])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
-const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|then|else|end|for|to|step|next)(?![a-z])/i;
-const RE_FUNCTON_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln)(?![a-z])/i;
+const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|then|else|end|for|to|step|next)/i;
+const RE_FUNCTION_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln)/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])(?:mod|and|or|xor)(?![a-z])/i;
 const RE_IDENTIFIER = /[a-z][a-z0-9]+[$%!]?/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
@@ -26,7 +26,7 @@ const RE_ALL = new RegExp([
     RE_NUMERIC_LITERAL_OCT.source,
     RE_NUMERIC_LITERAL_SCI.source,
     RE_KEYWORD.source,
-    RE_FUNCTON_NAME.source,
+    RE_FUNCTION_NAME.source,
     RE_OPERATOR.source,
     RE_IDENTIFIER.source,
     RE_EXPRESSION_BRACKET.source,
@@ -320,7 +320,7 @@ export function highlight(code, index, col, row) {
     
                 term.foreground(KEYWORD_COLOURS[keyword].foreground);
             }
-        } else if (RE_FUNCTON_NAME.exec(match)) {
+        } else if (RE_FUNCTION_NAME.exec(match)) {
             if (index == start) {
                 setColourByName("magenta");
                 renderBackgroundHighlight(length, col, row);
@@ -417,7 +417,7 @@ export function tokeniseLine(code, lineNumber = null) {
             continue;
         }
 
-        if (RE_FUNCTON_NAME.exec(lineSymbols[i])) {
+        if (RE_FUNCTION_NAME.exec(lineSymbols[i])) {
             expressionTokens.push(new Function(lineSymbols[i], lineNumber));
 
             continue;
