@@ -343,6 +343,8 @@ export function highlight(code, index, col, row) {
             useForeground("magenta");
         } else if (RE_STRING_CONCAT.exec(match)) {
             useForeground("purple");
+        } else if (RE_STATEMENT_SEPERATOR.exec(match)) {
+            useForeground("blue");
         }
 
         term.goto(col, row);
