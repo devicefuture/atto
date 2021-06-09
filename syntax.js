@@ -63,6 +63,16 @@ function setColourByName(name) {
     return canvas.setColour(canvas.colourScheme[canvas.COLOUR_NAMES[name]]);
 }
 
+export class ParsingSyntaxError extends Error {
+    constructor(message, lineNumber) {
+        super(message);
+
+        this.lineNumber = lineNumber;
+
+        this.name = this.constructor.name;
+    }
+}
+
 export class Token {
     constructor(code, lineNumber = null) {
         this.code = code;
@@ -184,6 +194,10 @@ export class SubtractionExpression extends Expression {
                 continue;
             }
 
+            if (chosenFunction != null) {
+                throw new ParsingSyntaxError("Expected value after function name");
+            }
+
             if (this.tokens[i] instanceof Operator && this.tokens[i].code == this.operator.code) {
                 this.children.push(new this.childExpressionClass([], this.lineNumber));
             } else {
@@ -254,8 +268,10 @@ export function highlight(code, index, col, row) {
     var defaultForeground = term.foregroundColour;
     var match;
 
-    function useForeground(name) {
-        var foregroundColour = canvas.colourScheme[canvas.COLOUR_NAMES[name]];
+    function useForeground(name, alpha = 1) {
+        var foregroundColour = canvas.colourScheme[canvas.COLOUR_NAMES[name]].clone();
+
+        foregroundColour.alpha = alpha;
 
         if (!foregroundColour.matches(defaultBackground)) {
             term.setColours(defaultBackground, foregroundColour);
@@ -269,11 +285,21 @@ export function highlight(code, index, col, row) {
     term.goto(col, row);
     term.print(code[index], false, false);
 
+    var bracketLevel = 0;
+
     while (match = RE_ALL.exec(code)) {
         var start = match.index;
         var length = match[0].length;
 
         if (index < start || index >= start + length) {
+            if (match == "(") {
+                bracketLevel++;
+            }
+    
+            if (match == ")") {
+                bracketLevel--;
+            }
+
             continue;
         }
 
@@ -292,6 +318,31 @@ export function highlight(code, index, col, row) {
     
                 term.foreground(KEYWORD_COLOURS[keyword].foreground);
             }
+        } else if (RE_FUNCTON_NAME.exec(match)) {
+            if (index == start) {
+                setColourByName("magenta");
+                renderBackgroundHighlight(length, col, row);
+            }
+
+            term.foreground("white");
+        } else if (RE_EXPRESSION_BRACKET.exec(match)) {
+            if (match == "(") {
+                bracketLevel++;
+            }
+
+            if (bracketLevel > 0) {
+                useForeground("black", 1 - (Math.min(bracketLevel, 3) * 0.3));
+            } else {
+                useForeground("red");
+            }
+
+            if (match == ")") {
+                bracketLevel--;
+            }
+        } else if (RE_OPERATOR.exec(match)) {
+            useForeground("magenta");
+        } else if (RE_STRING_CONCAT.exec(match)) {
+            useForeground("purple");
         }
 
         term.goto(col, row);
