@@ -3,15 +3,15 @@ import * as term from "./term.js";
 
 const RE_STRING_LITERAL = /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/i;
 const RE_LINE_NUMBER = /^\d+/i;
-const RE_NUMERIC_LITERAL_HEX = /\b0(?:x|X)[0-9a-fA-F]+\b/;
-const RE_NUMERIC_LITERAL_BIN = /\b0(?:b|B)[01]+\b/;
-const RE_NUMERIC_LITERAL_OCT = /\b0(?:o|O)[0-7]+\b/;
-const RE_NUMERIC_LITERAL_SCI = /(?<![\w\.])(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?![\w\.])/;
+const RE_NUMERIC_LITERAL_HEX = /(?<![a-z])0(?:x|X)[0-9a-fA-F]+/;
+const RE_NUMERIC_LITERAL_BIN = /(?<![a-z])0(?:b|B)[01]+/;
+const RE_NUMERIC_LITERAL_OCT = /(?<![a-z])0(?:o|O)[0-7]+/;
+const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
 const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|then|else|end|for|to|step|next)(?![a-z])/i;
 const RE_FUNCTON_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln)(?![a-z])/i;
+const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])(?:mod|and|or|xor)(?![a-z])/i;
 const RE_IDENTIFIER = /[a-z][a-z0-9]+[$%!]?/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
-const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])(?:mod|and|or|xor)(?![a-z])/i;
 const RE_STRING_CONCAT = /;/;
 const RE_STATEMENT_SEPERATOR = /:/;
 const RE_WHTIESPACE = /\w+/;
@@ -27,13 +27,15 @@ const RE_ALL = new RegExp([
     RE_NUMERIC_LITERAL_SCI.source,
     RE_KEYWORD.source,
     RE_FUNCTON_NAME.source,
+    RE_OPERATOR.source,
     RE_IDENTIFIER.source,
     RE_EXPRESSION_BRACKET.source,
-    RE_OPERATOR.source,
     RE_STRING_CONCAT.source,
     RE_STATEMENT_SEPERATOR.source,
     RE_WHTIESPACE.source
 ].join(RE_OR.source), "gi");
+
+console.log(RE_ALL.source);
 
 const KEYWORD_COLOURS = {
     "print": {background: "purple", foreground: "white"},
@@ -88,8 +90,8 @@ export class StatementEnd extends Token {}
 export class ExecutionLabel extends Token {}
 export class NumericLiteral extends Token {}
 export class Keyword extends Token {}
-export class Identifier extends Token {}
 export class Operator extends Token {}
+export class Identifier extends Token {}
 export class StringConcat extends Token {}
 
 export class ExpressionBracket extends Token {
