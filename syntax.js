@@ -35,8 +35,6 @@ const RE_ALL = new RegExp([
     RE_WHTIESPACE.source
 ].join(RE_OR.source), "gi");
 
-console.log(RE_ALL.source);
-
 const KEYWORD_COLOURS = {
     "print": {background: "purple", foreground: "white"},
     "input": {background: "purple", foreground: "white"},
@@ -49,6 +47,19 @@ const KEYWORD_COLOURS = {
     "to": {background: "blue", foreground: "white"},
     "step": {background: "blue", foreground: "white"},
     "next": {background: "blue", foreground: "white"}
+};
+
+const ESCAPE_CHARS = {
+    "'": "'",
+    "\"": "\"",
+    "`": "`",
+    "\\": "\\",
+    "n": "\n",
+    "r": "\r",
+    "t": "\t",
+    "v": "\v",
+    "b": "\b",
+    "f": "\f"
 };
 
 function renderBackgroundHighlight(length, col, row) {
@@ -88,7 +99,6 @@ export class Token {
 
 export class StatementEnd extends Token {}
 export class ExecutionLabel extends Token {}
-export class NumericLiteral extends Token {}
 export class Keyword extends Token {}
 export class Operator extends Token {}
 export class Identifier extends Token {}
@@ -97,6 +107,80 @@ export class StringConcat extends Token {}
 export class ExpressionBracket extends Token {
     isOpening() {
         return this.code == "(";
+    }
+}
+
+export class Value extends Token {
+    get value() {
+        return null;
+    }
+}
+
+export class StringLiteral extends Value {
+    get value() {
+        var value = "";
+        var inEscape = false;
+
+        for (var i = 0; i < this.code.length; i++) {
+            if (i == 0 || i == this.code.length - 1) {
+                continue;
+            } else if (inEscape && ESCAPE_CHARS.hasOwnProperty(this.code[i])) {
+                value += ESCAPE_CHARS[this.code[i]];
+                inEscape = false;
+            } else if (this.code[i] == "\\") {
+                inEscape = true;
+            } else {
+                value += this.code[i];
+            }
+        }
+
+        return value;
+    }
+}
+
+export class NumericLiteral extends Token {
+    get value() {
+        if (RE_NUMERIC_LITERAL_HEX.exec(this.code)) {
+            return parseInt(this.code.substring(2), 16);
+        }
+
+        if (RE_NUMERIC_LITERAL_BIN.exec(this.code)) {
+            return parseInt(this.code.substring(2), 2);
+        }
+
+        if (RE_NUMERIC_LITERAL_OCT.exec(this.code)) {
+            return parseInt(this.code.substring(2), 8);
+        }
+
+        if (RE_NUMERIC_LITERAL_SCI.exec(this.code)) {
+            return this.valueSci;
+        }
+    }
+
+    get valueSci() {
+        var value = "";
+        var exponent = "";
+        var inExponent = false;
+        var negativeExponent = false;
+
+        console.log(this.code);
+
+        for (var i = 0; i < this.code.length; i++) {
+            console.log(this.code[i]);
+            if (this.code[i] == "e" || this.code[i] == "E") {
+                inExponent = true;
+            } else if (this.code[i] == "-") {
+                negativeExponent = true;
+            } else if (inExponent) {
+                if (this.code[i] == "+") {continue;}
+
+                exponent += this.code[i];
+            } else {
+                value += this.code[i];
+            }
+        }
+
+        return (Number(value) || 0) * Math.pow(10, (negativeExponent ? -1 : 1) * (Number(exponent) || 0));
     }
 }
 
@@ -320,6 +404,13 @@ export function highlight(code, index, col, row) {
     
                 term.foreground(KEYWORD_COLOURS[keyword].foreground);
             }
+        } else if (
+            RE_NUMERIC_LITERAL_HEX.exec(match) ||
+            RE_NUMERIC_LITERAL_BIN.exec(match) ||
+            RE_NUMERIC_LITERAL_OCT.exec(match) ||
+            RE_NUMERIC_LITERAL_SCI.exec(match)
+        ) {
+            useForeground("black");
         } else if (RE_FUNCTION_NAME.exec(match)) {
             if (index == start) {
                 setColourByName("magenta");
@@ -402,6 +493,12 @@ export function tokeniseLine(code, lineNumber = null) {
         if (RE_STATEMENT_SEPERATOR.exec(lineSymbols[i])) {
             computeExpressionTokens();
             expressionTokens.push(new StatementEnd(lineSymbols[i], lineNumber));
+
+            continue;
+        }
+
+        if (RE_STRING_LITERAL.exec(lineSymbols[i])) {
+            expressionTokens.push(new StringLiteral(lineSymbols[i], lineNumber));
 
             continue;
         }
