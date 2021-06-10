@@ -1,5 +1,6 @@
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
+import * as basic from "./basic.js";
 
 const RE_STRING_LITERAL = /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/i;
 const RE_LINE_NUMBER = /^\d+/i;
@@ -7,12 +8,14 @@ const RE_NUMERIC_LITERAL_HEX = /(?<![a-z])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
-const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|then|else|end|for|to|step|next)/i;
+const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next)/i;
 const RE_FUNCTION_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln)/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])(?:mod|and|or|xor)(?![a-z])/i;
+const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
 const RE_IDENTIFIER = /[a-z][a-z0-9]+[$%!]?/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
 const RE_STRING_CONCAT = /;/;
+const RE_PARAMETER_SEPERATOR = /,/;
 const RE_STATEMENT_SEPERATOR = /:/;
 const RE_WHTIESPACE = /\w+/;
 
@@ -28,9 +31,11 @@ const RE_ALL = new RegExp([
     RE_KEYWORD.source,
     RE_FUNCTION_NAME.source,
     RE_OPERATOR.source,
+    RE_COMPARATOR.source,
     RE_IDENTIFIER.source,
     RE_EXPRESSION_BRACKET.source,
     RE_STRING_CONCAT.source,
+    RE_PARAMETER_SEPERATOR.source,
     RE_STATEMENT_SEPERATOR.source,
     RE_WHTIESPACE.source
 ].join(RE_OR.source), "gi");
@@ -76,16 +81,6 @@ function setColourByName(name) {
     return canvas.setColour(canvas.colourScheme[canvas.COLOUR_NAMES[name]]);
 }
 
-export class ParsingSyntaxError extends Error {
-    constructor(message, lineNumber) {
-        super(message);
-
-        this.lineNumber = lineNumber;
-
-        this.name = this.constructor.name;
-    }
-}
-
 export class Token {
     constructor(code, lineNumber = null) {
         this.code = code;
@@ -97,10 +92,12 @@ export class Token {
     parse() {}
 }
 
+export class ParameterSeperator extends Token {}
 export class StatementEnd extends Token {}
 export class ExecutionLabel extends Token {}
 export class Keyword extends Token {}
 export class Operator extends Token {}
+export class Comparator extends Token {}
 export class Identifier extends Token {}
 export class StringConcat extends Token {}
 
@@ -163,10 +160,7 @@ export class NumericLiteral extends Token {
         var inExponent = false;
         var negativeExponent = false;
 
-        console.log(this.code);
-
         for (var i = 0; i < this.code.length; i++) {
-            console.log(this.code[i]);
             if (this.code[i] == "e" || this.code[i] == "E") {
                 inExponent = true;
             } else if (this.code[i] == "-") {
@@ -186,7 +180,7 @@ export class NumericLiteral extends Token {
 
 export class Expression extends Token {
     constructor(tokens, operator = null, childExpressionClass = null, lineNumber = null) {
-        super("", lineNumber);
+        super(null, lineNumber);
 
         this.tokens = tokens;
         this.operator = operator;
@@ -214,6 +208,26 @@ export class Expression extends Token {
 
         this.children.forEach((i) => i.parse());
     }
+
+    getPrimaryIdentifier() {
+        for (var i = 0; i < this.tokens.length; i++) {
+            if (this.tokens[i] instanceof Identifier) {
+                return this.tokens[i];
+            }
+        }
+
+        return null;
+    }
+
+    get value() {
+        var value = this.children[0].value;
+
+        for (var i = 1; i < this.children.length; i++) {
+            value = this.reduce(value, this.children[i].value);
+        }
+
+        return value;
+    }
 }
 
 export class Function extends Token {
@@ -225,6 +239,19 @@ export class Function extends Token {
 
     parse() {
         this.expression.parse();
+    }
+
+    get value() {
+        switch (this.code.toLocaleLowerCase()) {
+            case "sin": return Math.sin(basic.trigModeToRadians(this.expression.value));
+            case "cos": return Math.cos(basic.trigModeToRadians(this.expression.value));
+            case "tan": return Math.tan(basic.trigModeToRadians(this.expression.value));
+            case "asin": return basic.radiansToTrigMode(Math.asin(this.expression.value));
+            case "acos": return basic.radiansToTrigMode(Math.acos(this.expression.value));
+            case "atan": return basic.radiansToTrigMode(Math.atan(this.expression.value));
+            case "log": return Math.log10(this.expression.value);
+            case "ln": return Math.log(this.expression.value);
+        }
     }
 }
 
@@ -281,7 +308,7 @@ export class SubtractionExpression extends Expression {
             }
 
             if (chosenFunction != null) {
-                throw new ParsingSyntaxError("Expected value after function name");
+                throw new basic.ParsingSyntaxError("Expected value after function name");
             }
 
             if (this.tokens[i] instanceof Operator && this.tokens[i].code == this.operator.code) {
@@ -293,11 +320,19 @@ export class SubtractionExpression extends Expression {
 
         this.children.forEach((i) => i.parse());
     }
+
+    reduce(a, b) {
+        return a - b;
+    }
 }
 
 export class AdditionExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("+"), MultiplicationExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return a + b;
     }
 }
 
@@ -305,11 +340,19 @@ export class MultiplicationExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("*"), DivisionExpression, lineNumber);
     }
+
+    reduce(a, b) {
+        return a * b;
+    }
 }
 
 export class DivisionExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("/"), ExponentiationExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return a / b;
     }
 }
 
@@ -317,11 +360,19 @@ export class ExponentiationExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("^"), ModuloExpression, lineNumber);
     }
+
+    reduce(a, b) {
+        return Math.pow(a, b);
+    }
 }
 
 export class ModuloExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("mod"), LogicalAndExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return a % b;
     }
 }
 
@@ -329,11 +380,19 @@ export class LogicalAndExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("and"), LogicalOrExpression, lineNumber);
     }
+
+    reduce(a, b) {
+        return a & b;
+    }
 }
 
 export class LogicalOrExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("or"), LogicalXorExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return a | b;
     }
 }
 
@@ -341,11 +400,19 @@ export class LogicalXorExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("xor"), LeafExpression, lineNumber);
     }
+
+    reduce(a, b) {
+        return a ^ b;
+    }
 }
 
 export class LeafExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, null, null, lineNumber);
+    }
+
+    get value() {
+        return this.tokens[0].value;
     }
 }
 
@@ -476,6 +543,12 @@ export function tokeniseLine(code, lineNumber = null) {
             continue;
         }
 
+        if (RE_STRING_LITERAL.exec(lineSymbols[i])) {
+            expressionTokens.push(new StringLiteral(lineSymbols[i], lineNumber));
+
+            continue;
+        }
+
         if (RE_KEYWORD.exec(lineSymbols[i])) {
             computeExpressionTokens();
             tokens.push(new Keyword(lineSymbols[i], lineNumber));
@@ -492,13 +565,21 @@ export function tokeniseLine(code, lineNumber = null) {
 
         if (RE_STATEMENT_SEPERATOR.exec(lineSymbols[i])) {
             computeExpressionTokens();
-            expressionTokens.push(new StatementEnd(lineSymbols[i], lineNumber));
+            tokens.push(new StatementEnd(lineSymbols[i], lineNumber));
 
             continue;
         }
 
-        if (RE_STRING_LITERAL.exec(lineSymbols[i])) {
-            expressionTokens.push(new StringLiteral(lineSymbols[i], lineNumber));
+        if (RE_PARAMETER_SEPERATOR.exec(lineSymbols[i])) {
+            computeExpressionTokens();
+            tokens.push(new ParameterSeperator(lineSymbols[i], lineNumber));
+
+            continue;
+        }
+
+        if (RE_COMPARATOR.exec(lineSymbols[i])) {
+            computeExpressionTokens();
+            tokens.push(new Comparator(lineSymbols[i], lineNumber));
 
             continue;
         }

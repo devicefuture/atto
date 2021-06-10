@@ -2,6 +2,9 @@ import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
 
+import * as basic from "./basic.js";
+window.basic = basic;
+
 import * as syntax from "./syntax.js";
 window.syntax = syntax;
 

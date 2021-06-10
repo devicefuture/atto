@@ -294,6 +294,16 @@ export function getFocusedInput() {
     return null;
 }
 
+export function unfocusInput() {
+    if (currentInput == null) {
+        return;
+    }
+
+    currentInput.finish();
+
+    currentInput = null;
+}
+
 function dispatchInputEvent(event) {
     var focusedInput = getFocusedInput();
 
