@@ -11,6 +11,7 @@ export const trigModes = {
 export var editingProgram = [];
 export var parsedProgram = [];
 export var programLabels = {};
+export var programVariables = {};
 export var running = false;
 export var currentPosition = 0;
 export var trigMode = trigModes.DEGREES;
@@ -63,8 +64,6 @@ export function radiansToTrigMode(value) {
 function expectFactory(tokens) {
     return function(i, ...expectations) {
         for (var j = 0; j < expectations.length; j++) {
-            console.log("Expects", expectations.toString(), "got", tokens[i + j]);
-
             if (i + j >= tokens.length) {
                 throw new ParsingSyntaxError(`Unexpected end of program`, tokens[tokens.length - 1].lineNumber);
             }
@@ -101,6 +100,7 @@ export function parseProgram(program) {
     var tokens = syntax.tokenise(program);
 
     parsedProgram = [];
+    programLabels = {};
 
     for (var i = 0; i < tokens.length; i++) {
         var expect = expectFactory(tokens);
@@ -195,7 +195,7 @@ export function parseProgram(program) {
 
             expect(i, (x) => x instanceof syntax.StatementEnd);
 
-            parsedProgram.push(new OpeningCommand(commands.forLoop, [identifier, start, end, stop]));
+            parsedProgram.push(new OpeningCommand(commands.forLoop, [identifier, start, end, step]));
         } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "end")) {
             parsedProgram.push(new ClosingCommand(commands.genericEnd));
 
@@ -207,7 +207,7 @@ export function parseProgram(program) {
                 i++;
             }
 
-            expect(++i, (x) => x instanceof syntax.StatementEnd);
+            expect(i, (x) => x instanceof syntax.StatementEnd);
         } else if (condition(i, (x) => x instanceof syntax.StatementEnd)) {
             console.warn("Unexpected:", i, tokens[i]);
 
@@ -223,9 +223,30 @@ export function parseProgram(program) {
     }
 }
 
-export function startProgram() {
+export function displayError(error) {
+    if (!(error instanceof ParsingSyntaxError)) {
+        throw error;
+    }
+
+    var defaultForeground = term.foregroundColour;
+
+    term.foreground("red");
+
+    if (term.backgroundColour == term.foregroundColour) {
+        term.foreground("black");
+    }
+
+    term.print(error.message + "\n");
+    term.setColours(term.backgroundColour, defaultForeground);
+}
+
+export function startProgram(clearVariables = true) {
     running = true;
     currentPosition = 0;
+
+    if (clearVariables) {
+        programVariables = {};
+    }
 
     hid.unfocusInput();
 
@@ -236,7 +257,7 @@ export function startProgram() {
         return;
     }
 
-    parsedProgram[currentPosition].call();
+    executeStatement(0);
 }
 
 export function executeStatement(position = currentPosition + 1) {
@@ -252,7 +273,18 @@ export function executeStatement(position = currentPosition + 1) {
             return;
         }
     
-        parsedProgram[currentPosition].call();
+        try {
+            parsedProgram[currentPosition].call();
+        } catch (e) {
+            displayError(e);
+
+            running = false;
+
+            term.print("Ready\n");
+            hid.startProgramInput();
+
+            return;
+        }
     });
 }
 
@@ -264,11 +296,11 @@ export function seekOpeningMark() {
             stackLevel++;
         }
 
+        currentPosition--;
+
         if (parsedProgram[currentPosition] instanceof OpeningCommand) {
             stackLevel--;
         }
-
-        currentPosition--;
     }
 }
 
@@ -280,12 +312,44 @@ export function seekClosingMark() {
             stackLevel++;
         }
 
+        currentPosition++;
+
         if (parsedProgram[currentPosition] instanceof ClosingCommand) {
             stackLevel--;
         }
-
-        currentPosition++;
     }
+}
+
+export function getVariable(identifierName) {
+    var type = null;
+
+    if (identifierName.endsWith("$")) {
+        type = String;
+    } else if (identifierName.endsWith("%")) {
+        type = Number;
+    }
+
+    identifierName = identifierName.replace(/[$%]/g, "").toLocaleLowerCase();
+
+    if (programVariables.hasOwnProperty(identifierName)) {
+        if (type == null) {
+            return programVariables[identifierName];
+        }
+
+        return type(programVariables[identifierName]);
+    }
+
+    if (type == String) {
+        return "";
+    } else {
+        return 0;
+    }
+}
+
+export function setVariable(identifierName, value) {
+    identifierName = identifierName.replace(/[$%]/g, "").toLocaleLowerCase();
+
+    programVariables[identifierName] = value;
 }
 
 export function processCommand(value, movementOnly) {
@@ -295,13 +359,19 @@ export function processCommand(value, movementOnly) {
         } else {
             editingProgram[Number(value.split(" ")[0])] = value;
         }
+
+        if (!movementOnly) {
+            hid.startProgramInput();
+        }
+
+        return;
     }
 
     if (movementOnly) {
         return;
     }
 
-    if (value == "list") {
+    if (value.trim() == "list") {
         for (var i = 0; i < editingProgram.length; i++) {
             if (typeof(editingProgram[i]) != "string") {
                 continue;
@@ -309,11 +379,25 @@ export function processCommand(value, movementOnly) {
 
             hid.startProgramInput(editingProgram[i], false);
         }
+
+        hid.startProgramInput();
+
+        return;
     }
 
-    if (value == "run") {
-        parseProgram(editingProgram);
-        startProgram(0);
+    if (value.trim() == "run") {
+        try {
+            parseProgram(editingProgram);
+        } catch (e) {
+            displayError(e);
+
+            term.print("Ready\n");
+            hid.startProgramInput();
+
+            return;
+        }
+
+        startProgram();
 
         return;
     }
@@ -326,9 +410,30 @@ export function processCommand(value, movementOnly) {
         } else {
             term.print("Please specify a line to edit\n");
         }
+
+        hid.startProgramInput();
+
+        return;
     }
 
-    hid.startProgramInput();
+    if (value.trim() == "") {
+        hid.startProgramInput();
+
+        return;
+    }
+
+    try {
+        parseProgram([value]);
+    } catch (e) {
+        displayError(e);
+
+        term.print("Ready\n");
+        hid.startProgramInput();
+
+        return;
+    }
+
+    startProgram(false);
 }
 
 export function discardCommand(value) {

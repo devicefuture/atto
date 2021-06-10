@@ -12,7 +12,7 @@ const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|else|end|fo
 const RE_FUNCTION_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln)/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])(?:mod|and|or|xor)(?![a-z])/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
-const RE_IDENTIFIER = /[a-z][a-z0-9]+[$%!]?/i;
+const RE_IDENTIFIER = /[a-z][a-z0-9]*[$%]?/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
 const RE_STRING_CONCAT = /;/;
 const RE_PARAMETER_SEPERATOR = /,/;
@@ -98,7 +98,6 @@ export class ExecutionLabel extends Token {}
 export class Keyword extends Token {}
 export class Operator extends Token {}
 export class Comparator extends Token {}
-export class Identifier extends Token {}
 export class StringConcat extends Token {}
 
 export class ExpressionBracket extends Token {
@@ -135,7 +134,7 @@ export class StringLiteral extends Value {
     }
 }
 
-export class NumericLiteral extends Token {
+export class NumericLiteral extends Value {
     get value() {
         if (RE_NUMERIC_LITERAL_HEX.exec(this.code)) {
             return parseInt(this.code.substring(2), 16);
@@ -175,6 +174,12 @@ export class NumericLiteral extends Token {
         }
 
         return (Number(value) || 0) * Math.pow(10, (negativeExponent ? -1 : 1) * (Number(exponent) || 0));
+    }
+}
+
+export class Identifier extends Value {
+    get value() {
+        return basic.getVariable(this.code);
     }
 }
 

@@ -11,7 +11,11 @@ export function print(value) {
     basic.executeStatement();
 }
 
-export function assign(identifier, value) {}
+export function assign(identifier, value) {
+    basic.setVariable(identifier.getPrimaryIdentifier().code, value.value);
+
+    basic.executeStatement();
+}
 
 export function goto(lineNumber) {
     basic.executeStatement(basic.programLabels[lineNumber.value]);
@@ -37,12 +41,31 @@ export function ifCondition(firstValue, secondValue, comparison) {
     }
 }
 
-export function forLoop(identifier, start, end, step) {}
+export function forLoop(identifier, start, end, step) {
+    basic.setVariable(identifier.getPrimaryIdentifier().code, start.value);
+
+    basic.executeStatement();
+}
 
 export function genericEnd() {
     basic.seekOpeningMark();
 
     if (basic.parsedProgram[basic.currentPosition].callable == ifCondition) {
+        basic.seekClosingMark();
+    }
+
+    basic.executeStatement();
+}
+
+export function forEnd() {
+    basic.seekOpeningMark();
+
+    var parameters = basic.parsedProgram[basic.currentPosition].parameters;
+    var identifierName = parameters[0].getPrimaryIdentifier().code;
+
+    if (basic.getVariable(identifierName) < parameters[2].value) {
+        basic.setVariable(identifierName, basic.getVariable(identifierName) + parameters[3].value);
+    } else {
         basic.seekClosingMark();
     }
 
