@@ -7,11 +7,12 @@ const RE_LINE_NUMBER = /^\d+/i;
 const RE_NUMERIC_LITERAL_HEX = /(?<![a-z])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z])0(?:o|O)[0-7]+/;
-const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
+const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor|not)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
 const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next)/i;
 const RE_FUNCTION_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|round|floor|ceil)/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])mod(?![a-z])|&|\||~|;/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
+const RE_LOGICAL_OPERATOR = /(?<![a-z])(?<![a-z][0-9]+)(?:and|or|xor|not)/i;
 const RE_IDENTIFIER = /[a-z][a-z0-9]*[$%]?/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
 const RE_PARAMETER_SEPERATOR = /,/;
@@ -31,6 +32,7 @@ const RE_ALL = new RegExp([
     RE_FUNCTION_NAME.source,
     RE_OPERATOR.source,
     RE_COMPARATOR.source,
+    RE_LOGICAL_OPERATOR.source,
     RE_IDENTIFIER.source,
     RE_EXPRESSION_BRACKET.source,
     RE_PARAMETER_SEPERATOR.source,
@@ -96,6 +98,7 @@ export class ExecutionLabel extends Token {}
 export class Keyword extends Token {}
 export class Operator extends Token {}
 export class Comparator extends Token {}
+export class LogicalOperator extends Token {}
 export class StringConcat extends Token {}
 
 export class ExpressionBracket extends Token {
@@ -188,6 +191,8 @@ export class Expression extends Token {
         this.tokens = tokens;
         this.operator = operator;
         this.childExpressionClass = childExpressionClass;
+
+        this.children = [];
     }
 
     parse() {
@@ -571,6 +576,8 @@ export function highlight(code, index, col, row) {
             }
         } else if (RE_OPERATOR.exec(match)) {
             useForeground("magenta");
+        } else if (RE_COMPARATOR.exec(match) || RE_LOGICAL_OPERATOR.exec(match)) {
+            useForeground("blue");
         } else if (RE_STATEMENT_SEPERATOR.exec(match)) {
             useForeground("blue");
         }
@@ -641,6 +648,13 @@ export function tokeniseLine(code, lineNumber = null) {
         if (RE_COMPARATOR.exec(lineSymbols[i])) {
             computeExpressionTokens();
             tokens.push(new Comparator(lineSymbols[i], lineNumber));
+
+            continue;
+        }
+
+        if (RE_LOGICAL_OPERATOR.exec(lineSymbols[i])) {
+            computeExpressionTokens();
+            tokens.push(new LogicalOperator(lineSymbols[i], lineNumber));
 
             continue;
         }

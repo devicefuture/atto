@@ -45,6 +45,125 @@ export class OpeningCommand extends Command {}
 
 export class ClosingCommand extends Command {}
 
+export class Condition {
+    constructor(a, b, comparison) {
+        this.a = a;
+        this.b = b;
+        this.comparison = comparison;
+    }
+
+    get value() {
+        switch (this.comparison.code) {
+            case "=": return this.a.value == this.b.value;
+            case "<": return this.a.value < this.b.value;
+            case ">": return this.a.value > this.b.value;
+            case "<=": return this.a.value <= this.b.value;
+            case ">=": return this.a.value >= this.b.value;
+            case "!=": return this.a.value != this.b.value;
+        }
+    }
+}
+
+export class LogicalOperatorCondition {
+    constructor(conditions, logicalOperator = null, childLogicalOperatorClass = null) {
+        this.conditions = conditions;
+        this.logicalOperator = logicalOperator;
+        this.childLogicalOperatorClass = childLogicalOperatorClass;
+
+        this.children = [];
+    }
+
+    parse() {
+        if (this.logicalOperator == null) {
+            this.children = [];
+
+            return; // This is a leaf logical operator condition
+        }
+
+        this.children = [new this.childLogicalOperatorClass([])];
+
+        for (var i = 0; i < this.conditions.length; i++) {
+            if (this.conditions[i] instanceof syntax.LogicalOperator && this.conditions[i].code == this.logicalOperator.code) {
+                this.children.push(new this.childLogicalOperatorClass([]));
+            } else {
+                this.children[this.children.length - 1].conditions.push(this.conditions[i]);
+            }
+        }
+
+        this.children.forEach((i) => i.parse());
+    }
+
+    get value() {
+        if (this.logicalOperator == null) {
+            return this.conditions[0].value;
+        }
+
+        var value = this.children[0].value;
+
+        for (var i = 1; i < this.children.length; i++) {
+            value = this.reduce(value, this.children[i].value);
+        }
+
+        return value;
+    }
+}
+
+export class LogicalNot extends LogicalOperatorCondition {
+    constructor(conditions) {
+        super(conditions, new syntax.LogicalOperator("not"), LogicalAnd);
+    }
+
+    reduce(a, b) {
+        return !b;
+    }
+}
+
+export class LogicalAnd extends LogicalOperatorCondition {
+    constructor(conditions) {
+        super(conditions, new syntax.LogicalOperator("and"), LogicalOr);
+    }
+
+    reduce(a, b) {
+        return a && b;
+    }
+}
+
+export class LogicalOr extends LogicalOperatorCondition {
+    constructor(conditions) {
+        super(conditions, new syntax.LogicalOperator("or"), LogicalXor);
+    }
+
+    reduce(a, b) {
+        return a || b;
+    }
+}
+
+export class LogicalXor extends LogicalOperatorCondition {
+    constructor(conditions) {
+        super(conditions, new syntax.LogicalOperator("xor"), LogicalLeaf);
+    }
+
+    reduce(a, b) {
+        return a != b;
+    }
+}
+
+export class LogicalLeaf extends LogicalOperatorCondition {
+    constructor(conditions) {
+        super(conditions);
+    }
+
+    get value() {
+        if (this.childLogicalOperatorClass == null) {
+            if (this.conditions.length == 0) {
+                return false;
+            }
+
+            return this.conditions[0].value;
+        }
+    }
+}
+ 
 export function trigModeToRadians(value) {
     if (trigMode == trigModes.RADIANS) {
         return value;
@@ -100,6 +219,49 @@ function conditionFactory(tokens) {
     }
 }
 
+function conditionalExpressionFactory(tokens, expect, condition) {
+    return function(i) {
+        var conditionalExpression = new LogicalNot([]);
+        var nextCondition = new Condition(null, null, null);
+
+        i--;
+
+        while (true) {
+            if (condition(++i, (x) => x instanceof syntax.Expression)) {
+                expect(i, (x) => x instanceof syntax.Expression);
+
+                nextCondition.a = tokens[i];
+
+                expect(++i, (x) => x instanceof syntax.Comparator);
+
+                nextCondition.comparison = tokens[i];
+
+                expect(++i, (x) => x instanceof syntax.Expression);
+
+                nextCondition.b = tokens[i];
+
+                conditionalExpression.conditions.push(nextCondition);
+
+                nextCondition = new Condition(null, null, null);
+            } else {
+                i--;
+            }
+
+            if (condition(++i, (x) => x instanceof syntax.LogicalOperator)) {
+                conditionalExpression.conditions.push(tokens[i]);
+            } else {
+                break;
+            }
+        }
+
+        conditionalExpression.parse();
+
+        i--;
+
+        return {i, conditionalExpression};
+    }
+}
+
 export function parseProgram(program) {
     var tokens = syntax.tokenise(program);
 
@@ -109,6 +271,7 @@ export function parseProgram(program) {
     for (var i = 0; i < tokens.length; i++) {
         var expect = expectFactory(tokens);
         var condition = conditionFactory(tokens);
+        var conditionalExpression = conditionalExpressionFactory(tokens, expect, condition);
 
         if (condition(i, (x) => x instanceof syntax.ExecutionLabel)) {
             programLabels[tokens[i].code] = parsedProgram.length;
@@ -152,25 +315,13 @@ export function parseProgram(program) {
 
             expect(++i, (x) => x instanceof syntax.StatementEnd);
         } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "if")) {
-            var firstValue = null;
-            var secondValue = null;
-            var comparison = null;
+            var conditionalExpressionResult = conditionalExpression(++i);
 
-            expect(++i, (x) => x instanceof syntax.Expression);
-
-            firstValue = tokens[i];
-
-            expect(++i, (x) => x instanceof syntax.Comparator);
-
-            comparison = tokens[i];
-
-            expect(++i, (x) => x instanceof syntax.Expression);
-
-            secondValue = tokens[i];
+            i = conditionalExpressionResult.i;
 
             expect(++i, (x) => x instanceof syntax.StatementEnd);
 
-            parsedProgram.push(new OpeningCommand(commands.ifCondition, [firstValue, secondValue, comparison]));
+            parsedProgram.push(new OpeningCommand(commands.ifCondition, [conditionalExpressionResult.conditionalExpression]));
         } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "for")) {
             var identifier = null;
             var start = null;

@@ -16,7 +16,7 @@ function expectParameters(...parameters) {
 }
 
 export function print(value) {
-    term.print((value == undefined ? "" : basic.getValueDisplay(value.value, value.lineNumber)) + (!value.postConcat ? "\n" : ""));
+    term.print((value == undefined ? "" : basic.getValueDisplay(value.value, value.lineNumber)) + (value == undefined || !value.postConcat ? "\n" : ""));
 
     basic.executeStatement();
 }
@@ -43,19 +43,8 @@ export function goto(lineNumber) {
     basic.executeStatement(basic.programLabels[lineNumber.value]);
 }
 
-export function ifCondition(firstValue, secondValue, comparison) {
-    var outcome = false;
-
-    switch (comparison.code) {
-        case "=": outcome = firstValue.value == secondValue.value; break;
-        case "<": outcome = firstValue.value < secondValue.value; break;
-        case ">": outcome = firstValue.value > secondValue.value; break;
-        case "<=": outcome = firstValue.value <= secondValue.value; break;
-        case ">=": outcome = firstValue.value >= secondValue.value; break;
-        case "!=": outcome = firstValue.value != secondValue.value; break;
-    }
-
-    if (outcome) {
+export function ifCondition(conditionalExpression) {
+    if (conditionalExpression.value) {
         basic.executeStatement();
     } else {
         basic.seekClosingMark();
