@@ -275,14 +275,20 @@ export class SubtractionExpression extends Expression {
         var bracketTokens = [];
         var chosenFunction = null;
 
+        console.log(this.tokens);
+
         for (var i = 0; i < this.tokens.length; i++) {
-            if (this.tokens[i] instanceof Function) {
+            if (this.tokens[i] instanceof Function && bracketLevel == 0) {
                 chosenFunction = this.tokens[i];
 
                 continue;
             }
 
             if (this.tokens[i] instanceof ExpressionBracket && this.tokens[i].isOpening()) {
+                if (bracketLevel > 0) {
+                    bracketTokens.push(this.tokens[i]);
+                }
+
                 bracketLevel++;
 
                 continue;
@@ -304,6 +310,8 @@ export class SubtractionExpression extends Expression {
 
                     chosenFunction = null;
                     bracketTokens = [];
+                } else {
+                    bracketTokens.push(this.tokens[i]);
                 }
 
                 continue;
@@ -324,6 +332,14 @@ export class SubtractionExpression extends Expression {
             } else {
                 this.children[this.children.length - 1].tokens.push(this.tokens[i]);
             }
+        }
+
+        if (bracketLevel < 0) {
+            throw new basic.ParsingSyntaxError("Expected an opening bracket");
+        }
+
+        if (bracketLevel > 0) {
+            throw new basic.ParsingSyntaxError("Expected a closing bracket");
         }
 
         this.children.forEach((i) => i.parse());
