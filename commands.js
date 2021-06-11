@@ -4,7 +4,8 @@ import * as hid from "./hid.js";
 
 export var keywords = {
     "print": print,
-    "input": input
+    "input": input,
+    "goto": goto
 };
 
 function expectParameters(...parameters) {
@@ -40,6 +41,8 @@ export function assign(identifier, value) {
 }
 
 export function goto(lineNumber) {
+    expectParameters(lineNumber);
+
     basic.executeStatement(basic.programLabels[lineNumber.value]);
 }
 

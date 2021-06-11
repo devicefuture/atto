@@ -310,12 +310,6 @@ export function parseProgram(program) {
             parsedProgram.push(new Command(commands.assign, [tokens[i - 1], tokens[++i]]));
 
             expect(++i, (x) => x instanceof syntax.StatementEnd);
-        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "goto")) { // Goto
-            expect(++i, (x) => x instanceof syntax.Expression);
-
-            parsedProgram.push(new Command(commands.goto, [tokens[i]]));
-
-            expect(++i, (x) => x instanceof syntax.StatementEnd);
         } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "if")) { // If
             var conditionalExpressionResult = conditionalExpression(++i);
 
