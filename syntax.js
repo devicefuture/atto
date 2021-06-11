@@ -370,7 +370,7 @@ export class StringConcatExpression extends Expression {
     }
 
     reduce(a, b) {
-        return basic.getValueDisplay(a) + basic.getValueDisplay(b);
+        return basic.getValueDisplay(a, this.lineNumber) + basic.getValueDisplay(b, this.lineNumber);
     }
 }
 

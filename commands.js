@@ -7,6 +7,14 @@ export var keywords = {
     "input": input
 };
 
+function expectParameters(...parameters) {
+    for (var i = 0; i < parameters.length; i++) {
+        if (parameters[i] == undefined) {
+            throw new basic.RuntimeError(`Expected ${parameters.length} parameters`);
+        }
+    }
+}
+
 export function print(value) {
     term.print((value == undefined ? "" : basic.getValueDisplay(value.value, value.lineNumber)) + (!value.postConcat ? "\n" : ""));
 
@@ -14,6 +22,8 @@ export function print(value) {
 }
 
 export function input(value, identifier) {
+    expectParameters(value, identifier);
+
     term.print(value == undefined ? "" : basic.getValueDisplay(value.value, value.lineNumber));
 
     hid.startInput().then(function(value) {
