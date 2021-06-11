@@ -44,12 +44,21 @@ export function goto(lineNumber) {
 }
 
 export function ifCondition(conditionalExpression) {
-    if (conditionalExpression.value) {
-        basic.executeStatement();
-    } else {
+    basic.declareLastConditionalState(conditionalExpression.value);
+
+    if (!conditionalExpression.value) {
         basic.seekClosingMark();
-        basic.executeStatement();
     }
+
+    basic.executeStatement();
+}
+
+export function elseCondition() {
+    if (basic.lastConditionalState) {
+        basic.seekClosingMark();
+    }
+
+    basic.executeStatement();
 }
 
 export function forLoop(identifier, start, end, step) {
@@ -61,7 +70,7 @@ export function forLoop(identifier, start, end, step) {
 export function genericEnd() {
     basic.seekOpeningMark();
 
-    if (basic.parsedProgram[basic.currentPosition].callable == ifCondition) {
+    if (basic.parsedProgram[basic.currentPosition].callable == ifCondition || basic.parsedProgram[basic.currentPosition].callable == elseCondition) {
         basic.seekClosingMark();
     }
 

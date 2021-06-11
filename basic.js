@@ -15,6 +15,7 @@ export var programVariables = {};
 export var running = false;
 export var currentPosition = 0;
 export var trigMode = trigModes.DEGREES;
+export var lastConditionalState = null;
 
 export class BasicError extends Error {
     constructor(message, lineNumber) {
@@ -210,12 +211,12 @@ function expectFactory(tokens) {
 function conditionFactory(tokens) {
     return function(i, ...conditions) {
         for (var j = 0; j < conditions.length; j++) {
-            if (!conditions[j](tokens[i + j]) && tokens[i + j]) {
+            if (!conditions[j](tokens[i + j])) {
                 return false;
             }
-
-            return true;
         }
+
+        return true;
     }
 }
 
@@ -264,6 +265,7 @@ function conditionalExpressionFactory(tokens, expect, condition) {
 
 export function parseProgram(program) {
     var tokens = syntax.tokenise(program);
+    var additionalEnds = 0;
 
     parsedProgram = [];
     programLabels = {};
@@ -308,13 +310,13 @@ export function parseProgram(program) {
             parsedProgram.push(new Command(commands.assign, [tokens[i - 1], tokens[++i]]));
 
             expect(++i, (x) => x instanceof syntax.StatementEnd);
-        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "goto")) {
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "goto")) { // Goto
             expect(++i, (x) => x instanceof syntax.Expression);
 
             parsedProgram.push(new Command(commands.goto, [tokens[i]]));
 
             expect(++i, (x) => x instanceof syntax.StatementEnd);
-        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "if")) {
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "if")) { // If
             var conditionalExpressionResult = conditionalExpression(++i);
 
             i = conditionalExpressionResult.i;
@@ -322,7 +324,20 @@ export function parseProgram(program) {
             expect(++i, (x) => x instanceof syntax.StatementEnd);
 
             parsedProgram.push(new OpeningCommand(commands.ifCondition, [conditionalExpressionResult.conditionalExpression]));
-        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "for")) {
+        } else if (condition(i,
+            (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "else",
+            (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "if"
+        )) { // Else if
+            parsedProgram.push(new ClosingCommand(commands.genericEnd));
+            parsedProgram.push(new OpeningCommand(commands.elseCondition));
+
+            additionalEnds++;
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "else")) { // Else
+            parsedProgram.push(new ClosingCommand(commands.genericEnd));
+            parsedProgram.push(new OpeningCommand(commands.elseCondition));
+
+            expect(++i, (x) => x instanceof syntax.StatementEnd);
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "for")) { // For loop
             var identifier = null;
             var start = null;
             var end = null;
@@ -351,11 +366,17 @@ export function parseProgram(program) {
             expect(i, (x) => x instanceof syntax.StatementEnd);
 
             parsedProgram.push(new OpeningCommand(commands.forLoop, [identifier, start, end, step]));
-        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "end")) {
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "end")) { // Generic end
             parsedProgram.push(new ClosingCommand(commands.genericEnd));
 
+            for (var j = 0; j < additionalEnds; j++) {
+                parsedProgram.push(new ClosingCommand(commands.genericEnd));
+            }
+
+            additionalEnds = 0;
+
             expect(++i, (x) => x instanceof syntax.StatementEnd);
-        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "next")) {
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "next")) { // For end
             parsedProgram.push(new ClosingCommand(commands.forEnd));
 
             if (condition(++i, (x) => x instanceof syntax.Expression)) {
@@ -567,6 +588,10 @@ export function setVariable(identifierName, value, lineNumber = null) {
     identifierName = identifierName.replace(/[$%]/g, "").toLocaleLowerCase();
 
     programVariables[identifierName] = value;
+}
+
+export function declareLastConditionalState(state) {
+    lastConditionalState = state;
 }
 
 export function processCommand(value, movementOnly) {
