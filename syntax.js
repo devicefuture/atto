@@ -10,7 +10,7 @@ const RE_NUMERIC_LITERAL_OCT = /(?<![a-z])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
 const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next)/i;
 const RE_FUNCTION_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln)/i;
-const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])(?:mod|and|or|xor)(?![a-z])/i;
+const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])mod(?![a-z])|&|\||~/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
 const RE_IDENTIFIER = /[a-z][a-z0-9]*[$%]?/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
@@ -373,7 +373,7 @@ export class ExponentiationExpression extends Expression {
 
 export class ModuloExpression extends Expression {
     constructor(tokens, lineNumber = null) {
-        super(tokens, new Operator("mod"), LogicalAndExpression, lineNumber);
+        super(tokens, new Operator("mod"), BitwiseAndExpression, lineNumber);
     }
 
     reduce(a, b) {
@@ -381,9 +381,9 @@ export class ModuloExpression extends Expression {
     }
 }
 
-export class LogicalAndExpression extends Expression {
+export class BitwiseAndExpression extends Expression {
     constructor(tokens, lineNumber = null) {
-        super(tokens, new Operator("and"), LogicalOrExpression, lineNumber);
+        super(tokens, new Operator("&"), BitwiseOrExpression, lineNumber);
     }
 
     reduce(a, b) {
@@ -391,9 +391,9 @@ export class LogicalAndExpression extends Expression {
     }
 }
 
-export class LogicalOrExpression extends Expression {
+export class BitwiseOrExpression extends Expression {
     constructor(tokens, lineNumber = null) {
-        super(tokens, new Operator("or"), LogicalXorExpression, lineNumber);
+        super(tokens, new Operator("|"), BitwiseXorExpression, lineNumber);
     }
 
     reduce(a, b) {
@@ -401,9 +401,9 @@ export class LogicalOrExpression extends Expression {
     }
 }
 
-export class LogicalXorExpression extends Expression {
+export class BitwiseXorExpression extends Expression {
     constructor(tokens, lineNumber = null) {
-        super(tokens, new Operator("xor"), LeafExpression, lineNumber);
+        super(tokens, new Operator("~"), LeafExpression, lineNumber);
     }
 
     reduce(a, b) {
@@ -606,6 +606,12 @@ export function tokeniseLine(code, lineNumber = null) {
             continue;
         }
 
+        if (RE_OPERATOR.exec(lineSymbols[i])) {
+            expressionTokens.push(new Operator(lineSymbols[i], lineNumber));
+
+            continue;
+        }
+
         if (RE_IDENTIFIER.exec(lineSymbols[i])) {
             expressionTokens.push(new Identifier(lineSymbols[i], lineNumber));
 
@@ -614,12 +620,6 @@ export function tokeniseLine(code, lineNumber = null) {
 
         if (RE_EXPRESSION_BRACKET.exec(lineSymbols[i])) {
             expressionTokens.push(new ExpressionBracket(lineSymbols[i], lineNumber));
-
-            continue;
-        }
-    
-        if (RE_OPERATOR.exec(lineSymbols[i])) {
-            expressionTokens.push(new Operator(lineSymbols[i], lineNumber));
 
             continue;
         }
