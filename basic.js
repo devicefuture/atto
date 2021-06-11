@@ -512,4 +512,4 @@ window.addEventListener("keyup", function(event) {
     if (event.key == "Escape") {
         interruptProgram();
     }
-})
+});
