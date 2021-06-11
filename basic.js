@@ -301,8 +301,13 @@ export function executeStatement(position = currentPosition + 1) {
 
 export function seekOpeningMark() {
     var stackLevel = 0;
+    var oldPosition = currentPosition;
 
     while (!(parsedProgram[currentPosition] instanceof OpeningCommand) || stackLevel > 0) {
+        if (currentPosition < 0) {
+            throw new ParsingSyntaxError("Mismatched statement closing mark", programLabels[oldPosition]);
+        }
+
         if (parsedProgram[currentPosition] instanceof ClosingCommand) {
             stackLevel++;
         }
@@ -317,8 +322,13 @@ export function seekOpeningMark() {
 
 export function seekClosingMark() {
     var stackLevel = 0;
+    var oldPosition = currentPosition;
 
     while (!(parsedProgram[currentPosition] instanceof ClosingCommand) || stackLevel > 0) {
+        if (currentPosition >= parsedProgram.length) {
+            throw new ParsingSyntaxError("Mismatched statement opening mark", programLabels[oldPosition]);
+        }
+
         if (parsedProgram[currentPosition] instanceof OpeningCommand) {
             stackLevel++;
         }
