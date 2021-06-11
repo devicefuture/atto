@@ -10,11 +10,10 @@ const RE_NUMERIC_LITERAL_OCT = /(?<![a-z])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
 const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next)/i;
 const RE_FUNCTION_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|round|floor|ceil)/i;
-const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])mod(?![a-z])|&|\||~/i;
+const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])mod(?![a-z])|&|\||~|;/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
 const RE_IDENTIFIER = /[a-z][a-z0-9]*[$%]?/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
-const RE_STRING_CONCAT = /;/;
 const RE_PARAMETER_SEPERATOR = /,/;
 const RE_STATEMENT_SEPERATOR = /:/;
 const RE_WHTIESPACE = /\w+/;
@@ -34,7 +33,6 @@ const RE_ALL = new RegExp([
     RE_COMPARATOR.source,
     RE_IDENTIFIER.source,
     RE_EXPRESSION_BRACKET.source,
-    RE_STRING_CONCAT.source,
     RE_PARAMETER_SEPERATOR.source,
     RE_STATEMENT_SEPERATOR.source,
     RE_WHTIESPACE.source
@@ -247,6 +245,18 @@ export class Function extends Token {
     }
 
     get value() {
+        if (this.code.toLocaleLowerCase() == "tan" && this.expression.value == 90) {
+            throw new basic.RuntimeError("Maths error", this.lineNumber);
+        }
+
+        if (["asin", "acos", "atan"].includes(this.code.toLocaleLowerCase()) && (this.expression.value < -1 || this.expression.value > 1)) {
+            throw new basic.RuntimeError("Maths error", this.lineNumber);
+        }
+
+        if (["log", "ln"].includes(this.code.toLocaleLowerCase()) && this.expression.value <= 0) {
+            throw new basic.RuntimeError("Maths error", this.lineNumber);
+        }
+
         switch (this.code.toLocaleLowerCase()) {
             case "sin": return Math.sin(basic.trigModeToRadians(this.expression.value));
             case "cos": return Math.cos(basic.trigModeToRadians(this.expression.value));
@@ -263,9 +273,9 @@ export class Function extends Token {
     }
 }
 
-export class SubtractionExpression extends Expression {
+export class StringConcatExpression extends Expression {
     constructor(tokens, lineNumber = null) {
-        super(tokens, new Operator("-"), AdditionExpression, lineNumber);
+        super(tokens, new Operator(";"), SubtractionExpression, lineNumber);
     }
 
     parse() {
@@ -274,8 +284,6 @@ export class SubtractionExpression extends Expression {
         var bracketLevel = 0;
         var bracketTokens = [];
         var chosenFunction = null;
-
-        console.log(this.tokens);
 
         for (var i = 0; i < this.tokens.length; i++) {
             if (this.tokens[i] instanceof Function && bracketLevel == 0) {
@@ -345,6 +353,32 @@ export class SubtractionExpression extends Expression {
         this.children.forEach((i) => i.parse());
     }
 
+    get value() {
+        var value = this.children[0].value;
+
+        for (var i = 1; i < this.children.length; i++) {
+            if (this.children[i].tokens.length > 0) {
+                value = this.reduce(value, this.children[i].value);
+            }
+        }
+
+        return value;
+    }
+
+    get postConcat() {
+        return this.children[this.children.length - 1].tokens.length == 0;
+    }
+
+    reduce(a, b) {
+        return basic.getValueDisplay(a) + basic.getValueDisplay(b);
+    }
+}
+
+export class SubtractionExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("-"), AdditionExpression, lineNumber);
+    }
+
     reduce(a, b) {
         return a - b;
     }
@@ -376,6 +410,10 @@ export class DivisionExpression extends Expression {
     }
 
     reduce(a, b) {
+        if (b == 0) {
+            throw new basic.RuntimeError("Maths error", this.lineNumber);
+        }
+
         return a / b;
     }
 }
@@ -396,6 +434,10 @@ export class ModuloExpression extends Expression {
     }
 
     reduce(a, b) {
+        if (b == 0) {
+            throw new basic.RuntimeError("Maths error", this.lineNumber);
+        }
+
         return a % b;
     }
 }
@@ -529,8 +571,6 @@ export function highlight(code, index, col, row) {
             }
         } else if (RE_OPERATOR.exec(match)) {
             useForeground("magenta");
-        } else if (RE_STRING_CONCAT.exec(match)) {
-            useForeground("purple");
         } else if (RE_STATEMENT_SEPERATOR.exec(match)) {
             useForeground("blue");
         }
@@ -557,7 +597,7 @@ export function tokeniseLine(code, lineNumber = null) {
             return;
         }
 
-        tokens.push(new SubtractionExpression(expressionTokens, lineNumber));
+        tokens.push(new StringConcatExpression(expressionTokens, lineNumber));
         tokens[tokens.length - 1].parse();
 
         expressionTokens = [];
@@ -580,13 +620,6 @@ export function tokeniseLine(code, lineNumber = null) {
         if (RE_KEYWORD.exec(lineSymbols[i])) {
             computeExpressionTokens();
             tokens.push(new Keyword(lineSymbols[i], lineNumber));
-
-            continue;
-        }
-
-        if (RE_STRING_CONCAT.exec(lineSymbols[i])) {
-            computeExpressionTokens();
-            expressionTokens.push(new StringConcat(lineSymbols[i], lineNumber));
 
             continue;
         }

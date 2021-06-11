@@ -257,7 +257,7 @@ export function startInput(format = inputFormats.TEXT, relativeRow = term.scroll
     currentInput = new Input(format, relativeRow, "", offset);
 
     return new Promise(function(resolve, reject) {
-        currentInput.bindPromiseResolver(resolve);
+        currentInput.bindCallback(resolve);
     }).then(function(value) {
         currentInput = null;
 

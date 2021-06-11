@@ -16,7 +16,7 @@ export var running = false;
 export var currentPosition = 0;
 export var trigMode = trigModes.DEGREES;
 
-export class ParsingSyntaxError extends Error {
+export class BasicError extends Error {
     constructor(message, lineNumber) {
         super(message);
 
@@ -25,6 +25,10 @@ export class ParsingSyntaxError extends Error {
         this.name = this.constructor.name;
     }
 }
+
+export class ParsingSyntaxError extends BasicError {}
+
+export class RuntimeError extends BasicError {}
 
 export class Command {
     constructor(callable, parameters = []) {
@@ -224,7 +228,7 @@ export function parseProgram(program) {
 }
 
 export function displayError(error) {
-    if (!(error instanceof ParsingSyntaxError)) {
+    if (!(error instanceof BasicError)) {
         throw error;
     }
 
@@ -236,7 +240,14 @@ export function displayError(error) {
         term.foreground("black");
     }
 
-    term.print(error.message + "\n");
+    term.print(error.message);
+
+    if (typeof(error.lineNumber) == "number" && error.lineNumber > 0) {
+        term.print(` at line ${error.lineNumber}`);
+    }
+
+    term.print("\n");
+
     term.setColours(term.backgroundColour, defaultForeground);
 }
 
@@ -320,6 +331,30 @@ export function seekClosingMark() {
     }
 }
 
+export function isValidDataType(value) {
+    if (Number.isNaN(value) || Math.abs(value) == Infinity) {
+        return false;
+    }
+
+    if (value == null || value == undefined) {
+        return false;
+    }
+
+    return true;
+}
+
+export function getValueDisplay(value, lineNumber = null) {
+    if (!isValidDataType(value)) {
+        throw new RuntimeError("Type conversion error", lineNumber);
+    }
+
+    if (typeof(value) == "number") {
+        return String(Math.round(value * 1e10) / 1e10);
+    } else {
+        return String(value);
+    }
+}
+
 export function getVariable(identifierName) {
     var type = null;
 
@@ -346,14 +381,18 @@ export function getVariable(identifierName) {
     }
 }
 
-export function setVariable(identifierName, value) {
+export function setVariable(identifierName, value, lineNumber = null) {
+    if (!isValidDataType(value)) {
+        throw new RuntimeError("Type conversion error", lineNumber);
+    }
+
     identifierName = identifierName.replace(/[$%]/g, "").toLocaleLowerCase();
 
     programVariables[identifierName] = value;
 }
 
 export function processCommand(value, movementOnly) {
-    if (Number.isInteger(Number(value.split(" ")[0])) && value.trim().length > 0) {
+    if (Number.isInteger(Number(value.split(" ")[0])) && value.trim().length > 0 && Number(value.split(" ")[0]) > 0) {
         if (value.split(" ").length == 1) {
             delete editingProgram[Number(value)];
         } else {
