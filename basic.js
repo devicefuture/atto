@@ -595,11 +595,12 @@ export function declareLastConditionalState(state) {
 }
 
 export function processCommand(value, movementOnly) {
-    if (Number.isInteger(Number(value.split(" ")[0])) && value.trim().length > 0 && Number(value.split(" ")[0]) > 0) {
-        if (value.split(" ").length == 1) {
-            delete editingProgram[Number(value)];
+    if (/^\d+/.exec(value.trim()) && Number(/^(\d+)/.exec(value.trim())[1]) > 0) {
+        var lineNumber = Number(/^(\d+)/.exec(value.trim())[1]);
+        if (value.trim() == String(lineNumber)) {
+            delete editingProgram[lineNumber];
         } else {
-            editingProgram[Number(value.split(" ")[0])] = value;
+            editingProgram[lineNumber] = value;
         }
 
         if (!movementOnly) {
@@ -644,9 +645,9 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.split(" ")[0] == "edit") {
-        if (Number.isInteger(Number(value.split(" ")[1]))) {
-            hid.startProgramInput(editingProgram[Number(value.split(" ")[1])]);
+    if (value.substring(0, 4) == "edit") {
+        if (Number.isInteger(Number(value.substring(4).trim()))) {
+            hid.startProgramInput(editingProgram[Number(value.substring(4).trim())]);
 
             return;
         } else {
