@@ -272,6 +272,10 @@ export function startProgram(clearVariables = true) {
 }
 
 export function executeStatement(position = currentPosition + 1) {
+    if (!running) {
+        return;
+    }
+
     currentPosition = position;
 
     requestAnimationFrame(function() {
@@ -297,6 +301,19 @@ export function executeStatement(position = currentPosition + 1) {
             return;
         }
     });
+}
+
+export function interruptProgram() {
+    if (!running) {
+        return;
+    }
+
+    running = false;
+
+    hid.unfocusInput();
+
+    term.print("Interrupt\n");
+    hid.startProgramInput();
 }
 
 export function seekOpeningMark() {
@@ -490,3 +507,9 @@ export function discardCommand(value) {
         delete editingProgram[Number(value.split(" ")[0])];
     }
 }
+
+window.addEventListener("keyup", function(event) {
+    if (event.key == "Escape") {
+        interruptProgram();
+    }
+})
