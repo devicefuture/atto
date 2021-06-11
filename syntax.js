@@ -9,7 +9,7 @@ const RE_NUMERIC_LITERAL_BIN = /(?<![a-z])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
 const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next)/i;
-const RE_FUNCTION_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln)/i;
+const RE_FUNCTION_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|round|floor|ceil)/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])mod(?![a-z])|&|\||~/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
 const RE_IDENTIFIER = /[a-z][a-z0-9]*[$%]?/i;
@@ -256,6 +256,9 @@ export class Function extends Token {
             case "atan": return basic.radiansToTrigMode(Math.atan(this.expression.value));
             case "log": return Math.log10(this.expression.value);
             case "ln": return Math.log(this.expression.value);
+            case "round": return Math.round(this.expression.value);
+            case "floor": return Math.floor(this.expression.value);
+            case "ceil": return Math.ceil(this.expression.value);
         }
     }
 }
@@ -417,6 +420,10 @@ export class LeafExpression extends Expression {
     }
 
     get value() {
+        if (this.tokens.length == 0) {
+            return 0;
+        }
+
         return this.tokens[0].value;
     }
 }
