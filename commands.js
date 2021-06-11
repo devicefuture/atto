@@ -5,8 +5,16 @@ export var keywords = {
     "print": print
 };
 
+function getValueDisplay(value) {
+    if (typeof(value) == "number") {
+        return String(Math.round(value * 1e10) / 1e10);
+    } else {
+        return String(value);
+    }
+}
+
 export function print(value) {
-    term.print(value.value + "\n");
+    term.print((value == undefined ? "" : getValueDisplay(value.value)) + "\n");
 
     basic.executeStatement();
 }
