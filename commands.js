@@ -43,6 +43,10 @@ export function assign(identifier, value) {
 export function goto(lineNumber) {
     expectParameters(lineNumber);
 
+    if (!basic.programLabels.hasOwnProperty(lineNumber.value)) {
+        throw new basic.RuntimeError(`Cannot goto nonexistent line ${lineNumber.value}`, lineNumber.lineNumber);
+    }
+
     basic.executeStatement(basic.programLabels[lineNumber.value]);
 }
 
