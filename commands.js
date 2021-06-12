@@ -5,7 +5,9 @@ import * as hid from "./hid.js";
 export var keywords = {
     "print": print,
     "input": input,
-    "goto": goto
+    "goto": goto,
+    "break": breakLoop,
+    "continue": continueLoop
 };
 
 function expectParameters(...parameters) {
@@ -50,6 +52,20 @@ export function goto(lineNumber) {
     basic.executeStatement(basic.programLabels[lineNumber.value]);
 }
 
+export function breakLoop() {
+    basic.seekLoopOpeningMark();
+    basic.seekClosingMark();
+
+    basic.executeStatement();
+}
+
+export function continueLoop() {
+    basic.seekLoopOpeningMark();
+    basic.seekClosingMark();
+
+    basic.executeStatement(basic.currentPosition);
+}
+
 export function ifCondition(conditionalExpression) {
     basic.declareLastConditionalState(conditionalExpression.value);
 
@@ -70,6 +86,30 @@ export function elseCondition() {
 
 export function forLoop(identifier, start, end, step) {
     basic.setVariable(identifier.getPrimaryIdentifier().code, start.value, start.lineNumber);
+
+    basic.executeStatement();
+}
+
+export function repeatLoop() {
+    basic.executeStatement();
+}
+
+export function whileLoop(conditionalExpression) {
+    basic.declareLastConditionalState(conditionalExpression.value);
+
+    if (!conditionalExpression.value) {
+        basic.seekClosingMark();
+    }
+
+    basic.executeStatement();
+}
+
+export function untilLoop(conditionalExpression) {
+    basic.declareLastConditionalState(!conditionalExpression.value);
+
+    if (conditionalExpression.value) {
+        basic.seekClosingMark();
+    }
 
     basic.executeStatement();
 }
@@ -97,4 +137,30 @@ export function forEnd() {
     }
 
     basic.executeStatement();
+}
+
+export function repeatWhileEnd(conditionalExpression) {
+    basic.declareLastConditionalState(conditionalExpression.value);
+
+    if (conditionalExpression.value) {
+        basic.seekOpeningMark();
+    }
+
+    basic.executeStatement();
+}
+
+export function repeatUntilEnd(conditionalExpression) {
+    basic.declareLastConditionalState(!conditionalExpression.value);
+
+    if (!conditionalExpression.value) {
+        basic.seekOpeningMark();
+    }
+
+    basic.executeStatement();
+}
+
+export function loopEnd() {
+    basic.seekOpeningMark();
+
+    basic.executeStatement(basic.currentPosition);
 }

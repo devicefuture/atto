@@ -185,6 +185,10 @@ export function radiansToTrigMode(value) {
     }
 }
 
+function findLineNumberByPosition(position) {
+    return Number(Object.keys(programLabels).find((i) => programLabels[i] == position && !Number.isNaN(Number(programLabels[i]))));
+}
+
 function expectFactory(tokens) {
     return function(i, ...expectations) {
         for (var j = 0; j < expectations.length; j++) {
@@ -266,6 +270,7 @@ function conditionalExpressionFactory(tokens, expect, condition) {
 export function parseProgram(program) {
     var tokens = syntax.tokenise(program);
     var additionalEnds = 0;
+    var repeatMode = false;
 
     parsedProgram = [];
     programLabels = {};
@@ -360,6 +365,28 @@ export function parseProgram(program) {
             expect(i, (x) => x instanceof syntax.StatementEnd);
 
             parsedProgram.push(new OpeningCommand(commands.forLoop, [identifier, start, end, step]));
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "repeat")) { // Repeat loop
+            parsedProgram.push(new OpeningCommand(commands.repeatLoop));
+
+            expect(++i, (x) => x instanceof syntax.StatementEnd);
+
+            repeatMode = true;
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "while") && !repeatMode) { // While loop
+            var conditionalExpressionResult = conditionalExpression(++i);
+
+            i = conditionalExpressionResult.i;
+
+            expect(++i, (x) => x instanceof syntax.StatementEnd);
+
+            parsedProgram.push(new OpeningCommand(commands.whileLoop, [conditionalExpressionResult.conditionalExpression]));
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "until") && !repeatMode) { // Until loop
+            var conditionalExpressionResult = conditionalExpression(++i);
+
+            i = conditionalExpressionResult.i;
+
+            expect(++i, (x) => x instanceof syntax.StatementEnd);
+
+            parsedProgram.push(new OpeningCommand(commands.untilLoop, [conditionalExpressionResult.conditionalExpression]));
         } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "end")) { // Generic end
             parsedProgram.push(new ClosingCommand(commands.genericEnd));
 
@@ -378,6 +405,34 @@ export function parseProgram(program) {
             }
 
             expect(i, (x) => x instanceof syntax.StatementEnd);
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "while") && repeatMode) { // Repeat while end
+            var conditionalExpressionResult = conditionalExpression(++i);
+
+            i = conditionalExpressionResult.i;
+
+            expect(++i, (x) => x instanceof syntax.StatementEnd);
+
+            parsedProgram.push(new ClosingCommand(commands.repeatWhileEnd, [conditionalExpressionResult.conditionalExpression]));
+
+            repeatMode = false;
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "until") && repeatMode) { // Repeat until end
+            var conditionalExpressionResult = conditionalExpression(++i);
+
+            i = conditionalExpressionResult.i;
+
+            expect(++i, (x) => x instanceof syntax.StatementEnd);
+
+            parsedProgram.push(new ClosingCommand(commands.repeatUntilEnd, [conditionalExpressionResult.conditionalExpression]));
+
+            repeatMode = false;
+        } else if (condition(i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "loop")) { // Loop end
+            parsedProgram.push(new ClosingCommand(commands.loopEnd));
+
+            for (var j = 0; j < additionalEnds; j++) {
+                parsedProgram.push(new ClosingCommand(commands.loopEnd));
+            }
+
+            expect(++i, (x) => x instanceof syntax.StatementEnd);
         } else if (condition(i, (x) => x instanceof syntax.StatementEnd)) {
             console.warn("Unexpected:", i, tokens[i]);
 
@@ -488,7 +543,7 @@ export function seekOpeningMark() {
 
     while (!(parsedProgram[currentPosition] instanceof OpeningCommand) || stackLevel > 0) {
         if (currentPosition < 0) {
-            throw new ParsingSyntaxError("Mismatched statement closing mark", programLabels[oldPosition]);
+            throw new ParsingSyntaxError("Mismatched statement closing mark", findLineNumberByPosition(oldPosition));
         }
 
         if (parsedProgram[currentPosition] instanceof ClosingCommand) {
@@ -509,7 +564,7 @@ export function seekClosingMark() {
 
     while (!(parsedProgram[currentPosition] instanceof ClosingCommand) || stackLevel > 0) {
         if (currentPosition >= parsedProgram.length) {
-            throw new ParsingSyntaxError("Mismatched statement opening mark", programLabels[oldPosition]);
+            throw new ParsingSyntaxError("Mismatched statement opening mark", findLineNumberByPosition(oldPosition));
         }
 
         if (parsedProgram[currentPosition] instanceof OpeningCommand) {
@@ -520,6 +575,23 @@ export function seekClosingMark() {
 
         if (parsedProgram[currentPosition] instanceof ClosingCommand) {
             stackLevel--;
+        }
+    }
+}
+
+export function seekLoopOpeningMark() {
+    var oldPosition = currentPosition;
+
+    while (!(parsedProgram[currentPosition] instanceof OpeningCommand && [
+        commands.forLoop,
+        commands.repeatLoop,
+        commands.whileLoop,
+        commands.untilLoop
+    ].includes(parsedProgram[currentPosition].callable))) {
+        currentPosition--;
+
+        if (currentPosition < 0) {
+            throw new ParsingSyntaxError("Loop control command was used outside of loop", findLineNumberByPosition(oldPosition));
         }
     }
 }
