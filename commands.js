@@ -7,7 +7,8 @@ export var keywords = {
     "input": input,
     "goto": goto,
     "break": breakLoop,
-    "continue": continueLoop
+    "continue": continueLoop,
+    "stop": stopProgram
 };
 
 function expectParameters(...parameters) {
@@ -64,6 +65,10 @@ export function continueLoop() {
     basic.seekClosingMark();
 
     basic.executeStatement(basic.currentPosition);
+}
+
+export function stopProgram() {
+    basic.stopProgram();
 }
 
 export function ifCondition(conditionalExpression) {

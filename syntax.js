@@ -8,7 +8,7 @@ const RE_NUMERIC_LITERAL_HEX = /(?<![a-z])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor|not)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
-const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next|break|continue|repeat|while|until|loop)/i;
+const RE_KEYWORD = /(?<![a-z])(?<![a-z][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop)/i;
 const RE_FUNCTION_NAME = /(?<![a-z])(?<![a-z][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|round|floor|ceil)/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z])mod(?![a-z])|&|\||~|;/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
@@ -54,6 +54,7 @@ const KEYWORD_COLOURS = {
     "next": {background: "blue", foreground: "white"},
     "break": {background: "blue", foreground: "white"},
     "continue": {background: "blue", foreground: "white"},
+    "stop": {background: "blue", foreground: "white"},
     "repeat": {background: "blue", foreground: "white"},
     "while": {background: "blue", foreground: "white"},
     "until": {background: "blue", foreground: "white"},

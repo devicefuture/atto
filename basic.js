@@ -524,6 +524,17 @@ export function executeStatement(position = currentPosition + 1) {
     });
 }
 
+export function stopProgram() {
+    if (!running) {
+        return;
+    }
+
+    running = false;
+
+    term.print("Ready\n");
+    hid.startProgramInput();
+}
+
 export function interruptProgram() {
     if (!running) {
         return;
