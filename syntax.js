@@ -4,6 +4,7 @@ import * as basic from "./basic.js";
 
 const RE_STRING_LITERAL = /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/i;
 const RE_LINE_NUMBER = /^\d+/;
+const RE_COMMENT = /(?:rem\s|#)[^\n]*/i;
 const RE_NUMERIC_LITERAL_HEX = /(?<![a-z_])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
@@ -25,6 +26,7 @@ const RE_OR = /|/;
 const RE_ALL = new RegExp([
     RE_STRING_LITERAL.source,
     RE_LINE_NUMBER.source,
+    RE_COMMENT.source,
     RE_NUMERIC_LITERAL_HEX.source,
     RE_NUMERIC_LITERAL_BIN.source,
     RE_NUMERIC_LITERAL_OCT.source,
@@ -547,6 +549,8 @@ export function highlight(code, index, col, row) {
 
         if (RE_STRING_LITERAL.exec(match)) {
             useForeground("green");
+        } else if (RE_COMMENT.exec(match)) {
+            useForeground("darkgrey");
         } else if (RE_KEYWORD.exec(match)) {
             var keyword = match.toString().toLocaleLowerCase();
 
@@ -612,7 +616,14 @@ export function tokeniseLine(code, lineNumber = null) {
     var tokens = [];
     var lineSymbols = [];
     var expressionTokens = [];
+    var commentMatch;
     var match;
+
+    if (commentMatch = RE_COMMENT.exec(code.replace(RE_STRING_LITERAL, function(matchedString) {
+        return "\0".repeat(matchedString.length);
+    }))) {
+        code = code.substring(0, commentMatch.index);
+    }
 
     while (match = RE_ALL.exec(code)) {
         lineSymbols.push(match[0]);

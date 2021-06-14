@@ -447,9 +447,7 @@ export function parseProgram(program) {
 
             expect(++i, (x) => x instanceof syntax.StatementEnd);
         } else if (condition(i, (x) => x instanceof syntax.StatementEnd)) {
-            console.warn("Unexpected:", i, tokens[i]);
-
-            throw new ParsingSyntaxError(`Unexpected end of line`, tokens[i].lineNumber);
+            // Pass; could be a comment
         } else {
             console.warn("Unexpected:", i, tokens[i]);
 
