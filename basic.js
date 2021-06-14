@@ -797,8 +797,8 @@ export function processCommand(value, movementOnly) {
     }
 
     if (value.trim().substring(0, 4) == "edit") {
-        if (value.trim().substring(4) != "" && Number.isInteger(Number(value.trim().substring(4)))) {
-            hid.startProgramInput(editingProgram[Number(value.trim().substring(4))]);
+        if (value.trim().substring(4) != "" && Number.isInteger(Number(value.trim().substring(4).trim()))) {
+            hid.startProgramInput(editingProgram[Number(value.trim().substring(4).trim())]);
 
             return;
         } else {
