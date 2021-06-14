@@ -691,6 +691,51 @@ export function declareLastConditionalState(state) {
     lastConditionalState = state;
 }
 
+export function renumberLines() {
+    var newProgram = [];
+    var newLineNumber = 10;
+    var gotoLines = [];
+    var renumberings = [];
+    var tokens = syntax.tokenise(editingProgram);
+
+    for (var i = 0; i < editingProgram.length; i++) {
+        if (i in editingProgram) {
+            renumberings[i] = newLineNumber;
+            newLineNumber += 10;
+        }
+    }
+
+    newLineNumber = 10;
+
+    for (var i = 0; i < tokens.length; i++) {
+        if (tokens[i] instanceof syntax.Keyword && tokens[i].code.toLocaleLowerCase() == "goto" && tokens[i + 1] instanceof syntax.Expression) {
+            gotoLines[tokens[i].lineNumber] = gotoLines[tokens[i].lineNumber] || [];
+
+            gotoLines[tokens[i].lineNumber].push(renumberings[tokens[i + 1].value] || tokens[i + 1].value);
+        }
+    }
+
+    for (var i = 0; i < editingProgram.length; i++) {
+        if (i in editingProgram) {
+            var newLineCode = editingProgram[i].replace(/^\d+/, String(newLineNumber));
+
+            if (typeof(gotoLines[i]) == "object") {
+                for (var j = 0; j < gotoLines[i].length; j++) {
+                    newLineCode = newLineCode.replace(/(goto\s*)\d+/i, `$1\0${gotoLines[i][j]}`);
+                }
+            }
+
+            newLineCode = newLineCode.replace(/(goto\s*)\0/gi, "$1");
+
+            newProgram[newLineNumber] = newLineCode;
+
+            newLineNumber += 10;
+        }
+    }
+
+    editingProgram = newProgram;
+}
+
 export function processCommand(value, movementOnly) {
     if (/^\d+/.exec(value.trim()) && Number(/^(\d+)/.exec(value.trim())[1]) > 0) {
         var lineNumber = Number(/^(\d+)/.exec(value.trim())[1]);
@@ -751,6 +796,13 @@ export function processCommand(value, movementOnly) {
             term.print("Please specify a line to edit\n");
         }
 
+        hid.startProgramInput();
+
+        return;
+    }
+
+    if (value.trim() == "renum") {
+        renumberLines();
         hid.startProgramInput();
 
         return;
