@@ -806,7 +806,7 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.trim() == "") {
+    if (value.trim() == "" || value.trim().startsWith("rem ") || value.trim().startsWith("#")) {
         hid.startProgramInput();
 
         return;
