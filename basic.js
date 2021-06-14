@@ -5,7 +5,8 @@ import * as commands from "./commands.js";
 
 export const trigModes = {
     DEGREES: 0,
-    RADIANS: 1
+    RADIANS: 1,
+    GRADIANS: 2
 };
 
 export var editingProgram = [];
@@ -173,6 +174,10 @@ export function trigModeToRadians(value) {
     if (trigMode == trigModes.DEGREES) {
         return value * (Math.PI / 180);
     }
+
+    if (trigMode == trigModes.GRADIANS) {
+        return value * (Math.PI / 200);
+    }
 }
 
 export function radiansToTrigMode(value) {
@@ -183,6 +188,14 @@ export function radiansToTrigMode(value) {
     if (trigMode == trigModes.DEGREES) {
         return value / (Math.PI / 180);
     }
+
+    if (trigMode == trigModes.GRADIANS) {
+        return value / (Math.PI / 200);
+    }
+}
+
+export function setTrigMode(value) {
+    trigMode = value;
 }
 
 function findLineNumberByPosition(position) {
@@ -499,6 +512,8 @@ export function executeStatement(position = currentPosition + 1) {
 
     currentPosition = position;
 
+    setConstants();
+
     requestAnimationFrame(function() {
         if (currentPosition >= parsedProgram.length) {
             running = false;
@@ -665,6 +680,11 @@ export function setVariable(identifierName, value, lineNumber = null) {
     identifierName = identifierName.replace(/[$%]/g, "").toLocaleLowerCase();
 
     programVariables[identifierName] = value;
+}
+
+export function setConstants() {
+    setVariable("pi", Math.PI);
+    setVariable("epoch", new Date().getTime());
 }
 
 export function declareLastConditionalState(state) {

@@ -8,7 +8,10 @@ export var keywords = {
     "goto": goto,
     "break": breakLoop,
     "continue": continueLoop,
-    "stop": stopProgram
+    "stop": stopProgram,
+    "deg": setTrigDegrees,
+    "rad": setTrigRadians,
+    "gon": setTrigGradians
 };
 
 function expectParameters(...parameters) {
@@ -168,4 +171,22 @@ export function loopEnd() {
     basic.seekOpeningMark();
 
     basic.executeStatement(basic.currentPosition);
+}
+
+export function setTrigDegrees() {
+    basic.setTrigMode(basic.trigModes.DEGREES);
+
+    basic.executeStatement();
+}
+
+export function setTrigRadians() {
+    basic.setTrigMode(basic.trigModes.RADIANS);
+
+    basic.executeStatement();
+}
+
+export function setTrigGradians() {
+    basic.setTrigMode(basic.trigModes.GRADIANS);
+
+    basic.executeStatement();
 }

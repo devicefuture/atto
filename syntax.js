@@ -8,12 +8,13 @@ const RE_NUMERIC_LITERAL_HEX = /(?<![a-z_])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor|not)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
-const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop)/i;
+const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon)/i;
 const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|round|floor|ceil)/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])mod(?![a-z_])|&|\||~|;/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
 const RE_LOGICAL_OPERATOR = /(?<![a-z_])(?<![a-z_][0-9]+)(?:and|or|xor|not)/i;
 const RE_IDENTIFIER = /[a-z_][a-z0-9_]*[$%]?/i;
+const RE_CONSTANT = /(?<![a-z_])(?<![a-z_][0-9]+)(?:pi|epoch)/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
 const RE_PARAMETER_SEPERATOR = /,/;
 const RE_STATEMENT_SEPERATOR = /:/;
@@ -34,6 +35,7 @@ const RE_ALL = new RegExp([
     RE_COMPARATOR.source,
     RE_LOGICAL_OPERATOR.source,
     RE_IDENTIFIER.source,
+    RE_CONSTANT.source,
     RE_EXPRESSION_BRACKET.source,
     RE_PARAMETER_SEPERATOR.source,
     RE_STATEMENT_SEPERATOR.source,
@@ -58,7 +60,10 @@ const KEYWORD_COLOURS = {
     "repeat": {background: "blue", foreground: "white"},
     "while": {background: "blue", foreground: "white"},
     "until": {background: "blue", foreground: "white"},
-    "loop": {background: "blue", foreground: "white"}
+    "loop": {background: "blue", foreground: "white"},
+    "deg": {background: "magenta", foreground: "white"},
+    "rad": {background: "magenta", foreground: "white"},
+    "gon": {background: "magenta", foreground: "white"}
 };
 
 const ESCAPE_CHARS = {
@@ -581,6 +586,13 @@ export function highlight(code, index, col, row) {
             if (match == ")") {
                 bracketLevel--;
             }
+        } else if (RE_CONSTANT.exec(match)) {
+            if (index == start) {
+                setColourByName("lightblue");
+                renderBackgroundHighlight(length, col, row);
+            }
+
+            term.foreground("white");
         } else if (RE_OPERATOR.exec(match)) {
             useForeground("magenta");
         } else if (RE_COMPARATOR.exec(match) || RE_LOGICAL_OPERATOR.exec(match)) {
@@ -689,7 +701,7 @@ export function tokeniseLine(code, lineNumber = null) {
             continue;
         }
 
-        if (RE_IDENTIFIER.exec(lineSymbols[i])) {
+        if (RE_IDENTIFIER.exec(lineSymbols[i]) || RE_CONSTANT.exec(lineSymbols[i])) {
             expressionTokens.push(new Identifier(lineSymbols[i], lineNumber));
 
             continue;
