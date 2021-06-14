@@ -770,6 +770,15 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
+    if (value.trim() == "new") {
+        editingProgram = [];
+
+        term.print("Created new program\n");
+        hid.startProgramInput();
+
+        return;
+    }
+
     if (value.trim() == "run") {
         try {
             parseProgram(editingProgram);
@@ -787,13 +796,13 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.substring(0, 4) == "edit") {
-        if (Number.isInteger(Number(value.substring(4).trim()))) {
-            hid.startProgramInput(editingProgram[Number(value.substring(4).trim())]);
+    if (value.trim().substring(0, 4) == "edit") {
+        if (value.trim().substring(4) != "" && Number.isInteger(Number(value.trim().substring(4)))) {
+            hid.startProgramInput(editingProgram[Number(value.trim().substring(4))]);
 
             return;
         } else {
-            term.print("Please specify a line to edit\n");
+            displayError(new ParsingSyntaxError("Please specify a line to edit"));
         }
 
         hid.startProgramInput();
