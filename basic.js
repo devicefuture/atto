@@ -682,6 +682,8 @@ export function setVariable(identifierName, value, lineNumber = null) {
 
 export function setConstants() {
     setVariable("pi", Math.PI);
+    setVariable("e", Math.E);
+    setVariable("phi", (1 + Math.sqrt(5)) / 2);
     setVariable("epoch", new Date().getTime());
 }
 

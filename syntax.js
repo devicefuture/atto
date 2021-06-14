@@ -10,8 +10,8 @@ const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor|not)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
 const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon)/i;
-const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|round|floor|ceil)/i;
-const RE_CONSTANT = /(?<![a-z_])(?<![a-z_][0-9]+)(?:pi|epoch)/i;
+const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil)/i;
+const RE_CONSTANT = /(?<![a-z0-9_])(?:pi|e|phi|epoch)(?![a-z0-9_])/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])mod(?![a-z_])|&|\||~|;/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
 const RE_LOGICAL_OPERATOR = /(?<![a-z_])(?<![a-z_][0-9]+)(?:and|or|xor|not)/i;
@@ -272,7 +272,7 @@ export class Function extends Token {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        if (["log", "ln"].includes(this.code.toLocaleLowerCase()) && this.expression.value <= 0) {
+        if (["log", "ln", "sqrt"].includes(this.code.toLocaleLowerCase()) && this.expression.value <= 0) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
@@ -285,6 +285,7 @@ export class Function extends Token {
             case "atan": return basic.radiansToTrigMode(Math.atan(this.expression.value));
             case "log": return Math.log10(this.expression.value);
             case "ln": return Math.log(this.expression.value);
+            case "sqrt": return Math.sqrt(this.expression.value);
             case "round": return Math.round(this.expression.value);
             case "floor": return Math.floor(this.expression.value);
             case "ceil": return Math.ceil(this.expression.value);
