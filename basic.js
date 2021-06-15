@@ -637,7 +637,7 @@ export function isValidDataType(value) {
     return true;
 }
 
-export function getValueComparative(value, lineNumber = null) {
+export function getValueComparative(value, lineNumber = running ? editingProgram[currentPosition] : null) {
     if (!isValidDataType(value)) {
         throw new RuntimeError("Type conversion error", lineNumber);
     }
@@ -649,7 +649,7 @@ export function getValueComparative(value, lineNumber = null) {
     }
 }
 
-export function getValueDisplay(value, lineNumber = null) {
+export function getValueDisplay(value, lineNumber = running ? editingProgram[currentPosition] : null) {
     return String(getValueComparative(value, lineNumber));
 }
 
