@@ -9,6 +9,9 @@ export const trigModes = {
     GRADIANS: 2
 };
 
+export var fileExporter;
+export var fileImporter;
+
 export var editingProgram = [];
 export var parsedProgram = [];
 export var programLabels = {};
@@ -547,7 +550,7 @@ export function stopProgram() {
     hid.startProgramInput();
 }
 
-export function interruptProgram() {
+export function interruptProgram(byUser = true) {
     if (!running) {
         return;
     }
@@ -562,8 +565,10 @@ export function interruptProgram() {
 
     hid.unfocusInput();
 
-    term.print("Interrupt\n");
-    hid.startProgramInput();
+    if (byUser) {
+        term.print("Interrupt\n");
+        hid.startProgramInput();
+    }
 }
 
 export function seekOpeningMark() {
@@ -756,14 +761,52 @@ export function renumberLines() {
     editingProgram = newProgram;
 }
 
+export function programToText() {
+    return editingProgram.filter((i) => typeof(i) == "string").join("\n");
+}
+
+export function textToProgram(text) {
+    editingProgram = [];
+
+    text.split("\n").forEach(function(line) {
+        if (/^\d+/.exec(line.trim()) && Number(/^(\d+)/.exec(line.trim())[1]) > 0) {
+            editingProgram[/^(\d+)/.exec(line.trim())[1]] = line;
+        }
+    });
+}
+
+export function exportToFile(filename = "untitled.atto") {
+    var file = new Blob([programToText()], {type: "text/plain"});
+
+    fileExporter.href = URL.createObjectURL(file);
+    fileExporter.download = filename;
+
+    fileExporter.click();
+}
+
+export function importFromFile() {
+    fileImporter.click();
+}
+
+export function autosave() {
+    if (programToText().length > 0) {
+        localStorage.setItem("atto_lastSessionProgram", programToText());
+    } else {
+        localStorage.removeItem("atto_lastSessionProgram");
+    }
+}
+
 export function processCommand(value, movementOnly) {
     if (/^\d+/.exec(value.trim()) && Number(/^(\d+)/.exec(value.trim())[1]) > 0) {
         var lineNumber = Number(/^(\d+)/.exec(value.trim())[1]);
+
         if (value.trim() == String(lineNumber)) {
             delete editingProgram[lineNumber];
         } else {
             editingProgram[lineNumber] = value;
         }
+
+        autosave();
 
         if (!movementOnly) {
             hid.startProgramInput();
@@ -794,6 +837,7 @@ export function processCommand(value, movementOnly) {
         editingProgram = [];
 
         term.print("Created new program\n");
+        autosave();
         hid.startProgramInput();
 
         return;
@@ -825,6 +869,7 @@ export function processCommand(value, movementOnly) {
             displayError(new ParsingSyntaxError("Please specify a line to edit"));
         }
 
+        autosave();
         hid.startProgramInput();
 
         return;
@@ -832,6 +877,41 @@ export function processCommand(value, movementOnly) {
 
     if (value.trim() == "renum") {
         renumberLines();
+        autosave();
+        hid.startProgramInput();
+
+        return;
+    }
+
+    if (value.trim().split(" ")[0] == "export") {
+        var parts = value.trim().split(" ");
+
+        parts.shift();
+
+        exportToFile(parts.length > 0 ? parts.join(" ") + ".atto" : undefined);
+        
+        term.print("Exported to file\n");
+        hid.startProgramInput();
+
+        return;
+    }
+
+    if (value.trim() == "import") {
+        importFromFile();
+        hid.startProgramInput();
+
+        return;
+    }
+
+    if (value.trim() == "load") {
+        var programFromStorage = localStorage.getItem("atto_lastSessionProgram");
+
+        if (programFromStorage == null) {
+            displayError(new ParsingSyntaxError("No previous sessions to load"));
+        } else {
+            textToProgram(programFromStorage);
+        }
+
         hid.startProgramInput();
 
         return;
@@ -858,10 +938,31 @@ export function processCommand(value, movementOnly) {
 }
 
 export function discardCommand(value) {
-    if (Number.isInteger(Number(value.split(" ")[0])) && value.trim().length > 0) {
-        delete editingProgram[Number(value.split(" ")[0])];
+    if (/^\d+/.exec(value.trim()) && Number(/^(\d+)/.exec(value.trim())[1]) > 0) {
+        delete editingProgram[Number(/^(\d+)/.exec(value.trim())[1])];
+
+        autosave();
     }
 }
+
+window.addEventListener("load", function() {
+    fileExporter = document.querySelector("#fileExporter");
+    fileImporter = document.querySelector("#fileImporter");
+
+    fileImporter.addEventListener("change", function() {
+        var reader = new FileReader();
+
+        reader.addEventListener("load", function(event) {
+            interruptProgram(false);
+            textToProgram(reader.result);
+
+            term.print("Imported from file\n");
+            hid.startProgramInput();
+        });
+
+        reader.readAsText(fileImporter.files[0]);
+    });
+});
 
 window.addEventListener("keyup", function(event) {
     if (event.key == "Escape") {

@@ -17,8 +17,17 @@ canvas.onReady(function() {
     term.foreground("green");
     term.print("help");
     term.foreground();
-    term.print(" to view the guide\n\n");
-    term.print("Ready\n");
+    term.print(" to view the guide\n");
+
+    if (localStorage.getItem("atto_lastSessionProgram") != null) {
+        term.print("Type ");
+        term.foreground("red");
+        term.print("load");
+        term.foreground();
+        term.print(" to load last session\n");
+    }
+
+    term.print("\nReady\n");
 
     hid.startProgramInput();
 });
