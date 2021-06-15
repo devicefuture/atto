@@ -197,7 +197,7 @@ export function setTrigGradians() {
 export function setTextPosition(col, row) {
     expectParameters(col, row);
 
-    term.goto(basic.getValueComparative(Math.floor(col.value - 1)), basic.getValueComparative(row.value));
+    term.goto(basic.getValueComparative(Math.floor(col.value) - 1), basic.getValueComparative(Math.floor(row.value)));
     term.right();
 
     basic.executeStatement();

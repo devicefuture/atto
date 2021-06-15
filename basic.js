@@ -511,8 +511,6 @@ export function executeStatement(position = currentPosition + 1) {
 
     currentPosition = position;
 
-    setConstants();
-
     requestAnimationFrame(function() {
         if (currentPosition >= parsedProgram.length) {
             running = false;
@@ -657,6 +655,8 @@ export function getValueDisplay(value, lineNumber = null) {
 
 export function getVariable(identifierName) {
     var type = null;
+
+    setConstants();
 
     if (identifierName.endsWith("$")) {
         type = String;
