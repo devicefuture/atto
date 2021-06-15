@@ -56,12 +56,12 @@ export class Condition {
 
     get value() {
         switch (this.comparison.code) {
-            case "=": return this.a.value == this.b.value;
-            case "<": return this.a.value < this.b.value;
-            case ">": return this.a.value > this.b.value;
-            case "<=": return this.a.value <= this.b.value;
-            case ">=": return this.a.value >= this.b.value;
-            case "!=": return this.a.value != this.b.value;
+            case "=": return getValueComparative(this.a.value) == getValueComparative(this.b.value);
+            case "<": return getValueComparative(this.a.value) < getValueComparative(this.b.value);
+            case ">": return getValueComparative(this.a.value) > getValueComparative(this.b.value);
+            case "<=": return getValueComparative(this.a.value) <= getValueComparative(this.b.value);
+            case ">=": return getValueComparative(this.a.value) >= getValueComparative(this.b.value);
+            case "!=": return getValueComparative(this.a.value) != getValueComparative(this.b.value);
         }
     }
 }
@@ -632,16 +632,20 @@ export function isValidDataType(value) {
     return true;
 }
 
-export function getValueDisplay(value, lineNumber = null) {
+export function getValueComparative(value, lineNumber = null) {
     if (!isValidDataType(value)) {
         throw new RuntimeError("Type conversion error", lineNumber);
     }
 
     if (typeof(value) == "number") {
-        return String(Math.round(value * 1e10) / 1e10);
+        return Math.round(value * 1e10) / 1e10;
     } else {
-        return String(value);
+        return String(value).normalize();
     }
+}
+
+export function getValueDisplay(value, lineNumber = null) {
+    return String(getValueComparative(value, lineNumber));
 }
 
 export function getVariable(identifierName) {
