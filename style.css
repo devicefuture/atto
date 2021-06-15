@@ -1,5 +1,24 @@
+:root {
+    --black: rgb(0, 0, 0);
+    --purple: rgb(94, 52, 235);
+    --darkGreen: rgb(62, 181, 74);
+    --darkBlue: rgb(28, 90, 189);
+    --red: rgb(237, 26, 58);
+    --magenta: rgb(219, 29, 118);
+    --brown: rgb(199, 80, 20);
+    --lightGrey: rgb(238, 238, 238);
+    --darkGrey: rgb(56, 56, 56);
+    --lightPurple: rgb(130, 134, 245);
+    --lightGreen: rgb(96, 230, 110);
+    --lightBlue: rgb(80, 177, 242);
+    --lightRed: rgb(255, 97, 121);
+    --pink: rgb(255, 71, 191);
+    --yellow: rgb(252, 218, 63);
+    --white: rgb(255, 255, 255);
+}
+
 * {
-    font-family: "Brass Mono", monospace;
+    font-family: "Lexend Deca", sans-serif;
     box-sizing: border-box;
 }
 
@@ -15,6 +34,53 @@ canvas {
     border-radius: 10px;
 }
 
+a {
+    color: var(--darkBlue);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a.card {
+    display: block;
+    height: 100px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: var(--darkBlue);
+    color: var(--white);
+    border-radius: 10px;
+    opacity: 1;
+    transition: 0.5s opacity;
+}
+
+a.card:hover {
+    text-decoration: none;
+    opacity: 0.8;
+}
+
+a.card.purple {
+    background-color: var(--purple);
+}
+
+a.card.darkGreen {
+    background-color: var(--darkGreen);
+}
+
+a.card.red {
+    background-color: var(--red);
+}
+
+a.card.magenta {
+    background-color: var(--magenta);
+}
+
+a.card.brown {
+    background-color: var(--brown);
+}
+
 #hidLog, #hidInput {
     position: absolute;
     display: block;
@@ -22,7 +88,24 @@ canvas {
     left: 0;
     width: 0;
     height: 0;
+    font-family: "Brass Mono", monospace;
     overflow: hidden;
     white-space: pre;
     opacity: 0;
+}
+
+#docs {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    width: 400px;
+    height: calc(100vh - 40px);
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: var(--lightGrey);
+    color: var(--black);
+    font-size: 20px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    overflow: auto;
 }

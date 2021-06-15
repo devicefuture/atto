@@ -12,6 +12,7 @@ var element;
 var buffer;
 var context;
 var readyListeners = [];
+var docsOpen = false;
 
 export class Colour {
     constructor(red, green, blue, alpha = 1) {
@@ -188,7 +189,8 @@ export function restoreFromBuffer(x = 0, y = 0) {
 }
 
 function resize() {
-    var viewportWidth = window.innerWidth - 40;
+    var availableWidth = docsOpen ? window.innerWidth - 400 : window.innerWidth;
+    var viewportWidth = availableWidth - 40;
     var viewportHeight = window.innerHeight - 40;
     var scaledDisplayWidth = DISP_WIDTH * DISP_SCALE_FACTOR;
     var scaledDisplayHeight = DISP_HEIGHT * DISP_SCALE_FACTOR;
@@ -204,7 +206,8 @@ function resize() {
         height = viewportHeight;
     }
 
-    element.style.left = `${(window.innerWidth - width) / 2}px`;
+    element.style.top = `${(window.innerHeight - height) / 2}px`;
+    element.style.left = `${(availableWidth - width) / 2}px`;
     element.style.width = `${width}px`;
     element.style.height = `${height}px`;
 }
@@ -233,5 +236,15 @@ export function init() {
 
     readyListeners.forEach((i) => i());
 };
+
+export function toggleDocs() {
+    if (docsOpen = !docsOpen) {
+        document.querySelector("#docs").hidden = false;
+    } else {
+        document.querySelector("#docs").hidden = true;
+    }
+
+    resize();
+}
 
 window.addEventListener("resize", resize);

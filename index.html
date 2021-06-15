@@ -4,12 +4,15 @@
         <title>atto</title>
         <link rel="stylesheet" href="fonts/fonts.css">
         <link rel="stylesheet" href="style.css">
+        <script src="lib/showdown.min.js"></script>
         <script type="module" src="script.js"></script>
+        <script src="docs.js"></script>
     </head>
     <body>
         <canvas></canvas>
         <div id="hidLog"></div>
         <input autocapitalize="off" autocomplete="off" id="hidInput">
+        <div hidden id="docs"></div>
         <div hidden>
             <a id="fileExporter"></a>
             <input type="file" accept=".atto" id="fileImporter">

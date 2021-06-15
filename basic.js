@@ -1,3 +1,4 @@
+import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
 import * as syntax from "./syntax.js";
@@ -816,6 +817,13 @@ export function processCommand(value, movementOnly) {
     }
 
     if (movementOnly) {
+        return;
+    }
+
+    if (value.trim() == "help") {
+        canvas.toggleDocs();
+        hid.startProgramInput();
+
         return;
     }
 

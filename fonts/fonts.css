@@ -2,3 +2,8 @@
     font-family: "Brass Mono";
     src: url("brassmono-comfortableregular.otf") format("opentype");
 }
+
+@font-face {
+    font-family: "Lexend Deca";
+    src: url("lexenddeca-regular.ttf") format("truetype");
+}
