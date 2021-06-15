@@ -88,6 +88,11 @@ export function goto(newCol, newRow) {
     row = newRow;
 }
 
+export function clear() {
+    canvas.setColour(backgroundColour);
+    canvas.clear();
+}
+
 export function print(text, notifyHid = true, wrap = true) {
     text = String(text);
 

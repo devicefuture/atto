@@ -17,6 +17,7 @@ export var running = false;
 export var currentPosition = 0;
 export var trigMode = trigModes.DEGREES;
 export var lastConditionalState = null;
+export var delayTimeout = null;
 
 export class BasicError extends Error {
     constructor(message, lineNumber) {
@@ -555,6 +556,12 @@ export function interruptProgram() {
 
     running = false;
 
+    if (delayTimeout != null) {
+        clearTimeout(delayTimeout);
+
+        delayTimeout = null;
+    }
+
     hid.unfocusInput();
 
     term.print("Interrupt\n");
@@ -689,10 +696,19 @@ export function setConstants() {
     setVariable("e", Math.E);
     setVariable("phi", (1 + Math.sqrt(5)) / 2);
     setVariable("epoch", new Date().getTime());
+    setVariable("random", Math.random());
+    setVariable("col", term.col);
+    setVariable("row", term.row);
 }
 
 export function declareLastConditionalState(state) {
     lastConditionalState = state;
+}
+
+export function setDelayTimeout(timeout) {
+    clearTimeout(delayTimeout);
+
+    delayTimeout = timeout;
 }
 
 export function renumberLines() {

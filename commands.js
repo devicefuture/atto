@@ -11,7 +11,10 @@ export var keywords = {
     "stop": stopProgram,
     "deg": setTrigDegrees,
     "rad": setTrigRadians,
-    "gon": setTrigGradians
+    "gon": setTrigGradians,
+    "pos": setTextPosition,
+    "cls": clearScreen,
+    "delay": delay
 };
 
 function expectParameters(...parameters) {
@@ -189,4 +192,32 @@ export function setTrigGradians() {
     basic.setTrigMode(basic.trigModes.GRADIANS);
 
     basic.executeStatement();
+}
+
+export function setTextPosition(col, row) {
+    expectParameters(col, row);
+
+    term.goto(basic.getValueComparative(Math.floor(col.value - 1)), basic.getValueComparative(row.value));
+    term.right();
+
+    basic.executeStatement();
+}
+
+export function clearScreen() {
+    term.clear();
+    term.goto(0, 0);
+
+    basic.executeStatement();
+}
+
+export function delay(milliseconds) {
+    expectParameters(milliseconds);
+
+    basic.setDelayTimeout(
+        setTimeout(function() {
+            if (basic.running) {
+                basic.executeStatement();
+            }
+        }, basic.getValueComparative(Number(milliseconds.value)))
+    );
 }
