@@ -22,6 +22,7 @@ export var currentPosition = 0;
 export var trigMode = trigModes.DEGREES;
 export var lastConditionalState = null;
 export var delayTimeout = null;
+export var currentKey = "";
 
 export class BasicError extends Error {
     constructor(message, lineNumber) {
@@ -705,6 +706,7 @@ export function setConstants() {
     setVariable("random", Math.random());
     setVariable("col", term.col);
     setVariable("row", term.row);
+    setVariable("key", currentKey);
 }
 
 export function declareLastConditionalState(state) {
@@ -972,8 +974,14 @@ window.addEventListener("load", function() {
     });
 });
 
+window.addEventListener("keydown", function(event) {
+    currentKey = event.key;
+});
+
 window.addEventListener("keyup", function(event) {
     if (event.key == "Escape") {
         interruptProgram();
     }
+
+    currentKey = "";
 });
