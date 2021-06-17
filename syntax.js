@@ -9,7 +9,7 @@ const RE_NUMERIC_LITERAL_HEX = /(?<![a-z_])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor|not)|(?<![a-z.]))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
-const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|pos|cls|delay)/i;
+const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|pos|cls|delay)/i;
 const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|asc|bin|oct|hex|len\$|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|chr\$|bin\$|oct\$|hex\$)/i;
 const RE_CONSTANT = /(?<![a-z0-9_])(?:pi|e|phi|epoch|random|col|row|key)(?![a-z0-9_])/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])mod(?![a-z_])|&|\||~|;/i;
@@ -48,6 +48,8 @@ const KEYWORD_COLOURS = {
     "print": {background: "purple", foreground: "white"},
     "input": {background: "purple", foreground: "white"},
     "goto": {background: "blue", foreground: "white"},
+    "gosub": {background: "blue", foreground: "white"},
+    "return": {background: "blue", foreground: "white"},
     "if": {background: "blue", foreground: "white"},
     "else": {background: "blue", foreground: "white"},
     "then": {background: "blue", foreground: "white"},

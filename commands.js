@@ -6,6 +6,8 @@ export var keywords = {
     "print": print,
     "input": input,
     "goto": goto,
+    "gosub": gosub,
+    "return": returnFromSub,
     "break": breakLoop,
     "continue": continueLoop,
     "stop": stopProgram,
@@ -57,6 +59,21 @@ export function goto(lineNumber) {
     }
 
     basic.executeStatement(basic.programLabels[lineNumber.value]);
+}
+
+export function gosub(lineNumber) {
+    expectParameters(lineNumber);
+
+    if (!basic.programLabels.hasOwnProperty(lineNumber.value)) {
+        throw new basic.RuntimeError(`Cannot gosub to nonexistent line ${lineNumber.value}`, lineNumber.lineNumber);
+    }
+
+    basic.pushStack(lineNumber.lineNumber);
+    basic.executeStatement(basic.programLabels[lineNumber.value]);
+}
+
+export function returnFromSub() {
+    basic.executeStatement(basic.popStack() + 1);
 }
 
 export function breakLoop() {

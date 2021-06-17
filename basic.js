@@ -4,6 +4,8 @@ import * as hid from "./hid.js";
 import * as syntax from "./syntax.js";
 import * as commands from "./commands.js";
 
+export const MAX_STACK_SIZE = 100;
+
 export const trigModes = {
     DEGREES: 0,
     RADIANS: 1,
@@ -17,6 +19,7 @@ export var editingProgram = [];
 export var parsedProgram = [];
 export var programLabels = {};
 export var programVariables = {};
+export var programStack = [];
 export var running = false;
 export var currentPosition = 0;
 export var trigMode = trigModes.DEGREES;
@@ -492,6 +495,7 @@ export function displayError(error) {
 export function startProgram(clearVariables = true) {
     running = true;
     currentPosition = 0;
+    programStack = [];
 
     if (clearVariables) {
         programVariables = {};
@@ -547,6 +551,7 @@ export function stopProgram() {
     }
 
     running = false;
+    programStack = [];
 
     term.print("Ready\n");
     hid.startProgramInput();
@@ -558,6 +563,7 @@ export function interruptProgram(byUser = true) {
     }
 
     running = false;
+    programStack = [];
 
     if (delayTimeout != null) {
         clearTimeout(delayTimeout);
@@ -709,6 +715,22 @@ export function setConstants() {
     setVariable("key", currentKey);
 }
 
+export function pushStack(lineNumber, position = currentPosition) {
+    if (programStack.length >= MAX_STACK_SIZE) {
+        throw new RuntimeError("Maximum recursion depth limit reached", lineNumber);
+    }
+
+    programStack.push(position);
+}
+
+export function popStack() {
+    if (programStack.length == 0) {
+        throw new RuntimeError("Nothing to return to", findLineNumberByPosition(currentPosition));
+    }
+
+    return programStack.pop();
+}
+
 export function declareLastConditionalState(state) {
     lastConditionalState = state;
 }
@@ -736,7 +758,7 @@ export function renumberLines() {
     newLineNumber = 10;
 
     for (var i = 0; i < tokens.length; i++) {
-        if (tokens[i] instanceof syntax.Keyword && tokens[i].code.toLocaleLowerCase() == "goto" && tokens[i + 1] instanceof syntax.Expression) {
+        if (tokens[i] instanceof syntax.Keyword && ["goto", "gosub"].includes(tokens[i].code.toLocaleLowerCase()) && tokens[i + 1] instanceof syntax.Expression) {
             gotoLines[tokens[i].lineNumber] = gotoLines[tokens[i].lineNumber] || [];
 
             gotoLines[tokens[i].lineNumber].push(renumberings[tokens[i + 1].value] || tokens[i + 1].value);
@@ -749,11 +771,11 @@ export function renumberLines() {
 
             if (typeof(gotoLines[i]) == "object") {
                 for (var j = 0; j < gotoLines[i].length; j++) {
-                    newLineCode = newLineCode.replace(/(goto\s*)\d+/i, `$1\0${gotoLines[i][j]}`);
+                    newLineCode = newLineCode.replace(/((?:goto|gosub)\s*)\d+/i, `$1\0${gotoLines[i][j]}`);
                 }
             }
 
-            newLineCode = newLineCode.replace(/(goto\s*)\0/gi, "$1");
+            newLineCode = newLineCode.replace(/((?:goto|gosub)\s*)\0/gi, "$1");
 
             newProgram[newLineNumber] = newLineCode;
 
