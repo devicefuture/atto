@@ -81,6 +81,42 @@ a.card.brown {
     background-color: var(--brown);
 }
 
+hr {
+    height: 4px;
+    border: none;
+    background-color: var(--darkGrey);
+    border-radius: 2px;
+}
+
+pre {
+    padding: 10px;
+    background-color: var(--white);
+    color: var(--black);
+    border-radius: 10px;
+    overflow-x: auto;
+}
+
+code {
+    font-family: "Brass Mono", monospace;
+}
+
+blockquote {
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    padding: 10px;
+    background-color: rgba(255, 71, 191, 0.2);
+    border-inline-start: 4px solid var(--pink);
+    border-radius: 10px;
+}
+
+blockquote p:first-child {
+    margin-top: 0;
+}
+
+blockquote p:last-child {
+    margin-bottom: 0;
+}
+
 #hidLog, #hidInput {
     position: absolute;
     display: block;
