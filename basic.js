@@ -5,6 +5,8 @@ import * as syntax from "./syntax.js";
 import * as commands from "./commands.js";
 
 export const MAX_STACK_SIZE = 100;
+export const MAX_RENDER_HOLD_TIME = 10;
+export const MAX_RENDER_CALL_DEPTH = 25;
 
 export const trigModes = {
     DEGREES: 0,
@@ -22,6 +24,8 @@ export var programVariables = {};
 export var programStack = [];
 export var running = false;
 export var currentPosition = 0;
+export var renderHoldTime = 0;
+export var renderCallDepth = 0;
 export var trigMode = trigModes.DEGREES;
 export var lastConditionalState = null;
 export var delayTimeout = null;
@@ -520,7 +524,10 @@ export function executeStatement(position = currentPosition + 1) {
 
     currentPosition = position;
 
-    requestAnimationFrame(function() {
+    function performExecution() {
+        renderHoldTime = new Date().getTime();
+        renderCallDepth++;
+
         if (currentPosition >= parsedProgram.length) {
             running = false;
     
@@ -542,7 +549,14 @@ export function executeStatement(position = currentPosition + 1) {
 
             return;
         }
-    });
+    }
+
+    if (new Date().getTime() - renderHoldTime > MAX_RENDER_HOLD_TIME || renderCallDepth > MAX_RENDER_CALL_DEPTH) {
+        renderCallDepth = 0;
+        requestAnimationFrame(performExecution);
+    } else {
+        performExecution();
+    }
 }
 
 export function stopProgram() {
