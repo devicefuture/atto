@@ -1,4 +1,6 @@
+import * as common from "./common.js";
 import * as basic from "./basic.js";
+import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
 
@@ -16,13 +18,15 @@ export var keywords = {
     "gon": setTrigGradians,
     "pos": setTextPosition,
     "cls": clearScreen,
-    "delay": delay
+    "delay": delay,
+    "bg": setBackgroundColour,
+    "fg": setForegroundColour
 };
 
 function expectParameters(...parameters) {
     for (var i = 0; i < parameters.length; i++) {
         if (parameters[i] == undefined) {
-            throw new basic.RuntimeError(`Expected ${parameters.length} parameters`);
+            throw new basic.RuntimeError(parameters.length > 1 ? `Expected ${parameters.length} parameters`: `Expected 1 parameter`);
         }
     }
 }
@@ -237,4 +241,64 @@ export function delay(milliseconds) {
             }
         }, basic.getValueComparative(Number(milliseconds.value)))
     );
+}
+
+export function setBackgroundColour(mode, p1, p2, p3, alpha) {
+    var chosenMode = String(mode != undefined ? mode.value : "grey").toLocaleLowerCase();
+
+    if (canvas.COLOUR_NAMES.hasOwnProperty(chosenMode)) {
+        term.background(chosenMode);
+    } else if (chosenMode == "rgb") {
+        expectParameters(p1, p2, p3);
+
+        term.setColours(new canvas.Colour(
+            basic.getValueComparative(Number(p1.value)),
+            basic.getValueComparative(Number(p2.value)),
+            basic.getValueComparative(Number(p3.value)),
+            alpha != undefined ? basic.getValueComparative(Number(alpha.value)) : 1
+        ), term.foregroundColour);
+    } else if (chosenMode == "hsl") {
+        expectParameters(p1, p2, p3);
+
+        term.setColours(common.colourFromHsl(
+            basic.getValueComparative(Number(p1.value)),
+            basic.getValueComparative(Number(p2.value)),
+            basic.getValueComparative(Number(p3.value)),
+            alpha != undefined ? basic.getValueComparative(Number(alpha.value)) : 1
+        ), term.foregroundColour);
+    } else {
+        throw new basic.RuntimeError(`Colour \`${chosenMode}\` does not exist`);
+    }
+
+    basic.executeStatement();
+}
+
+export function setForegroundColour(mode, p1, p2, p3, alpha) {
+    var chosenMode = String(mode != undefined ? mode.value : "black").toLocaleLowerCase();
+
+    if (canvas.COLOUR_NAMES.hasOwnProperty(chosenMode)) {
+        term.foreground(chosenMode);
+    } else if (chosenMode == "rgb") {
+        expectParameters(p1, p2, p3);
+
+        term.setColours(term.backgroundColour, new canvas.Colour(
+            basic.getValueComparative(Number(p1.value)),
+            basic.getValueComparative(Number(p2.value)),
+            basic.getValueComparative(Number(p3.value)),
+            alpha != undefined ? basic.getValueComparative(Number(alpha.value)) : 1
+        ));
+    } else if (chosenMode == "hsl") {
+        expectParameters(p1, p2, p3);
+
+        term.setColours(term.backgroundColour, common.colourFromHsl(
+            basic.getValueComparative(Number(p1.value)),
+            basic.getValueComparative(Number(p2.value)),
+            basic.getValueComparative(Number(p3.value)),
+            alpha != undefined ? basic.getValueComparative(Number(alpha.value)) : 1
+        ));
+    } else {
+        throw new basic.RuntimeError(`Colour \`${chosenMode}\` does not exist`);
+    }
+
+    basic.executeStatement();
 }
