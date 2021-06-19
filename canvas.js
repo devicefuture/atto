@@ -103,8 +103,14 @@ export function setColour(colour) {
     context.strokeStyle = colour.toCss();
 }
 
-export function setStrokeWidth(width) {
+export function setStrokeWidth(width, type = "butt") {
     context.lineWidth = width * DISP_SCALE_FACTOR;
+    context.lineCap = type;
+}
+
+export function resetStrokeWidth() {
+    context.lineWidth = 1;
+    context.lineCap = "butt";
 }
 
 export function drawText(text, x, y) {
@@ -158,21 +164,28 @@ export function fillRoundedRect(x1, y1, x2, y2, radius) {
 
 export function drawLine(x1, y1, x2, y2) {
     context.beginPath();
+
+    context.lineCap = "round";
+
     context.moveTo(x1 * DISP_SCALE_FACTOR, y1 * DISP_SCALE_FACTOR);
     context.lineTo(x2 * DISP_SCALE_FACTOR, y2 * DISP_SCALE_FACTOR);
-    context.closePath();
-    context.fill();
+    context.stroke();
 }
 
 export function drawPolygon(points) {
+    if (points.length == 0) {
+        return;
+    }
+
     context.beginPath();
+
     context.moveTo(points[0][0] * DISP_SCALE_FACTOR, points[0][1] * DISP_SCALE_FACTOR);
 
     for (var i = 1; i < points.length; i++) {
         context.lineTo(points[i][0] * DISP_SCALE_FACTOR, points[i][1] * DISP_SCALE_FACTOR);
     }
 
-    context.closePath();
+    context.stroke();
     context.fill();
 }
 
@@ -232,6 +245,7 @@ export function init() {
     setColour(new Colour(0, 0, 0));
     setStrokeWidth(1);
 
+    resetStrokeWidth();
     copyToBuffer();
 
     readyListeners.forEach((i) => i());

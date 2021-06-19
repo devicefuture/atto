@@ -20,7 +20,14 @@ export var keywords = {
     "cls": clearScreen,
     "delay": delay,
     "bg": setBackgroundColour,
-    "fg": setForegroundColour
+    "fg": setForegroundColour,
+    "move": graphicsMove,
+    "draw": graphicsDraw,
+    "stroke": graphicsStroke,
+    "fill": graphicsFill,
+    "copy": graphicsCopy,
+    "restore": graphicsRestore,
+    "frame": graphicsTakeFrame
 };
 
 function expectParameters(...parameters) {
@@ -29,6 +36,10 @@ function expectParameters(...parameters) {
             throw new basic.RuntimeError(parameters.length > 1 ? `Expected ${parameters.length} parameters`: `Expected 1 parameter`);
         }
     }
+}
+
+function getNumber(parameter) {
+    return basic.getValueComparative(Number(parameter.value), parameter.lineNumber);
 }
 
 export function print(value) {
@@ -239,7 +250,7 @@ export function delay(milliseconds) {
             if (basic.running) {
                 basic.executeStatement();
             }
-        }, basic.getValueComparative(Number(milliseconds.value)))
+        }, getNumber(milliseconds))
     );
 }
 
@@ -252,19 +263,19 @@ export function setBackgroundColour(mode, p1, p2, p3, alpha) {
         expectParameters(p1, p2, p3);
 
         term.setColours(new canvas.Colour(
-            basic.getValueComparative(Number(p1.value)),
-            basic.getValueComparative(Number(p2.value)),
-            basic.getValueComparative(Number(p3.value)),
-            alpha != undefined ? basic.getValueComparative(Number(alpha.value)) : 1
+            getNumber(p1),
+            getNumber(p2),
+            getNumber(p3),
+            alpha != undefined ? getNumber(alpha) : 1
         ), term.foregroundColour);
     } else if (chosenMode == "hsl") {
         expectParameters(p1, p2, p3);
 
         term.setColours(common.colourFromHsl(
-            basic.getValueComparative(Number(p1.value)),
-            basic.getValueComparative(Number(p2.value)),
-            basic.getValueComparative(Number(p3.value)),
-            alpha != undefined ? basic.getValueComparative(Number(alpha.value)) : 1
+            getNumber(p1),
+            getNumber(p2),
+            getNumber(p3),
+            alpha != undefined ? getNumber(alpha) : 1
         ), term.foregroundColour);
     } else {
         throw new basic.RuntimeError(`Colour \`${chosenMode}\` does not exist`);
@@ -282,23 +293,81 @@ export function setForegroundColour(mode, p1, p2, p3, alpha) {
         expectParameters(p1, p2, p3);
 
         term.setColours(term.backgroundColour, new canvas.Colour(
-            basic.getValueComparative(Number(p1.value)),
-            basic.getValueComparative(Number(p2.value)),
-            basic.getValueComparative(Number(p3.value)),
-            alpha != undefined ? basic.getValueComparative(Number(alpha.value)) : 1
+            getNumber(p1),
+            getNumber(p2),
+            getNumber(p3),
+            alpha != undefined ? getNumber(alpha) : 1
         ));
     } else if (chosenMode == "hsl") {
         expectParameters(p1, p2, p3);
 
         term.setColours(term.backgroundColour, common.colourFromHsl(
-            basic.getValueComparative(Number(p1.value)),
-            basic.getValueComparative(Number(p2.value)),
-            basic.getValueComparative(Number(p3.value)),
-            alpha != undefined ? basic.getValueComparative(Number(alpha.value)) : 1
+            getNumber(p1),
+            getNumber(p2),
+            getNumber(p3),
+            alpha != undefined ? getNumber(alpha) : 1
         ));
     } else {
         throw new basic.RuntimeError(`Colour \`${chosenMode}\` does not exist`);
     }
 
+    basic.executeStatement();
+}
+
+export function graphicsMove(x, y) {
+    expectParameters(x, y);
+
+    basic.setGraphicsPosition(getNumber(x), getNumber(y));
+    basic.clearGraphicsPolygonPoints();
+
+    basic.executeStatement();
+}
+
+export function graphicsDraw(x, y) {
+    expectParameters(x, y);
+
+    canvas.setColour(term.foregroundColour);
+    canvas.setStrokeWidth(basic.graphicsStrokeWidth, "round");
+    canvas.drawLine(basic.graphicsX, basic.graphicsY, x.value, y.value);
+    canvas.resetStrokeWidth();
+
+    basic.setGraphicsPosition(getNumber(x), getNumber(y));
+    basic.addGraphicsPolygonPoint(getNumber(x), getNumber(y));
+
+    basic.executeStatement();
+}
+
+export function graphicsStroke(width) {
+    expectParameters(width);
+
+    basic.setGraphicsStrokeWidth(getNumber(width));
+
+    basic.executeStatement();
+}
+
+export function graphicsFill() {
+    canvas.drawPolygon(basic.graphicsPolygonPoints);
+    canvas.resetStrokeWidth();
+    
+    basic.clearGraphicsPolygonPoints();
+
+    basic.executeStatement();
+}
+
+export function graphicsCopy() {
+    canvas.copyToBuffer();
+
+    basic.executeStatement();
+}
+
+export function graphicsRestore() {
+    canvas.restoreFromBuffer();
+
+    basic.executeStatement();
+}
+
+export function graphicsTakeFrame() {
+    basic.graphicsTakeFrame();
+    
     basic.executeStatement();
 }

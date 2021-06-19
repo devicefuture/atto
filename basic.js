@@ -6,7 +6,7 @@ import * as commands from "./commands.js";
 
 export const MAX_STACK_SIZE = 100;
 export const MAX_RENDER_HOLD_TIME = 10;
-export const MAX_RENDER_CALL_DEPTH = 25;
+export const MAX_RENDER_CALL_DEPTH = 100;
 
 export const trigModes = {
     DEGREES: 0,
@@ -27,6 +27,11 @@ export var currentPosition = 0;
 export var renderHoldTime = 0;
 export var renderCallDepth = 0;
 export var trigMode = trigModes.DEGREES;
+export var graphicsX = 0;
+export var graphicsY = 0;
+export var graphicsStrokeWidth = 1;
+export var graphicsPolygonPoints = [];
+export var turtleHeading = 90;
 export var lastConditionalState = null;
 export var delayTimeout = null;
 export var currentKey = "";
@@ -501,6 +506,11 @@ export function startProgram(clearVariables = true) {
     currentPosition = 0;
     programStack = [];
 
+    setGraphicsPosition(0, 0);
+    setGraphicsStrokeWidth(1);
+    clearGraphicsPolygonPoints();
+    setTurtleHeading(90);
+
     if (clearVariables) {
         programVariables = {};
     }
@@ -743,6 +753,27 @@ export function popStack() {
     }
 
     return programStack.pop();
+}
+
+export function setGraphicsPosition(x, y) {
+    graphicsX = x;
+    graphicsY = y;
+}
+
+export function setGraphicsStrokeWidth(width) {
+    graphicsStrokeWidth = width;
+}
+
+export function clearGraphicsPolygonPoints(all = false) {
+    graphicsPolygonPoints = [];
+}
+
+export function addGraphicsPolygonPoint(x, y) {
+    graphicsPolygonPoints.push([x, y]);
+}
+
+export function setTurtleHeading(heading) {
+    turtleHeading = heading;
 }
 
 export function declareLastConditionalState(state) {
