@@ -11,7 +11,7 @@ function visitDocumentation(path) {
         
             element.innerHTML = syntax.renderDocumentationSyntaxHighlighting(code);
 
-            if (element.innerHTML == "") {
+            if (element.textContent != code) {
                 element.textContent = code; // Fallback
             }
         });

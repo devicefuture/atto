@@ -97,6 +97,10 @@ pre {
 }
 
 code {
+    margin-top: -2px;
+    margin-bottom: -2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
     background-color: var(--white);
     color: var(--black);
     border-radius: 5px;
@@ -104,6 +108,13 @@ code {
 
 code, code * {
     font-family: "Brass Mono", monospace;
+}
+
+code span {
+    margin-top: -2px;
+    margin-bottom: -2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 code span.stringLiteral {
