@@ -6,8 +6,6 @@ export const TERM_ROWS = 20;
 export const CHAR_WIDTH = DISP_WIDTH / TERM_COLS;
 export const CHAR_HEIGHT = DISP_HEIGHT / TERM_ROWS;
 
-const TEXT_FONT = `${CHAR_HEIGHT * DISP_SCALE_FACTOR}px "Brass Mono", monospace`;
-
 var element;
 var buffer;
 var context;
@@ -113,13 +111,13 @@ export function resetStrokeWidth() {
     context.lineCap = "butt";
 }
 
-export function drawText(text, x, y) {
-    context.font = TEXT_FONT;
+export function drawText(text, x, y, scaleFactor = 1) {
+    context.font = `${CHAR_HEIGHT * DISP_SCALE_FACTOR * scaleFactor}px "Brass Mono", monospace`;
     context.textBaseline = "middle";
     context.textAlign = "center";
 
     for (var i = 0; i < text.length; i++) {
-        context.fillText(text[i], (x + ((i + 0.5) * CHAR_WIDTH)) * DISP_SCALE_FACTOR, ((y + (CHAR_HEIGHT / 2)) + 2) * DISP_SCALE_FACTOR);
+        context.fillText(text[i], (x + ((i + 0.5) * CHAR_WIDTH * scaleFactor)) * DISP_SCALE_FACTOR, ((y + ((CHAR_HEIGHT * scaleFactor) / 2)) + 2) * DISP_SCALE_FACTOR);
     }
 }
 
@@ -199,6 +197,12 @@ export function copyToBuffer() {
 
 export function restoreFromBuffer(x = 0, y = 0) {
     context.drawImage(buffer, x * DISP_SCALE_FACTOR, y * DISP_SCALE_FACTOR, DISP_WIDTH * DISP_SCALE_FACTOR, DISP_HEIGHT * DISP_SCALE_FACTOR);
+}
+
+export function getPixel(x, y) {
+    var data = context.getImageData(Math.floor(x * DISP_SCALE_FACTOR), Math.floor(y * DISP_SCALE_FACTOR), 1, 1).data;
+
+    return new Colour(data[0], data[1], data[2], 1);
 }
 
 function resize() {

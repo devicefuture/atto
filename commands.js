@@ -25,9 +25,11 @@ export var keywords = {
     "draw": graphicsDraw,
     "stroke": graphicsStroke,
     "fill": graphicsFill,
+    "text": graphicsDrawText,
     "copy": graphicsCopy,
     "restore": graphicsRestore,
-    "frame": graphicsTakeFrame
+    "frame": graphicsTakeFrame,
+    "getpixel": graphicsGetPixel
 };
 
 function expectParameters(...parameters) {
@@ -42,6 +44,14 @@ function getNumber(parameter) {
     return basic.getValueComparative(Number(parameter.value), parameter.lineNumber);
 }
 
+function getVariableName(identifier) {
+    if (identifier.getPrimaryIdentifier() != null) {
+        return identifier.getPrimaryIdentifier().code;
+    }
+
+    throw new basic.ParsingSyntaxError("Expected variable name", identifier.lineNumber);
+}
+
 export function print(value) {
     term.print((value == undefined ? "" : basic.getValueDisplay(value.value, value.lineNumber)) + (value == undefined || !value.postConcat ? "\n" : ""));
 
@@ -54,14 +64,14 @@ export function input(value, identifier) {
     term.print(value == undefined ? "" : basic.getValueDisplay(value.value, value.lineNumber));
 
     hid.startInput().then(function(value) {
-        basic.setVariable(identifier.getPrimaryIdentifier().code, value, identifier.getPrimaryIdentifier().lineNumber);
+        basic.setVariable(getVariableName(identifier), value, identifier.lineNumber);
 
         basic.executeStatement();
     });
 }
 
 export function assign(identifier, value) {
-    basic.setVariable(identifier.getPrimaryIdentifier().code, value.value, value.lineNumber);
+    basic.setVariable(getVariableName(identifier), value.value, value.lineNumber);
 
     basic.executeStatement();
 }
@@ -128,7 +138,7 @@ export function elseCondition() {
 }
 
 export function forLoop(identifier, start, end, step) {
-    basic.setVariable(identifier.getPrimaryIdentifier().code, start.value, start.lineNumber);
+    basic.setVariable(getVariableName(identifier), start.value, start.lineNumber);
 
     basic.executeStatement();
 }
@@ -171,7 +181,7 @@ export function forEnd() {
     basic.seekOpeningMark();
 
     var parameters = basic.parsedProgram[basic.currentPosition].parameters;
-    var identifierName = parameters[0].getPrimaryIdentifier().code;
+    var identifierName = getVariableName(parameters[0]);
 
     if (basic.getVariable(identifierName) < parameters[2].value) {
         basic.setVariable(identifierName, basic.getVariable(identifierName) + parameters[3].value, parameters[3].lineNumber);
@@ -319,6 +329,7 @@ export function graphicsMove(x, y) {
 
     basic.setGraphicsPosition(getNumber(x), getNumber(y));
     basic.clearGraphicsPolygonPoints();
+    basic.addGraphicsPolygonPoint(getNumber(x), getNumber(y));
 
     basic.executeStatement();
 }
@@ -354,6 +365,15 @@ export function graphicsFill() {
     basic.executeStatement();
 }
 
+export function graphicsDrawText(text, x, y, scaleFactor) {
+    expectParameters(text, x, y);
+
+    canvas.setColour(term.foregroundColour);
+    canvas.drawText(basic.getValueDisplay(text.value), getNumber(x), getNumber(y), scaleFactor != undefined ? getNumber(scaleFactor) : 1);
+
+    basic.executeStatement();
+}
+
 export function graphicsCopy() {
     canvas.copyToBuffer();
 
@@ -369,5 +389,17 @@ export function graphicsRestore() {
 export function graphicsTakeFrame() {
     basic.graphicsTakeFrame();
     
+    basic.executeStatement();
+}
+
+export function graphicsGetPixel(x, y, red, green, blue) {
+    expectParameters(x, y, red, green, blue);
+
+    var colour = canvas.getPixel(getNumber(x), getNumber(y));
+
+    basic.setVariable(getVariableName(red), colour.red, red.lineNumber);
+    basic.setVariable(getVariableName(green), colour.green, green.lineNumber);
+    basic.setVariable(getVariableName(blue), colour.blue, blue.lineNumber);
+
     basic.executeStatement();
 }
