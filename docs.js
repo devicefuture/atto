@@ -7,7 +7,13 @@ function visitDocumentation(path) {
         document.querySelector("#docs").innerHTML = converter.makeHtml(data);
 
         document.querySelectorAll("code").forEach(function(element) {
-            element.innerHTML = syntax.renderDocumentationSyntaxHighlighting(element.textContent);
+            var code = element.textContent;
+        
+            element.innerHTML = syntax.renderDocumentationSyntaxHighlighting(code);
+
+            if (element.innerHTML == "") {
+                element.textContent = code; // Fallback
+            }
         });
     });
 }
