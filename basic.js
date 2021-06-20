@@ -867,7 +867,9 @@ export function autosave() {
 }
 
 export function processCommand(value, movementOnly) {
-    if (/^\d+/.exec(value.trim()) && Number(/^(\d+)/.exec(value.trim())[1]) > 0) {
+    var command = value.trim().toLocaleLowerCase();
+
+    if (/^\d+/.exec(command) && Number(/^(\d+)/.exec(command)[1]) > 0) {
         var lineNumber = Number(/^(\d+)/.exec(value.trim())[1]);
 
         if (value.trim() == String(lineNumber)) {
@@ -889,14 +891,14 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.trim() == "help") {
+    if (command == "help") {
         canvas.toggleDocs();
         hid.startProgramInput();
 
         return;
     }
 
-    if (value.trim() == "list") {
+    if (command == "list") {
         for (var i = 0; i < editingProgram.length; i++) {
             if (typeof(editingProgram[i]) != "string") {
                 continue;
@@ -910,7 +912,7 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.trim() == "new") {
+    if (command == "new") {
         editingProgram = [];
 
         term.print("Created new program\n");
@@ -920,7 +922,7 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.trim() == "run") {
+    if (command == "run") {
         try {
             parseProgram(editingProgram);
         } catch (e) {
@@ -937,9 +939,9 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.trim().substring(0, 4) == "edit") {
-        if (value.trim().substring(4) != "" && Number.isInteger(Number(value.trim().substring(4).trim()))) {
-            hid.startProgramInput(editingProgram[Number(value.trim().substring(4).trim())]);
+    if (command.substring(0, 4) == "edit") {
+        if (command.substring(4) != "" && Number.isInteger(Number(command.substring(4).trim()))) {
+            hid.startProgramInput(editingProgram[Number(command.substring(4).trim())]);
 
             return;
         } else {
@@ -952,7 +954,7 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.trim() == "renum") {
+    if (command == "renum") {
         renumberLines();
         autosave();
         hid.startProgramInput();
@@ -960,7 +962,7 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.trim().split(" ")[0] == "export") {
+    if (command.split(" ")[0] == "export") {
         var parts = value.trim().split(" ");
 
         parts.shift();
@@ -973,14 +975,14 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.trim() == "import") {
+    if (command == "import") {
         importFromFile();
         hid.startProgramInput();
 
         return;
     }
 
-    if (value.trim() == "load") {
+    if (command == "load") {
         var programFromStorage = localStorage.getItem("atto_lastSessionProgram");
 
         if (programFromStorage == null) {
@@ -994,7 +996,7 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (value.trim() == "" || value.trim().startsWith("rem ") || value.trim().startsWith("#")) {
+    if (command == "" || command.startsWith("rem ") || command.startsWith("#")) {
         hid.startProgramInput();
 
         return;
