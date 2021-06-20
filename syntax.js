@@ -19,7 +19,7 @@ const RE_IDENTIFIER = /[a-z_][a-z0-9_]*[$%]?/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
 const RE_PARAMETER_SEPERATOR = /,/;
 const RE_STATEMENT_SEPERATOR = /:/;
-const RE_WHTIESPACE = /\w+/;
+const RE_WHTIESPACE = /\s+/;
 
 const RE_OR = /|/;
 
@@ -43,6 +43,8 @@ const RE_ALL = new RegExp([
     RE_STATEMENT_SEPERATOR.source,
     RE_WHTIESPACE.source
 ].join(RE_OR.source), "gi");
+
+console.log(RE_ALL.source);
 
 const KEYWORD_COLOURS = {
     "print": {background: "purple", foreground: "white"},
@@ -784,4 +786,69 @@ export function tokenise(program) {
     }
 
     return tokens;
+}
+
+export function renderDocumentationSyntaxHighlighting(code) {
+    var element = document.createElement("div");
+    var match;
+
+    function addHighlight(classes, code) {
+        var highlight = document.createElement("span");
+
+        classes.forEach((i) => highlight.classList.add(i));
+
+        highlight.textContent = code;
+
+        element.appendChild(highlight);
+    }
+
+    var bracketLevel = 0;
+
+    while (match = RE_ALL.exec(code)) {
+        console.log(match);
+        if (RE_STRING_LITERAL.exec(match)) {
+            addHighlight(["stringLiteral"], match[0]);
+        } else if (RE_COMMENT.exec(match)) {
+            addHighlight(["comment"], match[0]);
+        } else if (RE_KEYWORD.exec(match)) {
+            var keyword = match.toString().toLocaleLowerCase();
+
+            addHighlight(["keyword", KEYWORD_COLOURS[keyword].background], match[0]);
+        } else if (
+            RE_NUMERIC_LITERAL_HEX.exec(match) ||
+            RE_NUMERIC_LITERAL_BIN.exec(match) ||
+            RE_NUMERIC_LITERAL_OCT.exec(match) ||
+            RE_NUMERIC_LITERAL_SCI.exec(match)
+        ) {
+            addHighlight(["other"], match[0]);
+        } else if (RE_FUNCTION_NAME.exec(match)) {
+            addHighlight(["function"], match[0]);
+        } else if (RE_CONSTANT.exec(match)) {
+            addHighlight(["constant"], match[0]);
+        } else if (RE_EXPRESSION_BRACKET.exec(match)) {
+            if (match == "(") {
+                bracketLevel++;
+            }
+
+            if (bracketLevel > 0) {
+                addHighlight(["bracket", `bracket${Math.min(bracketLevel, 3)}`], match[0]);
+            } else {
+                addHighlight(["badBracket"], match[0]);
+            }
+
+            if (match == ")") {
+                bracketLevel--;
+            }
+        } else if (RE_OPERATOR.exec(match)) {
+            addHighlight(["operator"], match[0]);
+        } else if (RE_COMPARATOR.exec(match) || RE_LOGICAL_OPERATOR.exec(match)) {
+            addHighlight(["comparator"], match[0]);
+        } else if (RE_STATEMENT_SEPERATOR.exec(match)) {
+            addHighlight(["statementSeperator"], match[0]);
+        } else {
+            addHighlight(["other"], match[0]);
+        }
+    }
+
+    return element.innerHTML;
 }

@@ -97,7 +97,58 @@ pre {
 }
 
 code {
+    background-color: var(--white);
+    color: var(--black);
+    border-radius: 5px;
+}
+
+code, code * {
     font-family: "Brass Mono", monospace;
+}
+
+code span.stringLiteral {
+    color: var(--darkGreen);
+}
+
+code span.comment {
+    color: var(--darkGrey);
+}
+
+code span.keyword {
+    color: var(--white);
+    border-radius: 5px;
+}
+
+code span.keyword.blue {
+    background-color: var(--darkBlue);
+}
+
+code span.keyword.purple {
+    background-color: var(--purple);
+}
+
+code span.function {
+    background-color: var(--pink);
+    color: var(--white);
+    border-radius: 5px;
+}
+
+code span.constant {
+    background-color: var(--lightBlue);
+    color: var(--white);
+    border-radius: 5px;
+}
+
+code span.operator {
+    color: var(--pink);
+}
+
+code span.comparator {
+    color: var(--darkBlue);
+}
+
+code span.statementSeperator {
+    color: var(--darkBlue);
 }
 
 blockquote {

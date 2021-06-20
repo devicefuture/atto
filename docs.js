@@ -5,6 +5,10 @@ function visitDocumentation(path) {
         var converter = new showdown.Converter();
 
         document.querySelector("#docs").innerHTML = converter.makeHtml(data);
+
+        document.querySelectorAll("code").forEach(function(element) {
+            element.innerHTML = syntax.renderDocumentationSyntaxHighlighting(element.textContent);
+        });
     });
 }
 
