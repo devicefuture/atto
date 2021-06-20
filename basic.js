@@ -337,7 +337,7 @@ export function parseProgram(program) {
                 }
             }
 
-            parsedProgram.push(new Command(commands.keywords[commandName], parameters));
+            parsedProgram.push(new Command(commands.keywords[commandName.toLocaleLowerCase()], parameters));
 
             i++;
         } else if (condition(i, (x) => x instanceof syntax.Expression && x.getPrimaryIdentifier() != null)) { // Assignment
