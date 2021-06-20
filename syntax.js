@@ -805,7 +805,6 @@ export function renderDocumentationSyntaxHighlighting(code) {
     var bracketLevel = 0;
 
     while (match = RE_ALL.exec(code)) {
-        console.log(match);
         if (RE_STRING_LITERAL.exec(match)) {
             addHighlight(["stringLiteral"], match[0]);
         } else if (RE_COMMENT.exec(match)) {
