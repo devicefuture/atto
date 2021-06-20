@@ -764,7 +764,7 @@ export function setGraphicsStrokeWidth(width) {
     graphicsStrokeWidth = width;
 }
 
-export function clearGraphicsPolygonPoints(all = false) {
+export function clearGraphicsPolygonPoints() {
     graphicsPolygonPoints = [];
 }
 
