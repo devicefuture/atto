@@ -44,8 +44,6 @@ const RE_ALL = new RegExp([
     RE_WHTIESPACE.source
 ].join(RE_OR.source), "gi");
 
-console.log(RE_ALL.source);
-
 const KEYWORD_COLOURS = {
     "print": {background: "purple", foreground: "white"},
     "input": {background: "purple", foreground: "white"},
