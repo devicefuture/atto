@@ -6,6 +6,7 @@ import * as syntax from "./syntax.js";
 export var hidLog;
 export var hidLive;
 export var hidInput;
+export var hidLogOutputBuffer = "";
 
 export var currentInput = null;
 export var programInputs = [];
@@ -245,24 +246,7 @@ export class Input {
 }
 
 export function log(text) {
-    hidLog.textContent += text.replace(/\n/g, "\u2028");
-
-    var lines = hidLog.textContent.split("\u2028");
-
-    lines = lines.slice(Math.max(lines.length - 100, 0));
-    hidLog.innerHTML = "";
-
-    for (var i = 0; i < lines.length; i++) {
-        var lineElement = document.createElement("div");
-
-        lineElement.innerText = lines[i] + (i != lines.length - 1 ? "\u2028" : "");
-
-        hidLog.appendChild(lineElement);
-    }
-
-    lines = lines.filter((i) => i.replace(/\u2028/g, "").trim() != "");
-
-    hidLive.textContent = lines[lines.length - 1];
+    hidLogOutputBuffer += text;
 }
 
 export function startInput(format = inputFormats.TEXT, relativeRow = term.scrollDelta + term.row, offset = term.col) {
@@ -349,6 +333,32 @@ window.addEventListener("load", function() {
     hidInput = document.querySelector("#hidInput");
 
     canvas.init();
+    
+    setInterval(function() {
+        if (hidLogOutputBuffer == "") {
+            return;
+        }
+
+        hidLog.textContent += hidLogOutputBuffer.replace(/\n/g, "\u2028");
+        hidLogOutputBuffer = "";
+
+        var lines = hidLog.textContent.split("\u2028");
+
+        lines = lines.slice(Math.max(lines.length - 100, 0));
+        hidLog.innerHTML = "";
+
+        for (var i = 0; i < lines.length; i++) {
+            var lineElement = document.createElement("div");
+
+            lineElement.innerText = lines[i].slice(-100) + (i != lines.length - 1 ? "\u2028" : "");
+
+            hidLog.appendChild(lineElement);
+        }
+
+        lines = lines.filter((i) => i.replace(/\u2028/g, "").trim() != "");
+
+        hidLive.textContent = lines[lines.length - 1];
+    }, 1000);
 });
 
 canvas.onReady(function() {
