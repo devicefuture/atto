@@ -898,13 +898,41 @@ export function processCommand(value, movementOnly) {
         return;
     }
 
-    if (command == "list") {
+    if (command.substring(0, 4) == "list") {
+        var startLimit = command.substring(4).split("-")[0].trim();
+        var endLimit = (command.substring(4).split("-")[1] || "").trim();
+
+        if (startLimit != "" && !Number.isNaN(Number(startLimit))) {
+            startLimit = Number(startLimit);
+        } else {
+            startLimit = 0;
+        }
+
+        if (endLimit != "" && !Number.isNaN(Number(endLimit))) {
+            endLimit = Math.min(Number(endLimit), editingProgram.length);
+        } else {
+            endLimit = editingProgram.length;
+        }
+
+        var listingLength = editingProgram.filter((element, i) => typeof(element) == "string" && i >= startLimit && i <= endLimit).length;
+        var editingProgramAddedLines = 0;
+
         for (var i = 0; i < editingProgram.length; i++) {
+            if (i < startLimit) {
+                continue;
+            }
+
+            if (i > endLimit) {
+                break;
+            }
+
             if (typeof(editingProgram[i]) != "string") {
                 continue;
             }
 
-            hid.startProgramInput(editingProgram[i], false);
+            editingProgramAddedLines++;
+
+            hid.startProgramInput(editingProgram[i], false, term.scrollDelta + term.row, editingProgramAddedLines + canvas.TERM_ROWS > listingLength);
         }
 
         hid.startProgramInput();

@@ -119,11 +119,14 @@ export class Input {
         }
     }
 
-    finish(addNewline = true) {
+    finish(addNewline = true, rendering = true) {
         this.caretPosition = 0;
         this.scrollColumn = 0;
 
-        this.render(false);
+        if (rendering) {
+            this.render(false);
+        }
+
         log(this.value + "\n");
 
         if (addNewline) {
@@ -283,7 +286,7 @@ export function startInput(format = inputFormats.TEXT, relativeRow = term.scroll
     });
 }
 
-export function startProgramInput(lineValue = "", immediateEdit = true, relativeRow = term.scrollDelta + term.row) {
+export function startProgramInput(lineValue = "", immediateEdit = true, relativeRow = term.scrollDelta + term.row, rendering = true) {
     hidInput.value = lineValue;
 
     var newProgramInput = new Input(inputFormats.PROGRAM, relativeRow, lineValue);
@@ -300,7 +303,7 @@ export function startProgramInput(lineValue = "", immediateEdit = true, relative
     });
 
     if (!immediateEdit) {
-        newProgramInput.finish();
+        newProgramInput.finish(true, rendering);
     }
 }
 
