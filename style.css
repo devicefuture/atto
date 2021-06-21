@@ -179,7 +179,7 @@ blockquote p:last-child {
     margin-bottom: 0;
 }
 
-#hidLog, #hidInput {
+#hidLog, #hidLive, #hidInput {
     position: absolute;
     display: block;
     top: 0;

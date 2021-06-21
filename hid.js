@@ -4,6 +4,7 @@ import * as basic from "./basic.js";
 import * as syntax from "./syntax.js";
 
 export var hidLog;
+export var hidLive;
 export var hidInput;
 
 export var currentInput = null;
@@ -241,7 +242,24 @@ export class Input {
 }
 
 export function log(text) {
-    hidLog.textContent += text;
+    hidLog.textContent += text.replace(/\n/g, "\u2028");
+
+    var lines = hidLog.textContent.split("\u2028");
+
+    lines = lines.slice(Math.max(lines.length - 100, 0));
+    hidLog.innerHTML = "";
+
+    for (var i = 0; i < lines.length; i++) {
+        var lineElement = document.createElement("div");
+
+        lineElement.innerText = lines[i] + (i != lines.length - 1 ? "\u2028" : "");
+
+        hidLog.appendChild(lineElement);
+    }
+
+    lines = lines.filter((i) => i.replace(/\u2028/g, "").trim() != "");
+
+    hidLive.textContent = lines[lines.length - 1];
 }
 
 export function startInput(format = inputFormats.TEXT, relativeRow = term.scrollDelta + term.row, offset = term.col) {
@@ -324,6 +342,7 @@ function renderLoop() {
 
 window.addEventListener("load", function() {
     hidLog = document.querySelector("#hidLog");
+    hidLive = document.querySelector("#hidLive");
     hidInput = document.querySelector("#hidInput");
 
     canvas.init();
