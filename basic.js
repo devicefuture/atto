@@ -1014,7 +1014,7 @@ export function processCommand(value, movementOnly) {
         var programFromStorage = localStorage.getItem("atto_lastSessionProgram");
 
         if (programFromStorage == null) {
-            displayError(new ParsingSyntaxError("No previous sessions to load"));
+            displayError(new ParsingSyntaxError("No previous session to load"));
         } else {
             textToProgram(programFromStorage);
         }
