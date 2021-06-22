@@ -392,14 +392,26 @@ export function graphicsTakeFrame() {
     basic.executeStatement();
 }
 
-export function graphicsGetPixel(x, y, red, green, blue) {
-    expectParameters(x, y, red, green, blue);
+export function graphicsGetPixel(mode, x, y, p1, p2, p3) {
+    var chosenMode = String(mode.value).toLocaleLowerCase();
+
+    expectParameters(chosenMode, x, y, p1, p2, p3);
 
     var colour = canvas.getPixel(getNumber(x), getNumber(y));
 
-    basic.setVariable(getVariableName(red), colour.red, red.lineNumber);
-    basic.setVariable(getVariableName(green), colour.green, green.lineNumber);
-    basic.setVariable(getVariableName(blue), colour.blue, blue.lineNumber);
+    if (chosenMode == "rgb") {
+        basic.setVariable(getVariableName(p1), colour.red, p1.lineNumber);
+        basic.setVariable(getVariableName(p2), colour.green, p2.lineNumber);
+        basic.setVariable(getVariableName(p3), colour.blue, p3.lineNumber);
+    } else if (chosenMode == "hsl") {
+        var hsl = common.hslFromColour(colour);
+
+        basic.setVariable(getVariableName(p1), hsl.hue, p1.lineNumber);
+        basic.setVariable(getVariableName(p2), hsl.saturation, p2.lineNumber);
+        basic.setVariable(getVariableName(p3), hsl.luminance, p3.lineNumber);
+    } else {
+        throw new basic.RuntimeError(`Colour space \`${chosenMode}\` does not exist`);
+    }
 
     basic.executeStatement();
 }

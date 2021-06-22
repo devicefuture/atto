@@ -1,4 +1,5 @@
 import * as canvas from "./canvas.js";
+import * as basic from "./basic.js";
 
 function hueToRgb(p, q, t) {
     if (t < 0) {
@@ -24,8 +25,21 @@ function hueToRgb(p, q, t) {
     return p;
 }
 
-export function colourFromHsl(hue, saturation, luminance, alpha = 1) {
+export function colourFromHsl(hue, saturation, luminance, alpha = 1, trigMode = basic.trigMode) {
     var colour = new canvas.Colour(0, 0, 0, alpha);
+
+    switch (trigMode) {
+        case basic.trigModes.DEGREES:
+            hue = hue / 360;
+            break;
+
+        case basic.trigModes.RADIANS:
+            hue = hue / (2 * Math.PI);
+            break;
+
+        case basic.trigModes.GRADIANS:
+            hue = hue / 400;
+    }
 
     if (saturation == 0) {
         colour.red = colour.green = colour.blue = luminance;
@@ -43,4 +57,56 @@ export function colourFromHsl(hue, saturation, luminance, alpha = 1) {
     colour.blue = Math.round(colour.blue * 255);
 
     return colour;
+}
+
+export function hslFromColour(colour, trigMode = basic.trigMode) {
+    colour = colour.clone();
+
+    colour.red /= 255;
+    colour.green /= 255;
+    colour.blue /= 255;
+
+    var max = Math.max(colour.red, colour.green, colour.blue);
+    var min = Math.min(colour.red, colour.green, colour.blue);
+
+    var hue, saturation, luminance = (max + min) / 2;
+
+    if (max == min) {
+        hue = saturation = 0;
+    } else {
+        var range = max - min;
+
+        saturation = luminance > 0.5 ? range / (2 - max - min) : d / (max + min);
+
+        switch (max) {
+            case colour.red:
+                hue = ((colour.green - colour.blue) / range) + (colour.green < colour.blue ? 6 : 0);
+                break;
+
+            case colour.green:
+                hue = ((colour.blue - colour.red) / range) + 2;
+                break;
+
+            case colour.blue:
+                hue = ((colour.red - colour.green) / range) + 4;
+                break;
+        }
+
+        hue /= 6;
+    }
+
+    switch (trigMode) {
+        case basic.trigModes.DEGREES:
+            hue = hue * 360;
+            break;
+
+        case basic.trigModes.RADIANS:
+            hue = hue * (2 * Math.PI);
+            break;
+
+        case basic.trigModes.GRADIANS:
+            hue = hue * 400;
+    }
+
+    return {hue, saturation, luminance, alpha: colour.alpha};
 }
