@@ -51,6 +51,7 @@ Clears the screen and positions the text cursor at the top left of the screen.
 
 ## `bg`
 ```
+bg
 bg colour
 bg "rgb", red, green, blue
 bg "rgb", red, green, blue, alpha
@@ -63,6 +64,8 @@ Sets the background colour for all future written text to be the given colour.
 Set the first parameter to a colour name to set the background colour to that given colour; set the first parameter to `"rgb"` and set `red`, `green` and `blue` to set the background colour to a given RGB value (each component being within the range of `0`-`255`); or set the first parameter to `"hsl"` to set the background colour to a given HSL value (the `hue` value being a trigonometric angle, with `saturation` and `luminance` being within the range of `0`-`1`).
 
 For `"rgb"` and `"hsl"`, a transparency value can be given as argument `alpha`, where `0` is completely transparent and `1` is completely opaque.
+
+If no colour is chosen, then the default background colour for atto is used.
 
 Use the [`cls`](#cls) command afterwards to fill the screen with the chosen background colour.
 
@@ -77,6 +80,7 @@ Use the [`cls`](#cls) command afterwards to fill the screen with the chosen back
 
 ## `fg`
 ```
+fg
 fg colour
 fg "rgb", red, green, blue
 fg "rgb", red, green, blue, alpha
@@ -89,6 +93,8 @@ Sets the foreground colour for all future written text to be the given colour.
 Set the first parameter to a colour name to set the foreground colour to that given colour; set the first parameter to `"rgb"` and set `red`, `green` and `blue` to set the foreground colour to a given RGB value (each component being within the range of `0`-`255`); or set the first parameter to `"hsl"` to set the foreground colour to a given HSL value (the `hue` value being a trigonometric angle, with `saturation` and `luminance` being within the range of `0`-`1`).
 
 For `"rgb"` and `"hsl"`, a transparency value can be given as argument `alpha`, where `0` is completely transparent and `1` is completely opaque.
+
+If no colour is chosen, then the default foreground colour for atto is used.
 
 <details>
 <summary>Example</summary>
