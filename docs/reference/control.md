@@ -197,7 +197,7 @@ until condition
 loop
 ```
 
-Executes statements within the loop until the condition given as argument `condition` is true. If `condition` is true when the `while` loop is first approached, execution will be skipped to the `loop` line.
+Executes statements within the loop until the condition given as argument `condition` is true. If `condition` is true when the `until` loop is first approached, execution will be skipped to the `loop` line.
 
 <details>
 <summary>Example</summary>

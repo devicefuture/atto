@@ -208,6 +208,10 @@ blockquote p:last-child {
     margin-bottom: 0;
 }
 
+summary {
+    cursor: pointer;
+}
+
 h1.reference {
     font-size: 20px;
     margin-bottom: 0;
