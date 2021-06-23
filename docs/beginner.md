@@ -1,4 +1,4 @@
-[Guide](javascript:visitDocumentation('docs/index.md');) > **I've never programmed before**
+[Guide](/index.md) 🢒 **I've never programmed before**
 
 So, it's your first time programming, huh? Well, we're glad that you're here! Once we've shown you a bit of what we do, you'll be mastering coding in no time!
 

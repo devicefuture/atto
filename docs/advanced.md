@@ -1,4 +1,4 @@
-[Guide](javascript:visitDocumentation('docs/index.md');) > **I can already code well**
+[Guide](/index.md) 🢒 **I can already code well**
 
 If you can already code at an advanced level, then we're confident that you'll find atto a breeze! atto is similar to BASIC, but with modern features to make the language more relevant to today.
 

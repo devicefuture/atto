@@ -1,4 +1,4 @@
-[Guide](javascript:visitDocumentation('docs/index.md');) > **I've used Scratch or Python for learning**
+[Guide](/index.md) 🢒 **I've used Scratch or Python for learning**
 
 If you've learnt coding before, then great! You're going to be right at home. If you've only used Scratch before, then atto is a bit different because you have to write everything out instead of dragging blocks. If you've used Python, then everything will be quite familiar to you. Either way, it's easy! Let's have a play.
 

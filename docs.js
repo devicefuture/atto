@@ -6,6 +6,16 @@ function visitDocumentation(path) {
 
         document.querySelector("#docs").innerHTML = converter.makeHtml(data);
 
+        document.querySelectorAll("a").forEach(function(element) {
+            var destination = element.getAttribute("href") || "";
+
+            if (destination.startsWith("http://") || destination.startsWith("https://")) {
+                return;
+            }
+
+            element.setAttribute("href", `javascript:visitDocumentation("docs/${destination.replace(/\^\//, "")}");`);
+        });
+
         document.querySelectorAll("code").forEach(function(element) {
             var code = element.textContent;
         
