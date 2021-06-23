@@ -72,8 +72,22 @@ a.card:hover {
     opacity: 0.8;
 }
 
+a.card.darkBlue {
+    background-color: var(--darkBlue);
+}
+
 a.card.purple {
     background-color: var(--purple);
+}
+
+a.card.pink {
+    background-color: var(--pink);
+    color: var(--black);
+}
+
+a.card.yellow {
+    background-color: var(--yellow);
+    color: var(--black);
 }
 
 a.card.darkGreen {
@@ -149,6 +163,10 @@ code span.keyword.purple {
     background-color: var(--purple);
 }
 
+code span.keyword.pink {
+    background-color: var(--pink);
+}
+
 code span.function {
     background-color: var(--pink);
     color: var(--white);
@@ -188,6 +206,39 @@ blockquote p:first-child {
 
 blockquote p:last-child {
     margin-bottom: 0;
+}
+
+h1.reference {
+    font-size: 20px;
+    margin-bottom: 0;
+}
+
+h1.reference + p {
+    margin-top: 0;
+}
+
+h1.reference a.control {
+    color: var(--darkBlue);
+}
+
+h1.reference a.io {
+    color: var(--purple);
+}
+
+h1.reference a.functions {
+    color: var(--pink);
+}
+
+h1.reference a.constants {
+    color: var(--lightBlue);
+}
+
+h1.reference a.operators {
+    color: var(--pink);
+}
+
+h1.reference a.comparators {
+    color: var(--darkBlue);
 }
 
 #hidLog, #hidLive, #hidInput {

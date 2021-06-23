@@ -4,3 +4,5 @@ Welcome to the help guide for **atto**! We'll guide you on how to use and master
 <a href="/fromedu.md" class="card purple">I've used Scratch or Python for learning</a>
 <a href="/frombasic.md" class="card darkBlue">I've played with BASIC before</a>
 <a href="/advanced.md" class="card magenta">I can already code well</a>
+
+[Command reference 🢒](/reference/index.md)
