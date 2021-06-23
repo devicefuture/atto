@@ -28,18 +28,7 @@ function hueToRgb(p, q, t) {
 export function colourFromHsl(hue, saturation, luminance, alpha = 1, trigMode = basic.trigMode) {
     var colour = new canvas.Colour(0, 0, 0, alpha);
 
-    switch (trigMode) {
-        case basic.trigModes.DEGREES:
-            hue = hue / 360;
-            break;
-
-        case basic.trigModes.RADIANS:
-            hue = hue / (2 * Math.PI);
-            break;
-
-        case basic.trigModes.GRADIANS:
-            hue = hue / 400;
-    }
+    hue = basic.trigModeToRadians(hue, trigMode) / (2 * Math.PI);
 
     if (saturation == 0) {
         colour.red = colour.green = colour.blue = luminance;
@@ -95,18 +84,7 @@ export function hslFromColour(colour, trigMode = basic.trigMode) {
         hue /= 6;
     }
 
-    switch (trigMode) {
-        case basic.trigModes.DEGREES:
-            hue = hue * 360;
-            break;
-
-        case basic.trigModes.RADIANS:
-            hue = hue * (2 * Math.PI);
-            break;
-
-        case basic.trigModes.GRADIANS:
-            hue = hue * 400;
-    }
+    hue = basic.radiansToTrigMode(hue * (2 * Math.PI), trigMode);
 
     return {hue, saturation, luminance, alpha: colour.alpha};
 }
