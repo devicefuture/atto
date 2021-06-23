@@ -11,7 +11,8 @@ export const MAX_RENDER_CALL_DEPTH = 100;
 export const trigModes = {
     DEGREES: 0,
     RADIANS: 1,
-    GRADIANS: 2
+    GRADIANS: 2,
+    TURNS: 3
 };
 
 export var fileExporter;
@@ -184,31 +185,39 @@ export class LogicalLeaf extends LogicalOperatorCondition {
     }
 }
  
-export function trigModeToRadians(value) {
-    if (trigMode == trigModes.RADIANS) {
+export function trigModeToRadians(value, mode = trigMode) {
+    if (mode == trigModes.RADIANS) {
         return value;
     }
 
-    if (trigMode == trigModes.DEGREES) {
+    if (mode == trigModes.DEGREES) {
         return value * (Math.PI / 180);
     }
 
-    if (trigMode == trigModes.GRADIANS) {
+    if (mode == trigModes.GRADIANS) {
         return value * (Math.PI / 200);
+    }
+
+    if (mode == trigModes.TURNS) {
+        return value * (2 * Math.PI);
     }
 }
 
-export function radiansToTrigMode(value) {
-    if (trigMode == trigModes.RADIANS) {
+export function radiansToTrigMode(value, mode = trigMode) {
+    if (mode == trigModes.RADIANS) {
         return value;
     }
 
-    if (trigMode == trigModes.DEGREES) {
+    if (mode == trigModes.DEGREES) {
         return value / (Math.PI / 180);
     }
 
-    if (trigMode == trigModes.GRADIANS) {
+    if (mode == trigModes.GRADIANS) {
         return value / (Math.PI / 200);
+    }
+
+    if (mode == trigModes.TURNS) {
+        return value / (2 * Math.PI);
     }
 }
 
@@ -567,6 +576,10 @@ export function executeStatement(position = currentPosition + 1) {
     } else {
         performExecution();
     }
+}
+
+export function graphicsTakeFrame() {
+    renderHoldTime = 0;
 }
 
 export function stopProgram() {

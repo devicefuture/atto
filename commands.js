@@ -16,6 +16,7 @@ export var keywords = {
     "deg": setTrigDegrees,
     "rad": setTrigRadians,
     "gon": setTrigGradians,
+    "turn": setTrigTurns,
     "pos": setTextPosition,
     "cls": clearScreen,
     "delay": delay,
@@ -232,6 +233,12 @@ export function setTrigRadians() {
 
 export function setTrigGradians() {
     basic.setTrigMode(basic.trigModes.GRADIANS);
+
+    basic.executeStatement();
+}
+
+export function setTrigTurns() {
+    basic.setTrigMode(basic.trigModes.TURNS);
 
     basic.executeStatement();
 }

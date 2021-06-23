@@ -9,8 +9,8 @@ const RE_NUMERIC_LITERAL_HEX = /(?<![a-z_])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor|not)|(?<![a-z_][a-z0-9_]*))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
-const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|pos|cls|delay|bg|fg|move|draw|stroke|fill|text|copy|restore|frame|getpixel)/i;
-const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|asc|bin|oct|hex|len\$|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|chr\$|bin\$|oct\$|hex\$)/i;
+const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|stroke|fill|text|copy|restore|frame|getpixel)/i;
+const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|chr\$)/i;
 const RE_CONSTANT = /(?<![a-z0-9_])(?:pi|e|phi|epoch|random|col|row|key)(?![a-z0-9_])/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])mod(?![a-z_])|&|\||~|;/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
@@ -68,6 +68,7 @@ const KEYWORD_COLOURS = {
     "deg": {background: "magenta", foreground: "white"},
     "rad": {background: "magenta", foreground: "white"},
     "gon": {background: "magenta", foreground: "white"},
+    "turn": {background: "magenta", foreground: "white"},
     "pos": {background: "purple", foreground: "white"},
     "cls": {background: "purple", foreground: "white"},
     "delay": {background: "blue", foreground: "white"},
@@ -318,7 +319,7 @@ export class Function extends Token {
             case "bin": return Number.parseInt(this.expression.value, 2);
             case "oct": return Number.parseInt(this.expression.value, 8);
             case "hex": return Number.parseInt(this.expression.value, 16);
-            case "len$": return String(this.expression.value).length;
+            case "len": return String(this.expression.value).length;
             case "lower$": return String(this.expression.value).toLocaleLowerCase();
             case "upper$": return String(this.expression.value).toLocaleUpperCase();
             case "trim$": return String(this.expression.value).trim();
