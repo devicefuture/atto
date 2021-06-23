@@ -1086,6 +1086,41 @@ window.addEventListener("load", function() {
 
 window.addEventListener("keydown", function(event) {
     currentKey = event.key;
+
+    if (event.key == "F5") {
+        hid.unfocusInput();
+
+        try {
+            parseProgram(editingProgram);
+        } catch (e) {
+            displayError(e);
+
+            term.print("Ready\n");
+            hid.startProgramInput();
+        }
+
+        startProgram();
+
+        event.preventDefault();
+    }
+
+    if (event.key == "s" && event.ctrlKey) {
+        interruptProgram(false);
+
+        exportToFile("untitled.atto");
+        
+        term.print("Exported to file\n");
+        hid.startProgramInput();
+
+        event.preventDefault();
+    }
+
+    if (event.key == "o" && event.ctrlKey) {
+        interruptProgram();
+        importFromFile();
+
+        event.preventDefault();
+    }
 });
 
 window.addEventListener("keyup", function(event) {
