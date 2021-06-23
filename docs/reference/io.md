@@ -84,7 +84,7 @@ fg "hsl", hue, saturation, luminance
 fg "hsl", hue, saturation, luminance, alpha
 ```
 
-Sets the background colour for all future written text to be the given colour.
+Sets the foreground colour for all future written text to be the given colour.
 
 Set the first parameter to a colour name to set the foreground colour to that given colour; set the first parameter to `"rgb"` and set `red`, `green` and `blue` to set the foreground colour to a given RGB value (each component being within the range of `0`-`255`); or set the first parameter to `"hsl"` to set the foreground colour to a given HSL value (the `hue` value being a trigonometric angle, with `saturation` and `luminance` being within the range of `0`-`1`).
 
