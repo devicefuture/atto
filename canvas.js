@@ -206,9 +206,10 @@ export function getPixel(x, y) {
 }
 
 function resize() {
+    var isFullscreen = window.innerWidth == screen.width && window.innerHeight == screen.height;
     var availableWidth = docsOpen ? window.innerWidth - 400 : window.innerWidth;
-    var viewportWidth = availableWidth - 40;
-    var viewportHeight = window.innerHeight - 40;
+    var viewportWidth = isFullscreen ? availableWidth : availableWidth - 40;
+    var viewportHeight = isFullscreen ? window.innerHeight : window.innerHeight - 40;
     var scaledDisplayWidth = DISP_WIDTH * DISP_SCALE_FACTOR;
     var scaledDisplayHeight = DISP_HEIGHT * DISP_SCALE_FACTOR;
 
@@ -227,6 +228,12 @@ function resize() {
     element.style.left = `${(availableWidth - width) / 2}px`;
     element.style.width = `${width}px`;
     element.style.height = `${height}px`;
+
+    if (isFullscreen) {
+        document.body.classList.add("fullscreen");
+    } else {
+        document.body.classList.remove("fullscreen");
+    }
 }
 
 export function init() {

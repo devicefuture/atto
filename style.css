@@ -26,12 +26,23 @@ body {
     height: 100vh;
     margin: 0;
     padding: 20px;
+    background-color: var(--white);
+    color: var(--black);
+}
+
+body.fullscreen {
+    background-color: var(--black);
+    color: var(--white);
 }
 
 canvas {
     position: absolute;
     background-color: #eeeeee;
     border-radius: 10px;
+}
+
+body.fullscreen canvas {
+    border-radius: 0;
 }
 
 a {
