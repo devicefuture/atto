@@ -259,6 +259,8 @@ export function init() {
     resetStrokeWidth();
     copyToBuffer();
 
+    element.hidden = false;
+
     readyListeners.forEach((i) => i());
 };
 
