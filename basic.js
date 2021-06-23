@@ -578,6 +578,10 @@ export function executeStatement(position = currentPosition + 1) {
     }
 }
 
+export function graphicsTakeFrame() {
+    renderHoldTime = 0;
+}
+
 export function stopProgram() {
     if (!running) {
         return;
