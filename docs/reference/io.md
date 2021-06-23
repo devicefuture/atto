@@ -60,9 +60,9 @@ bg "hsl", hue, saturation, luminance, alpha
 
 Sets the background colour for all future written text to be the given colour.
 
-Set the first parameter to a colour name to set the background colour to that given colour; set the first parameter to `"rgb"` and set `red`, `green` and `blue` to set the background colour to a given RGB value (each component being in the range of `0`-`255`); or set the first parameter to `"hsl"` to set the background colour to a given HSL value (the `hue` value being a trigonometric angle, with `saturation` and `luminance` being in the range of `0`-`1`).
+Set the first parameter to a colour name to set the background colour to that given colour; set the first parameter to `"rgb"` and set `red`, `green` and `blue` to set the background colour to a given RGB value (each component being within the range of `0`-`255`); or set the first parameter to `"hsl"` to set the background colour to a given HSL value (the `hue` value being a trigonometric angle, with `saturation` and `luminance` being within the range of `0`-`1`).
 
-For `"rgb"` and `"hsl"`, a transparency value can be givne as argument `alpha`, where `0` is completely transparent and `1` is completely opaque.
+For `"rgb"` and `"hsl"`, a transparency value can be given as argument `alpha`, where `0` is completely transparent and `1` is completely opaque.
 
 Use the [`cls`](#cls) command afterwards to fill the screen with the chosen background colour.
 
@@ -86,9 +86,9 @@ fg "hsl", hue, saturation, luminance, alpha
 
 Sets the background colour for all future written text to be the given colour.
 
-Set the first parameter to a colour name to set the foreground colour to that given colour; set the first parameter to `"rgb"` and set `red`, `green` and `blue` to set the foreground colour to a given RGB value (each component being in the range of `0`-`255`); or set the first parameter to `"hsl"` to set the foreground colour to a given HSL value (the `hue` value being a trigonometric angle, with `saturation` and `luminance` being in the range of `0`-`1`).
+Set the first parameter to a colour name to set the foreground colour to that given colour; set the first parameter to `"rgb"` and set `red`, `green` and `blue` to set the foreground colour to a given RGB value (each component being within the range of `0`-`255`); or set the first parameter to `"hsl"` to set the foreground colour to a given HSL value (the `hue` value being a trigonometric angle, with `saturation` and `luminance` being within the range of `0`-`1`).
 
-For `"rgb"` and `"hsl"`, a transparency value can be givne as argument `alpha`, where `0` is completely transparent and `1` is completely opaque.
+For `"rgb"` and `"hsl"`, a transparency value can be given as argument `alpha`, where `0` is completely transparent and `1` is completely opaque.
 
 <details>
 <summary>Example</summary>
