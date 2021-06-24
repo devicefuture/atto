@@ -1101,6 +1101,12 @@ window.addEventListener("load", function() {
 window.addEventListener("keydown", function(event) {
     currentKey = event.key;
 
+    if (event.key == "F1") {
+        canvas.toggleDocs();
+
+        event.preventDefault();
+    }
+
     if (event.key == "F5") {
         hid.unfocusInput();
 
