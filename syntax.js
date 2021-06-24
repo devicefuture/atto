@@ -514,7 +514,7 @@ export class StringConcatExpression extends Expression {
             throw new basic.RuntimeError("Maximum string length limit reached", this.lineNumber);
         }
 
-        return basic.getValueDisplay(a, this.lineNumber) + basic.getValueDisplay(b, this.lineNumber);
+        return value;
     }
 }
 
@@ -534,6 +534,12 @@ export class AdditionExpression extends Expression {
     }
 
     reduce(a, b) {
+        var value = a + b;
+
+        if (typeof(value) == "string") {
+            return NaN;
+        }
+
         return a + b;
     }
 }
