@@ -180,6 +180,10 @@ code span.constant {
 }
 
 code span.operator {
+    color: var(--yellow);
+}
+
+code span.operator {
     color: var(--magenta);
 }
 

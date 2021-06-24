@@ -406,8 +406,6 @@ export function parseProgram(program) {
                 ], tokens[i].lineNumber);
 
                 step.parse();
-
-                console.log(step);
             }
 
             if (condition(++i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "step")) {
@@ -708,6 +706,20 @@ export function getValueComparative(value, lineNumber = running ? editingProgram
 
     if (typeof(value) == "number") {
         return Math.round(value * 1e10) / 1e10;
+    } else if (typeof(value) == "object") {
+        var mappableValue = [];
+
+        for (var i = 0; i < value.length; i++) {
+            if (value[i] == undefined) {
+                mappableValue.push(0);
+
+                continue;
+            }
+
+            mappableValue.push(value[i]);
+        }
+
+        return mappableValue.map((i) => getValueDisplay(i)).join(", ");
     } else {
         return String(value).normalize();
     }
@@ -729,6 +741,10 @@ export function getVariable(identifierName) {
     }
 
     identifierName = identifierName.replace(/[$%]/g, "").toLocaleLowerCase();
+
+    if (typeof(programVariables[identifierName]) == "object") {
+        return programVariables[identifierName];
+    }
 
     if (programVariables.hasOwnProperty(identifierName)) {
         if (type == null) {
@@ -764,6 +780,44 @@ export function setConstants() {
     setVariable("col", term.col);
     setVariable("row", term.row);
     setVariable("key", currentKey);
+}
+
+export function getListItem(identifierName, index, lineNumber = null) {
+    identifierName = identifierName.replace(/[$%]/g, "").toLocaleLowerCase();
+
+    if (typeof(programVariables[identifierName]) != "object") {
+        throw new RuntimeError("Cannot access item in non-list variable", lineNumber);
+    }
+
+    return programVariables[identifierName][index] || 0;
+}
+
+export function setListItem(identifierName, index, value, lineNumber = null) {
+    identifierName = identifierName.replace(/[$%]/g, "").toLocaleLowerCase();
+
+    if (typeof(programVariables[identifierName]) != "object") {
+        throw new RuntimeError("Cannot set item in non-list variable", lineNumber);
+    }
+
+    programVariables[identifierName][index] = value;
+}
+
+export function setStore(store, value) {
+    var identifier = store.getPrimaryIdentifier();
+
+    if (identifier instanceof syntax.ListAccessIdentifier) {
+       setListItem(identifier.listIdentifier.code, identifier.childExpression.value, value, identifier.lineNumber);
+
+       return;
+    }
+
+    if (identifier instanceof syntax.Identifier) {
+        setVariable(identifier.code, value, identifier.lineNumber);
+ 
+        return;
+    }
+
+    throw new RuntimeError("Expected variable name", identifier.lineNumber);
 }
 
 export function pushStack(lineNumber, position = currentPosition) {

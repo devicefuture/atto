@@ -30,7 +30,12 @@ export var keywords = {
     "copy": graphicsCopy,
     "restore": graphicsRestore,
     "frame": graphicsTakeFrame,
-    "getpixel": graphicsGetPixel
+    "getpixel": graphicsGetPixel,
+    "dim": listCreate,
+    "push": listPush,
+    "pop": listPop,
+    "insert": listInsert,
+    "remove": listRemove
 };
 
 function expectParameters(...parameters) {
@@ -45,14 +50,6 @@ function getNumber(parameter) {
     return basic.getValueComparative(Number(parameter.value), parameter.lineNumber);
 }
 
-function getVariableName(identifier) {
-    if (identifier.getPrimaryIdentifier() != null) {
-        return identifier.getPrimaryIdentifier().code;
-    }
-
-    throw new basic.ParsingSyntaxError("Expected variable name", identifier.lineNumber);
-}
-
 export function print(value) {
     term.print((value == undefined ? "" : basic.getValueDisplay(value.value, value.lineNumber)) + (value == undefined || !value.postConcat ? "\n" : ""));
 
@@ -65,14 +62,14 @@ export function input(value, identifier) {
     term.print(value == undefined ? "" : basic.getValueDisplay(value.value, value.lineNumber));
 
     hid.startInput().then(function(value) {
-        basic.setVariable(getVariableName(identifier), value, identifier.lineNumber);
+        basic.setStore(identifier, value);
 
         basic.executeStatement();
     });
 }
 
 export function assign(identifier, value) {
-    basic.setVariable(getVariableName(identifier), value.value, value.lineNumber);
+    basic.setStore(identifier, value.value);
 
     basic.executeStatement();
 }
@@ -139,7 +136,7 @@ export function elseCondition() {
 }
 
 export function forLoop(identifier, start, end, step) {
-    basic.setVariable(getVariableName(identifier), start.value, start.lineNumber);
+    basic.setStore(identifier, start.value);
 
     basic.executeStatement();
 }
@@ -182,13 +179,12 @@ export function forEnd() {
     basic.seekOpeningMark();
 
     var parameters = basic.parsedProgram[basic.currentPosition].parameters;
-    var identifierName = getVariableName(parameters[0]);
 
     if (
         (parameters[3].value >= 0 && basic.getVariable(identifierName) < parameters[2].value) ||
         (parameters[3].value < 0 && basic.getVariable(identifierName) > parameters[2].value)
     ) {
-        basic.setVariable(identifierName, basic.getVariable(identifierName) + parameters[3].value, parameters[3].lineNumber);
+        basic.setStore(parameters[0], parameters[0] + parameters[3].value);
     } else {
         basic.seekClosingMark();
     }
@@ -410,18 +406,92 @@ export function graphicsGetPixel(mode, x, y, p1, p2, p3) {
     var colour = canvas.getPixel(getNumber(x), getNumber(y));
 
     if (chosenMode == "rgb") {
-        basic.setVariable(getVariableName(p1), colour.red, p1.lineNumber);
-        basic.setVariable(getVariableName(p2), colour.green, p2.lineNumber);
-        basic.setVariable(getVariableName(p3), colour.blue, p3.lineNumber);
+        basic.setStore(p1, colour.red);
+        basic.setStore(p2, colour.green);
+        basic.setStore(p3, colour.blue);
     } else if (chosenMode == "hsl") {
         var hsl = common.hslFromColour(colour);
 
-        basic.setVariable(getVariableName(p1), hsl.hue, p1.lineNumber);
-        basic.setVariable(getVariableName(p2), hsl.saturation, p2.lineNumber);
-        basic.setVariable(getVariableName(p3), hsl.luminance, p3.lineNumber);
+        basic.setStore(p1, hsl.hue);
+        basic.setStore(p2, hsl.saturation);
+        basic.setStore(p3, hsl.luminance);
     } else {
         throw new basic.RuntimeError(`Colour space \`${chosenMode}\` does not exist`);
     }
+
+    basic.executeStatement();
+}
+
+export function listCreate(identifier) {
+    expectParameters(identifier);
+
+    basic.setStore(identifier, []);
+
+    basic.executeStatement();
+}
+
+export function listPush(value, identifier) {
+    expectParameters(value, identifier);
+
+    if (typeof(identifier.value) != "object") {
+        throw new basic.RuntimeError("Cannot push to non-list variable");
+    }
+
+    basic.setStore(identifier, [...identifier.value, value.value]);
+
+    basic.executeStatement();
+}
+
+export function listPop(identifier, reassignVariable) {
+    expectParameters(identifier);
+
+    if (typeof(identifier.value) != "object") {
+        throw new basic.RuntimeError("Cannot pop from non-list variable");
+    }
+
+    var list = [...identifier.value];
+
+    if (list.length == 0) {
+        throw new basic.RuntimeError("Cannot pop from empty list");
+    }
+
+    var popped = list.pop();
+
+    basic.setStore(identifier, list);
+
+    if (reassignVariable != undefined) {
+        basic.setStore(reassignVariable, popped);
+    }
+
+    basic.executeStatement();
+}
+
+export function listInsert(value, identifier, index) {
+    expectParameters(value, identifier, index);
+
+    if (typeof(identifier.value) != "object") {
+        throw new basic.RuntimeError("Cannot insert into non-list variable");
+    }
+
+    var list = [...identifier.value];
+
+    list.splice(index.value, 0, value.value);
+    basic.setStore(identifier, list);
+
+    basic.executeStatement();
+}
+
+export function listRemove(identifier, index) {
+    expectParameters(identifier, index);
+
+    if (typeof(identifier.value) != "object") {
+        throw new basic.RuntimeError("Cannot insert into non-list variable");
+    }
+
+    var list = [...identifier.value];
+
+    list.splice(index.value, 1);
+    basic.setStore(identifier, list);
 
     basic.executeStatement();
 }

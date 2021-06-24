@@ -9,7 +9,7 @@ const RE_NUMERIC_LITERAL_HEX = /(?<![a-z_])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor|not)|(?<![a-z_][a-z0-9_]*))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
-const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|stroke|fill|text|copy|restore|frame|getpixel)/i;
+const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove)/i;
 const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|chr\$)/i;
 const RE_CONSTANT = /(?<![a-z0-9_])(?:pi|e|phi|epoch|random|col|row|key)(?![a-z0-9_])/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])mod(?![a-z_])|&|\||~|;/i;
@@ -17,6 +17,7 @@ const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
 const RE_LOGICAL_OPERATOR = /(?<![a-z_])(?<![a-z_][0-9]+)(?:and|or|xor|not)/i;
 const RE_IDENTIFIER = /[a-z_][a-z0-9_]*[$%]?/i;
 const RE_EXPRESSION_BRACKET = /[()]/;
+const RE_LIST_ACCESS_BRACKET = /[\[\]]/;
 const RE_PARAMETER_SEPERATOR = /,/;
 const RE_STATEMENT_SEPERATOR = /:/;
 const RE_WHTIESPACE = /\s+/;
@@ -39,6 +40,7 @@ const RE_ALL = new RegExp([
     RE_LOGICAL_OPERATOR.source,
     RE_IDENTIFIER.source,
     RE_EXPRESSION_BRACKET.source,
+    RE_LIST_ACCESS_BRACKET.source,
     RE_PARAMETER_SEPERATOR.source,
     RE_STATEMENT_SEPERATOR.source,
     RE_WHTIESPACE.source
@@ -82,7 +84,13 @@ const KEYWORD_COLOURS = {
     "copy": {background: "purple", foreground: "white"},
     "restore": {background: "purple", foreground: "white"},
     "frame": {background: "purple", foreground: "white"},
-    "getpixel": {background: "purple", foreground: "white"}
+    "getpixel": {background: "purple", foreground: "white"},
+    "dim": {background: "yellow", foreground: "black"},
+    "push": {background: "yellow", foreground: "black"},
+    "pop": {background: "yellow", foreground: "black"},
+    "insert": {background: "yellow", foreground: "black"},
+    "remove": {background: "yellow", foreground: "black"},
+    "fill": {background: "yellow", foreground: "black"}
 };
 
 const ESCAPE_CHARS = {
@@ -135,6 +143,12 @@ export class StringConcat extends Token {}
 export class ExpressionBracket extends Token {
     isOpening() {
         return this.code == "(";
+    }
+}
+
+export class ListAccessBracket extends Token {
+    isOpening() {
+        return this.code == "[";
     }
 }
 
@@ -215,6 +229,19 @@ export class Identifier extends Value {
     }
 }
 
+export class ListAccessIdentifier extends Identifier {
+    constructor(listIdentifier, childExpression, lineNumber = null) {
+        super(null, lineNumber);
+
+        this.listIdentifier = listIdentifier;
+        this.childExpression = childExpression;
+    }
+
+    get value() {
+        return basic.getListItem(this.listIdentifier.code, this.childExpression.value, this.lineNumber);
+    }
+}
+
 export class Expression extends Token {
     constructor(tokens, operator = null, childExpressionClass = null, lineNumber = null) {
         super(null, lineNumber);
@@ -249,6 +276,10 @@ export class Expression extends Token {
     }
 
     getPrimaryIdentifier() {
+        if (!(this instanceof LeafExpression)) {
+            return this.children[0].getPrimaryIdentifier();
+        }
+
         for (var i = 0; i < this.tokens.length; i++) {
             if (this.tokens[i] instanceof Identifier) {
                 return this.tokens[i];
@@ -344,6 +375,7 @@ export class StringConcatExpression extends Expression {
         var bracketLevel = 0;
         var bracketTokens = [];
         var chosenFunction = null;
+        var chosenListIdentifier = null;
 
         for (var i = 0; i < this.tokens.length; i++) {
             if (this.tokens[i] instanceof Function && bracketLevel == 0) {
@@ -352,7 +384,13 @@ export class StringConcatExpression extends Expression {
                 continue;
             }
 
-            if (this.tokens[i] instanceof ExpressionBracket && this.tokens[i].isOpening()) {
+            if (this.tokens[i] instanceof ListAccessBracket && this.tokens[i].isOpening() && bracketLevel == 0) {
+                if (this.children[this.children.length - 1].tokens.length > 0 && this.children[this.children.length - 1].tokens[this.children[this.children.length - 1].tokens.length - 1] instanceof Identifier) {
+                    chosenListIdentifier = this.children[this.children.length - 1].tokens.pop();
+                } // TODO: Throw error if not identifier
+            }
+
+            if ((this.tokens[i] instanceof ExpressionBracket || this.tokens[i] instanceof ListAccessBracket) && this.tokens[i].isOpening()) {
                 if (bracketLevel > 0) {
                     bracketTokens.push(this.tokens[i]);
                 }
@@ -383,6 +421,28 @@ export class StringConcatExpression extends Expression {
                 }
 
                 continue;
+            }
+
+            if (this.tokens[i] instanceof ListAccessBracket) {
+                bracketLevel--;
+
+                if (bracketLevel == 0) {
+                    var expression = new this.constructor(bracketTokens, this.lineNumber);
+
+                    expression.parse();
+
+                    var listAccess = new ListAccessIdentifier(chosenListIdentifier, expression, this.lineNumber);
+
+                    if (bracketLevel > 0) {
+                        bracketTokens.push(listAccess);
+                    } else {
+                        this.children[this.children.length - 1].tokens.push(listAccess);
+                    }
+
+                    chosenListIdentifier = null;
+
+                    continue;
+                }
             }
 
             if (bracketLevel > 0) {
@@ -638,6 +698,8 @@ export function highlight(code, index, col, row) {
             if (match == ")") {
                 bracketLevel--;
             }
+        } else if (RE_LIST_ACCESS_BRACKET.exec(match)) {
+            useForeground("yellow");
         } else if (RE_OPERATOR.exec(match)) {
             useForeground("magenta");
         } else if (RE_COMPARATOR.exec(match) || RE_LOGICAL_OPERATOR.exec(match)) {
@@ -764,6 +826,10 @@ export function tokeniseLine(code, lineNumber = null) {
 
             continue;
         }
+
+        if (RE_LIST_ACCESS_BRACKET.exec(lineSymbols[i])) {
+            expressionTokens.push(new ListAccessBracket(lineSymbols[i], lineNumber));
+        }
     }
 
     computeExpressionTokens();
@@ -837,6 +903,8 @@ export function renderDocumentationSyntaxHighlighting(code) {
             if (match == ")") {
                 bracketLevel--;
             }
+        } else if (RE_LIST_ACCESS_BRACKET.exec(match)) {
+            addHighlight(["listAccess"], match[0]);
         } else if (RE_OPERATOR.exec(match)) {
             addHighlight(["operator"], match[0]);
         } else if (RE_COMPARATOR.exec(match) || RE_LOGICAL_OPERATOR.exec(match)) {
