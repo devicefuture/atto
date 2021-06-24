@@ -786,7 +786,7 @@ export function getListItem(identifierName, index, lineNumber = null) {
     identifierName = identifierName.replace(/[$%]/g, "").toLocaleLowerCase();
 
     if (typeof(programVariables[identifierName]) != "object") {
-        throw new RuntimeError("Cannot access item in non-list variable", lineNumber);
+        throw new RuntimeError("Cannot access item in non-list value", lineNumber);
     }
 
     return programVariables[identifierName][index] || 0;

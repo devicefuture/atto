@@ -10,7 +10,7 @@ const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor|not)|(?<![a-z_][a-z0-9_]*))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
 const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove)/i;
-const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|chr\$)/i;
+const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|last|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|chr\$)/i;
 const RE_CONSTANT = /(?<![a-z0-9_])(?:pi|e|phi|epoch|random|col|row|key)(?![a-z0-9_])/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])mod(?![a-z_])|&|\||~|;/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
@@ -324,6 +324,10 @@ export class Function extends Token {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
+        if (this.code.toLocaleLowerCase() == "last" && typeof(this.expression.value) != "object") {
+            throw new basic.RuntimeError("Cannot get last item of non-list value", this.lineNumber);
+        }
+
         if (this.code.toLocaleLowerCase() == "chr$" && Number.isNaN(Number(this.expression.value))) {
             throw new basic.RuntimeError("Type conversion error", this.lineNumber);
         }
@@ -350,7 +354,6 @@ export class Function extends Token {
             case "bin": return Number.parseInt(this.expression.value, 2);
             case "oct": return Number.parseInt(this.expression.value, 8);
             case "hex": return Number.parseInt(this.expression.value, 16);
-            case "len": return String(this.expression.value).length;
             case "lower$": return String(this.expression.value).toLocaleLowerCase();
             case "upper$": return String(this.expression.value).toLocaleUpperCase();
             case "trim$": return String(this.expression.value).trim();
@@ -360,6 +363,20 @@ export class Function extends Token {
             case "bin$": return Number(this.expression.value).toString(2);
             case "oct$": return Number(this.expression.value).toString(8);
             case "hex$": return Number(this.expression.value).toString(16);
+
+            case "len":
+                if (typeof(this.expression.value) == "object") {
+                    return this.expression.value.length;
+                }
+
+                return String(this.expression.value).length;
+
+            case "last":
+                if (this.expression.value.length == 0) {
+                    throw new basic.RuntimeError("Cannot get last item from empty list");
+                }
+
+                return this.expression.value[this.expression.value.length - 1];
         }
     }
 }
