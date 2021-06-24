@@ -163,6 +163,11 @@ code span.keyword.purple {
     background-color: var(--purple);
 }
 
+code span.keyword.yellow {
+    background-color: var(--yellow);
+    color: var(--black);
+}
+
 code span.keyword.magenta {
     background-color: var(--magenta);
 }
@@ -179,7 +184,23 @@ code span.constant {
     border-radius: 5px;
 }
 
-code span.operator {
+code span.bracket.bracket1 {
+    opacity: 0.7;
+}
+
+code span.bracket.bracket2 {
+    opacity: 0.4;
+}
+
+code span.bracket.bracket3 {
+    opacity: 0.1;
+}
+
+code span.badBracket {
+    color: var(--red);
+}
+
+code span.listAccess {
     color: var(--yellow);
 }
 

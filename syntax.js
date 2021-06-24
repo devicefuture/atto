@@ -89,8 +89,7 @@ const KEYWORD_COLOURS = {
     "push": {background: "yellow", foreground: "black"},
     "pop": {background: "yellow", foreground: "black"},
     "insert": {background: "yellow", foreground: "black"},
-    "remove": {background: "yellow", foreground: "black"},
-    "fill": {background: "yellow", foreground: "black"}
+    "remove": {background: "yellow", foreground: "black"}
 };
 
 const ESCAPE_CHARS = {
@@ -404,7 +403,9 @@ export class StringConcatExpression extends Expression {
             if (this.tokens[i] instanceof ListAccessBracket && this.tokens[i].isOpening() && bracketLevel == 0) {
                 if (this.children[this.children.length - 1].tokens.length > 0 && this.children[this.children.length - 1].tokens[this.children[this.children.length - 1].tokens.length - 1] instanceof Identifier) {
                     chosenListIdentifier = this.children[this.children.length - 1].tokens.pop();
-                } // TODO: Throw error if not identifier
+                } else {
+                    throw new basic.ParsingSyntaxError("Expected operator", this.tokens[i].lineNumber);
+                }
             }
 
             if ((this.tokens[i] instanceof ExpressionBracket || this.tokens[i] instanceof ListAccessBracket) && this.tokens[i].isOpening()) {
@@ -469,7 +470,7 @@ export class StringConcatExpression extends Expression {
             }
 
             if (chosenFunction != null) {
-                throw new basic.ParsingSyntaxError("Expected value after function name");
+                throw new basic.ParsingSyntaxError("Expected value after function name", this.lineNumber);
             }
 
             if (this.tokens[i] instanceof Operator && this.tokens[i].code == this.operator.code) {
@@ -480,11 +481,11 @@ export class StringConcatExpression extends Expression {
         }
 
         if (bracketLevel < 0) {
-            throw new basic.ParsingSyntaxError("Expected an opening bracket");
+            throw new basic.ParsingSyntaxError("Expected an opening bracket", this.lineNumber);
         }
 
         if (bracketLevel > 0) {
-            throw new basic.ParsingSyntaxError("Expected a closing bracket");
+            throw new basic.ParsingSyntaxError("Expected a closing bracket", this.lineNumber);
         }
 
         this.children.forEach((i) => i.parse());
@@ -507,6 +508,12 @@ export class StringConcatExpression extends Expression {
     }
 
     reduce(a, b) {
+        var value = basic.getValueDisplay(a, this.lineNumber) + basic.getValueDisplay(b, this.lineNumber);
+
+        if (value.length > 1_000_000) {
+            throw new basic.RuntimeError("Maximum string length limit reached", this.lineNumber);
+        }
+
         return basic.getValueDisplay(a, this.lineNumber) + basic.getValueDisplay(b, this.lineNumber);
     }
 }
