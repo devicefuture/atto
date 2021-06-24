@@ -184,7 +184,10 @@ export function forEnd() {
     var parameters = basic.parsedProgram[basic.currentPosition].parameters;
     var identifierName = getVariableName(parameters[0]);
 
-    if (basic.getVariable(identifierName) < parameters[2].value) {
+    if (
+        (parameters[3].value >= 0 && basic.getVariable(identifierName) < parameters[2].value) ||
+        (parameters[3].value < 0 && basic.getVariable(identifierName) > parameters[2].value)
+    ) {
         basic.setVariable(identifierName, basic.getVariable(identifierName) + parameters[3].value, parameters[3].lineNumber);
     } else {
         basic.seekClosingMark();

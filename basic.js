@@ -380,7 +380,7 @@ export function parseProgram(program) {
             var identifier = null;
             var start = null;
             var end = null;
-            var step = new syntax.LeafExpression([new syntax.NumericLiteral("1", tokens[i].lineNumber)], tokens[i].lineNumber);
+            var step;
 
             expect(++i, (x) => x instanceof syntax.Expression && x.getPrimaryIdentifier() != null);
 
@@ -395,6 +395,20 @@ export function parseProgram(program) {
             expect(++i, (x) => x instanceof syntax.Expression);
 
             end = tokens[i];
+
+            if (start.value <= end.value) {
+                step = new syntax.LeafExpression([new syntax.NumericLiteral("1", tokens[i].lineNumber)], tokens[i].lineNumber);
+            } else {
+                step = new syntax.SubtractionExpression([
+                    new syntax.LeafExpression([new syntax.NumericLiteral("0", tokens[i].lineNumber)], tokens[i].lineNumber),
+                    new syntax.Operator("-", tokens[i].lineNumber),
+                    new syntax.LeafExpression([new syntax.NumericLiteral("1", tokens[i].lineNumber)], tokens[i].lineNumber)
+                ], tokens[i].lineNumber);
+
+                step.parse();
+
+                console.log(step);
+            }
 
             if (condition(++i, (x) => x instanceof syntax.Keyword && x.code.toLocaleLowerCase() == "step")) {
                 expect(++i, (x) => x instanceof syntax.Expression);
