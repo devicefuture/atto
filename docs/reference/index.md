@@ -18,4 +18,4 @@ This reference guide contains a listing of all commands, functions, constants an
 `+`, `-`, `*`, `/`, `^`, `mod`, `&`, `|`, `~` and `;`
 
 <h1 class="reference"><a href="/reference/comparators.md" class="comparators">Comparators 🢒</a></h1>
-`=`, `<`, `>`, `<=`, `>=` and `!=`
+`=`, `<`, `>`, `<=`, `>=`, `!=`, `and`, `or`, `xor` and `not`
