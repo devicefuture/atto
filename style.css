@@ -163,12 +163,12 @@ code span.keyword.purple {
     background-color: var(--purple);
 }
 
-code span.keyword.pink {
-    background-color: var(--pink);
+code span.keyword.magenta {
+    background-color: var(--magenta);
 }
 
 code span.function {
-    background-color: var(--pink);
+    background-color: var(--magenta);
     color: var(--white);
     border-radius: 5px;
 }
@@ -180,7 +180,7 @@ code span.constant {
 }
 
 code span.operator {
-    color: var(--pink);
+    color: var(--magenta);
 }
 
 code span.comparator {
@@ -230,7 +230,7 @@ h1.reference a.io {
 }
 
 h1.reference a.functions {
-    color: var(--pink);
+    color: var(--magenta);
 }
 
 h1.reference a.constants {
@@ -238,7 +238,7 @@ h1.reference a.constants {
 }
 
 h1.reference a.operators {
-    color: var(--pink);
+    color: var(--magenta);
 }
 
 h1.reference a.comparators {

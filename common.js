@@ -65,7 +65,7 @@ export function hslFromColour(colour, trigMode = basic.trigMode) {
     } else {
         var range = max - min;
 
-        saturation = luminance > 0.5 ? range / (2 - max - min) : d / (max + min);
+        saturation = luminance > 0.5 ? range / (2 - max - min) : range / (max + min);
 
         switch (max) {
             case colour.red:

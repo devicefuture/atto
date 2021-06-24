@@ -49,6 +49,23 @@ Clears the screen and positions the text cursor at the top left of the screen.
 </pre>
 </details>
 
+## `pos`
+```
+pos col, row
+```
+
+Positions the text cursor at the specified column and row cells, given as arguments `col` and `row`, respectively.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 for i=0 to 10</code>
+<code>20 pos i, i</code>
+<code>30 print "Hello, world!"</code>
+<code>40 next</code>
+</pre>
+</details>
+
 ## `bg`
 ```
 bg
@@ -101,5 +118,171 @@ If no colour is chosen, then the default foreground colour for atto is used.
 <pre>
 <code>10 bg "red"</code>
 <code>20 print "Something bad has happened!"</code>
+</pre>
+</details>
+
+## `move`
+```
+move x, y
+```
+
+Positions the drawing brush at the specified location given as arguments `x` and `y`. The top left of the display is `0, 0`, and the bottom right is `639, 479`.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 move 100, 100</code>
+<code>20 draw 100, 200</code>
+<code>30 move 200, 100</code>
+<code>40 draw 200, 200</code>
+</pre>
+</details>
+
+## `draw`
+```
+draw x, y
+```
+
+Draws a line using the drawing brush from the old location to the new, specified location given as arguments `x` and `y`, using the foreground colour.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>5 rem Draws a triangle</code>
+<code>10 move 150, 100</code>
+<code>20 draw 100, 200</code>
+<code>30 draw 200, 200</code>
+<code>40 draw 150, 100</code>
+</pre>
+</details>
+
+## `stroke`
+```
+stroke width
+```
+
+Sets the drawing brush's stroke width, in pixels. The default value is `1`.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 for i=1 to 10</code>
+<code>20 stroke i</code>
+<code>30 move 10, 10*i</code>
+<code>40 draw 100, 100*i</code>
+<code>50 next</code>
+</pre>
+</details>
+
+## `fill`
+```
+fill
+```
+
+Fills in the polygon bound by the points given from the most recent `move` command and all subsequent `draw` commands using the foregrund colour.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>5 rem Draws a filled triangle</code>
+<code>10 move 150, 100</code>
+<code>20 draw 100, 200</code>
+<code>30 draw 200, 200</code>
+<code>40 fill</code>
+</pre>
+</details>
+
+## `text`
+```
+text message, x, y
+text message, x, y, size
+```
+
+Draws the text at the position specified by the arguments `x` and `y`, with the text specified as argument `message`, using the foreground colour.
+
+If the `size` argument is present, then the text will be scaled by the scale factor specified as argument `size` from the normal text size.
+
+The drawn text will not wrap to the next line if it reaches the edge of the screen.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 cls</code>
+<code>20 for i=50 to 200 step 10</code>
+<code>30 fg "rgb", 0, 0, 0, i/200</code>
+<code>40 text i, i, "Hello, world!"</code>
+<code>50 next</code>
+</pre>
+</details>
+
+## `copy`
+```
+copy
+```
+
+Copies the current displayed frame to a hidden buffer used for rendering advanced graphics. The stored frame can then be restored by using the [`restore`](#restore) command.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 move 150, 100</code>
+<code>20 draw 100, 200</code>
+<code>30 draw 200, 200</code>
+<code>40 draw 150, 100</code>
+<code>50 copy</code>
+<code>60 delay 500</code>
+<code>70 fill</code>
+<code>80 delay 500</code>
+<code>90 restore</code>
+<code>100 goto 50</code>
+</pre>
+</details>
+
+## `restore`
+```
+restore
+```
+
+Restores the current displayed frame from a hidden buffer used for rendering advanced graphics. See [`copy`](#copy) for more details.
+
+## `frame`
+```
+frame
+```
+
+Forces the display to be refreshed and rendered when called to aid in producing smooth animations.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>5 rem The background should only appear green</code>
+<code>10 bg "red"</code>
+<code>20 cls</code>
+<code>30 bg "green"</code>
+<code>40 cls</code>
+<code>50 frame</code>
+<code>60 goto 10</code>
+</pre>
+</details>
+
+## `getpixel`
+```
+getpixel "rgb", x, y, red, green, blue
+getpixel "hsl", x, y, hue, saturation, luminance
+```
+
+Gets the colour of the pixel at the position specified by arguments `x` and `y`. If the first argument is set to `"rgb"`, then the variables used for the `red`, `green` and `blue` arguments will be set to match the pixel's RGB value (each component being within the range of `0`-`255`). If the first argument is set to `"hsl"`, then the variables used for the `hue`, `saturation` and `luminance` arguments will be set to match the pixel's HSL value (the `hue` value being a trigonometric angle, with `saturation` and `luminance` being within the range of `0`-`1`).
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 deg</code>
+<code>20 bg "green"</code>
+<code>30 cls</code>
+<code>40 getpixel "hsl", 100, 100, hue, saturation, luminance</code>
+<code>50 print "The colour at 100, 100 is:"</code>
+<code>60 print hue; "° hue"</code>
+<code>70 print saturation*100; "% saturation"</code>
+<code>80 print luminance*100; "% luminance"</code>
 </pre>
 </details>
