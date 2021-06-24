@@ -1090,7 +1090,7 @@ window.addEventListener("load", function() {
             interruptProgram(false);
             textToProgram(reader.result);
 
-            term.print("Imported from file\n");
+            term.print("\rImported from file\n");
             hid.startProgramInput();
         });
 
