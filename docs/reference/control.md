@@ -251,6 +251,24 @@ Immediately returns to the opening line of the loop to continue execution from t
 </pre>
 </details>
 
+## `delay`
+```
+delay duration
+```
+
+Pauses program execution for a specified number of milliseconds given as argument `duration`, and then continues execution afterwards.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 count=0</code>
+<code>20 print count</code>
+<code>30 delay 1000</code>
+<code>40 count=count+1</code>
+<code>50 goto 20</code>
+</pre>
+</details>
+
 ## `stop`
 ```
 stop
