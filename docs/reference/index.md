@@ -14,8 +14,11 @@ This reference guide contains a listing of all commands, functions, constants an
 <h1 class="reference"><a href="/reference/constants.md" class="constants">Constants 🢒</a></h1>
 `pi`, `e`, `phi`, `epoch`, `random`, `key` etc.
 
+<h1 class="reference"><a href="/reference/lists.md" class="lists">List commands and syntax 🢒</a></h1>
+`dim`, `push`, `pop`, `insert`, `remove` etc.
+
 <h1 class="reference"><a href="/reference/operators.md" class="operators">Operators 🢒</a></h1>
-`+`, `-`, `*`, `/`, `^`, `mod`, `&`, `|`, `~` and `;`
+`+`, `-`, `*`, `/`, `^`, `div`, `mod`, `&`, `|`, `~` and `;`
 
 <h1 class="reference"><a href="/reference/comparators.md" class="comparators">Comparators 🢒</a></h1>
 `=`, `<`, `>`, `<=`, `>=`, `!=`, `and`, `or`, `xor` and `not`

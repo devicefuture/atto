@@ -258,6 +258,10 @@ h1.reference a.functions {
     color: var(--magenta);
 }
 
+h1.reference a.lists {
+    color: var(--yellow);
+}
+
 h1.reference a.constants {
     color: var(--lightBlue);
 }
