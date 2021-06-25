@@ -71,7 +71,7 @@ Calculates the sine of the numerical expression given as argument `x`, in the cu
 <summary>Example</summary>
 <pre>
 <code>10 deg</code>
-<code>20 for i=0 to 360<code>
+<code>20 for i=0 to 360</code>
 <code>30 print sin(i)</code>
 <code>40 next</code>
 </pre>
@@ -88,7 +88,7 @@ Calculates the cosine of the numerical expression given as argument `x`, in the 
 <summary>Example</summary>
 <pre>
 <code>10 deg</code>
-<code>20 for i=0 to 360<code>
+<code>20 for i=0 to 360</code>
 <code>30 print cos(i)</code>
 <code>40 next</code>
 </pre>
@@ -107,7 +107,7 @@ If `x` is equal to a multiple of 90, but not a multiple of 180, then an error wi
 <summary>Example</summary>
 <pre>
 <code>10 deg</code>
-<code>20 for i=0 to 360<code>
+<code>20 for i=0 to 360</code>
 <code>30 if i mod 90=0 and i mod 180!=0</code>
 <code>40 print "Infinity"</code>
 <code>50 else</code>
@@ -445,7 +445,7 @@ Converts the string expression given as argument `x` to an upper case string.
 trim$(x)
 ```
 
-Removes leading and trailing whitespace characters (` `) on the string expression given as argument `x`.
+Removes leading and trailing whitespace characters on the string expression given as argument `x`.
 
 <details>
 <summary>Example</summary>
@@ -459,7 +459,7 @@ Removes leading and trailing whitespace characters (` `) on the string expressio
 ltrim$(x)
 ```
 
-Removes leading whitespace characters (` `) on the string expression given as argument `x`.
+Removes leading whitespace characters on the string expression given as argument `x`.
 
 <details>
 <summary>Example</summary>
@@ -473,7 +473,7 @@ Removes leading whitespace characters (` `) on the string expression given as ar
 rtrim$(x)
 ```
 
-Removes trailing whitespace characters (` `) on the string expression given as argument `x`.
+Removes trailing whitespace characters on the string expression given as argument `x`.
 
 <details>
 <summary>Example</summary>
