@@ -688,7 +688,7 @@ export function seekLoopOpeningMark() {
 }
 
 export function isValidDataType(value) {
-    if (Number.isNaN(value) || Math.abs(value) == Infinity) {
+    if (Number.isNaN(value) || (Math.abs(value) == Infinity && typeof(value) != "string")) {
         return false;
     }
 
