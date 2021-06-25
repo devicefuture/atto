@@ -8,11 +8,11 @@ const RE_COMMENT = /(?:rem\s|#)[^\n]*/i;
 const RE_NUMERIC_LITERAL_HEX = /(?<![a-z_])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
-const RE_NUMERIC_LITERAL_SCI = /(?:(?<=mod|and|or|xor|not)|(?<![a-z_][a-z0-9_]*))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
+const RE_NUMERIC_LITERAL_SCI = /(?:(?<=div|mod|and|or|xor|not)|(?<![a-z_][a-z0-9_]*))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
 const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove)/i;
 const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|last|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|chr\$)/i;
 const RE_CONSTANT = /(?<![a-z0-9_])(?:pi|e|phi|epoch|random|col|row|key)(?![a-z0-9_])/i;
-const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])mod(?![a-z_])|&|\||~|;/i;
+const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])(?:div|mod)(?![a-z_])|&|\||~|;/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
 const RE_LOGICAL_OPERATOR = /(?<![a-z_])(?<![a-z_][0-9]+)(?:and|or|xor|not)/i;
 const RE_IDENTIFIER = /[a-z_][a-z0-9_]*[$%]?/i;
@@ -570,11 +570,25 @@ export class DivisionExpression extends Expression {
 
 export class ExponentiationExpression extends Expression {
     constructor(tokens, lineNumber = null) {
-        super(tokens, new Operator("^"), ModuloExpression, lineNumber);
+        super(tokens, new Operator("^"), IntegerDivisionExpression, lineNumber);
     }
 
     reduce(a, b) {
         return Math.pow(a, b);
+    }
+}
+
+export class IntegerDivisionExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("div"), ModuloExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        if (b == 0) {
+            throw new basic.RuntimeError("Maths error", this.lineNumber);
+        }
+
+        return Math.floor(a / b);
     }
 }
 
