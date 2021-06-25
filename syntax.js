@@ -768,7 +768,7 @@ export function tokeniseLine(code, lineNumber = null) {
     var commentMatch;
     var match;
 
-    if (commentMatch = RE_COMMENT.exec(code.replace(RE_STRING_LITERAL, function(matchedString) {
+    if (commentMatch = RE_COMMENT.exec(code.replace(new RegExp(RE_STRING_LITERAL, "g"), function(matchedString) {
         return "\0".repeat(matchedString.length);
     }))) {
         code = code.substring(0, commentMatch.index);
