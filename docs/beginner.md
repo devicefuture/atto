@@ -82,18 +82,8 @@ This is all well and good, but it's not really too helpful if our program doesn'
 ```
 10 input "First number? ", first%
 20 input "Second number? ", second%
-30 sum=______________
-40 print sum
-```
-
-Here's a challenge! Your task is to write what'll go on line 30. `first%` and `second%` are variables that are set to whatever we type in as our first and second values when we run our program.
-
-Copy lines 10, 20 and 40, and write code for line 30 which adds `first%` and `second%` and stores them in the `sum` variable.
-
-If you're stuck, line 30 should be:
-
-```
 30 sum=first%+second%
+40 print sum
 ```
 
 > **Note:** The `%` after `first%` and `second%` tell atto to get the value the variable as a number, instead of text. Much better for adding!
