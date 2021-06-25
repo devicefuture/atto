@@ -11,11 +11,11 @@ This reference guide contains a listing of all commands, functions, constants an
 <h1 class="reference"><a href="/reference/functions.md" class="functions">Functions 🢒</a></h1>
 `sin`, `cos`, `tan`, `log`, `ln`, `sqrt`, `round`, `asc`, `hex$`, `lower$` etc.
 
-<h1 class="reference"><a href="/reference/lists.md" class="lists">List commands and syntax 🢒</a></h1>
-`dim`, `push`, `pop`, `insert`, `remove` etc.
-
 <h1 class="reference"><a href="/reference/constants.md" class="constants">Constants 🢒</a></h1>
 `pi`, `e`, `phi`, `epoch`, `random`, `key` etc.
+
+<h1 class="reference"><a href="/reference/lists.md" class="lists">List commands and syntax 🢒</a></h1>
+`dim`, `push`, `pop`, `insert`, `remove` etc.
 
 <h1 class="reference"><a href="/reference/operators.md" class="operators">Operators 🢒</a></h1>
 `+`, `-`, `*`, `/`, `^`, `div`, `mod`, `&`, `|`, `~` and `;`
