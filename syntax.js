@@ -312,7 +312,7 @@ export class Function extends Token {
     }
 
     get value() {
-        if (this.code.toLocaleLowerCase() == "tan" && this.expression.value == 90) {
+        if (this.code.toLocaleLowerCase() == "tan" && this.expression.value % 90 == 0 && this.expression.value % 180 != 0) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
