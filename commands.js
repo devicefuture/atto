@@ -181,8 +181,8 @@ export function forEnd() {
     var parameters = basic.parsedProgram[basic.currentPosition].parameters;
 
     if (
-        (parameters[3].value >= 0 && parameters[0].value < parameters[2].value) ||
-        (parameters[3].value < 0 && parameters[0].value > parameters[2].value)
+        (basic.getValueComparative(parameters[3].value) >= 0 && basic.getValueComparative(parameters[0].value) < basic.getValueComparative(parameters[2].value)) ||
+        (basic.getValueComparative(parameters[3].value) < 0 && basic.getValueComparative(parameters[0].value) > basic.getValueComparative(parameters[2].value))
     ) {
         basic.setStore(parameters[0], parameters[0].value + parameters[3].value);
     } else {

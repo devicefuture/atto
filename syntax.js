@@ -237,6 +237,7 @@ export class ListAccessIdentifier extends Identifier {
     }
 
     get value() {
+        debugger;
         return basic.getListItem(this.listIdentifier.code, this.childExpression.value, this.lineNumber);
     }
 }
@@ -458,6 +459,7 @@ export class StringConcatExpression extends Expression {
                     }
 
                     chosenListIdentifier = null;
+                    bracketTokens = [];
 
                     continue;
                 }
