@@ -468,7 +468,13 @@ export function listPop(identifier, reassignVariable) {
     var list = [...identifier.value];
 
     if (list.length == 0) {
-        throw new basic.RuntimeError("Cannot pop from empty list");
+        if (reassignVariable != undefined) {
+            basic.setStore(reassignVariable, 0);
+        }
+
+        basic.executeStatement();
+
+        return;
     }
 
     var popped = list.pop();
