@@ -8,6 +8,18 @@ window.basic = basic;
 import * as syntax from "./syntax.js";
 window.syntax = syntax;
 
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").then(function() {
+        console.log("Service worker successfully registered");
+    });
+
+    navigator.serviceWorker.ready.then(function() {
+        console.log("Service worker is now ready");
+    });
+} else {
+    console.log("Service workers not supported in this browser");
+}
+
 canvas.onReady(function() {
     term.print("Welcome to ");
     term.foreground("blue");
