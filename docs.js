@@ -1,5 +1,5 @@
 function visitDocumentation(path) {
-    path = path.replace("/docs//", "/docs/");
+    path = path.replace(/^docs\/\//g, "docs/");
 
     fetch(path).then(function(response) {
         return response.text();
