@@ -54,10 +54,10 @@ Pushes the item given as argument `item` onto the end of the list given as argum
 ## `pop`
 ```
 pop items
-pop items, removed
+pop items, reassigned
 ```
 
-Pops the last item from the list given as argument `items`, and if the `removed` variable is present, then it will be set to the value of the popped item.
+Pops the last item from the list given as argument `items`, and if the `reassigned` variable is present, then it will be set to the value of the popped item.
 
 <details>
 <summary>Example</summary>
