@@ -7,7 +7,7 @@ print message
 
 Writes the text given as argument `message` to the current line on the display.
 
-By default, `print` will add a newline onto the end of the written text, but adding the `;` operator to the end of the command will suppress this, allowing for multiple `print` commands to be used for writing one line.
+By default, `print` will add a newline onto the end of the written text, but adding the [`;`](/reference/operators.md#-4) operator to the end of the command will suppress this, allowing for multiple `print` commands to be used for writing one line.
 
 <details>
 <summary>Example</summary>
