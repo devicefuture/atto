@@ -4,7 +4,7 @@
 
 <h1 align="center"><code>atto</code></h1>
 <p align="center"><strong>The new BASIC computer that runs in your browser!</strong></p>
-<p align="center">Try it live: <a href="https://jamesl.me/atto">jamesl.me/atto</a></p>
+<p align="center">Try it live: <a href="https://jamesl.me/atto" target="_blank">jamesl.me/atto</a></p>
 
 ## What is atto?
 atto is a virtual fantasy computer system that's designed to teach people coding through a BASIC-like programming language.
