@@ -434,7 +434,7 @@ export function listPush(value, identifier) {
     expectParameters(value, identifier);
 
     if (typeof(identifier.value) != "object") {
-        throw new basic.RuntimeError("Cannot push to non-list variable");
+        throw new basic.RuntimeError("Cannot push to non-list variable", identifier.lineNumber);
     }
 
     basic.setStore(identifier, [...identifier.value, value.value]);
@@ -446,7 +446,7 @@ export function listPop(identifier, reassignVariable) {
     expectParameters(identifier);
 
     if (typeof(identifier.value) != "object") {
-        throw new basic.RuntimeError("Cannot pop from non-list variable");
+        throw new basic.RuntimeError("Cannot pop from non-list variable", identifier.lineNumber);
     }
 
     var list = [...identifier.value];
