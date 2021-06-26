@@ -4,7 +4,7 @@ The new BASIC computer that runs in your browser!
 Try it live: [jamesl.me/atto](https://jamesl.me/atto)
 
 ## What is atto?
-atto is a virtual fantasy computer system that's designed to teach people coding through the BASIC programming language.
+atto is a virtual fantasy computer system that's designed to teach people coding through a BASIC-like programming language.
 
 atto is a mix of simplicity from the days of 1980s computing, paired with the modern functionality of computers today.
 
