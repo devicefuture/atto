@@ -1,0 +1,25 @@
+{
+    "name": "atto",
+    "short_name": "atto - code ur dreams",
+    "description": "The new BASIC computer that runs in your browser!",
+    "lang": "en-GB",
+    "start_url": "/atto/index.html",
+    "scope": "/atto",
+    "display": "standalone",
+    "orientation": "landscape",
+    "theme_color": "#ffffff",
+    "icons": [
+        {
+            "src": "media/logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "media/maskable.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "background_color": "#ffffff"
+}
