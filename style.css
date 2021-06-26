@@ -35,6 +35,19 @@ body.fullscreen {
     color: var(--white);
 }
 
+body.notSupported {
+    padding-top: 20vh;
+    padding-bottom: 20vh;
+    padding-left: 10vw;
+    padding-right: 10vw;
+    text-align: center;
+}
+
+body.notSupported h1 {
+    color: var(--magenta);
+    font-family: "Brass Mono", monospace;
+}
+
 canvas {
     position: absolute;
     background-color: #eeeeee;
