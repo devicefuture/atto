@@ -138,6 +138,22 @@ export function elseCondition() {
 export function forLoop(identifier, start, end, step) {
     basic.setStore(identifier, start.value);
 
+    if (step == null) {
+        if (start.value <= end.value) {
+            step = new syntax.LeafExpression([new syntax.NumericLiteral("1", identifier.lineNumber)], identifier.lineNumber);
+        } else {
+            step = new syntax.SubtractionExpression([
+                new syntax.LeafExpression([new syntax.NumericLiteral("0", identifier.lineNumber)], identifier.lineNumber),
+                new syntax.Operator("-", identifier.lineNumber),
+                new syntax.LeafExpression([new syntax.NumericLiteral("1", identifier.lineNumber)], identifier.lineNumber)
+            ], identifier.lineNumber);
+
+            step.parse();
+        }
+
+        basic.parsedProgram[basic.currentPosition].parameters[3] = step;
+    }
+
     basic.executeStatement();
 }
 
