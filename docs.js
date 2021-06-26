@@ -1,4 +1,6 @@
 function visitDocumentation(path) {
+    path = path.replace("/docs//", "/docs/");
+
     fetch(path).then(function(response) {
         return response.text();
     }).then(function(data) {
