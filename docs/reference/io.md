@@ -51,10 +51,12 @@ Clears the screen and positions the text cursor at the top left of the screen.
 
 ## `pos`
 ```
-pos col, row
+pos colval, rowval
 ```
 
-Positions the text cursor at the specified column and row cells, given as arguments `col` and `row`, respectively.
+Positions the text cursor at the specified column and row cells, given as arguments `colval` and `rowval`, respectively.
+
+Use the [`col`](/reference/constants.md#col) and [`row`](/reference/constants.md#row) constants to retrieve the current text cursor position.
 
 <details>
 <summary>Example</summary>
