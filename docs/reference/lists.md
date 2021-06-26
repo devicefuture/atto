@@ -1,6 +1,6 @@
 [Guide](/index.md) 🢒 [Command reference](/reference/index.md) 🢒 **List commands and syntax**
 
-## `[` and `]`
+## `[]`
 ```
 items[index]
 ```

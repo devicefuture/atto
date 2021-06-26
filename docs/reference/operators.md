@@ -150,3 +150,15 @@ Returns the result of a bitwise exclusive OR (XOR) of `a` and `b`.
 <code>20 print bin$(result)</code>
 </pre>
 </details>
+
+## `()`
+```
+(a)
+```
+
+Returns the evaluated result of `a`. Used to clarify expressions where operator precedence (eg. BIDMAS or BODMAS) would cause an incorrect evaluation.
+
+```
+10 print 5+3*2 # Prints 11
+20 print (5+3)*2 # Prints 16
+```
