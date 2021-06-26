@@ -6,3 +6,7 @@ Welcome to the help guide for **atto**! We'll guide you on how to use and master
 <a href="/advanced.md" class="card magenta">I can already code well</a>
 
 [Command reference 🢒](/reference/index.md)
+
+---
+
+atto on <a href="https://github.com/James-Livesey/atto" target="_blank">GitHub</code>
