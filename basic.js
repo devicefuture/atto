@@ -1128,7 +1128,7 @@ window.addEventListener("load", function() {
     fileImporter.addEventListener("change", function() {
         var reader = new FileReader();
 
-        reader.addEventListener("load", function(event) {
+        reader.addEventListener("load", function() {
             interruptProgram(false);
             textToProgram(reader.result);
 
