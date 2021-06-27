@@ -13,6 +13,8 @@ Here is a basic demo of the infamous `Hello, world!` program:
 
 This example will continuously write `Hello, world!` to the screen until you press the Esc key to interrupt it. You can run this example with the `run` command.
 
+---
+
 Since atto is a full programming language, variables can also unsurprisingly be used:
 
 ```

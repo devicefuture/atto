@@ -1143,6 +1143,10 @@ window.addEventListener("load", function() {
 window.addEventListener("keydown", function(event) {
     currentKey = event.key;
 
+    if (!["Tab", "Enter"].includes(event.key)) {
+        hid.hidInput.focus();
+    }
+
     if (event.key == "F1") {
         canvas.toggleDocs();
 
