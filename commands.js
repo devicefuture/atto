@@ -56,13 +56,13 @@ export function print(value) {
     basic.executeStatement();
 }
 
-export function input(value, identifier) {
-    expectParameters(value, identifier);
+export function input(p1, p2) {
+    expectParameters(p1);
 
-    term.print(value == undefined ? "" : basic.getValueDisplay(value.value, value.lineNumber));
+    term.print(p2 == undefined ? "" : basic.getValueDisplay(p1.value, p1.lineNumber));
 
     hid.startInput().then(function(value) {
-        basic.setStore(identifier, value);
+        basic.setStore(p2 == undefined ? p1 : p2, value);
 
         basic.executeStatement();
     });

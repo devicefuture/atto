@@ -22,9 +22,10 @@ By default, `print` will add a newline onto the end of the written text, but add
 ## `input`
 ```
 input message, store
+input store
 ```
 
-Prompts the user with the text given as argument `message`, and stores the entered response into the variable given as argument `store`.
+Prompts the user with the text given as argument `message`, and stores the entered response into the variable given as argument `store`. If `message` is not present, then an empty input message will be shown.
 
 <details>
 <summary>Example</summary>
