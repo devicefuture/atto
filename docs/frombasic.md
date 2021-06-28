@@ -1,6 +1,6 @@
 [Guide](/index.md) 🢒 **I've played with BASIC before**
 
-If you've used BASIC before, then atto will be very familiar to you. atto is a BASIC-like language — atto is essentially BASIC, but with a few modern features added in.
+If you've used BASIC before, then atto will be very familiar to you. atto is a BASIC-like language — which means it's essentially BASIC, but with a few modern features added in.
 
 Try running the infamous `Hello, world!` program to see what we mean by it being familiar:
 

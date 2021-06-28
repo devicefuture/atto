@@ -42,13 +42,18 @@ canvas.onReady(function() {
 
     if (common.getParameter("code") != null) {
         basic.textToProgram(common.getParameter("code"));
-        basic.parseProgram(basic.editingProgram);
 
         term.print("\nLoaded shared program\n");
 
-        setTimeout(function() {
-            basic.startProgram();  
-        });
+        try {
+            basic.parseProgram(basic.editingProgram);
+            basic.startProgram();
+        } catch (e) {
+            basic.displayError(e);
+
+            term.print("Ready\n");
+            hid.startProgramInput();
+        }
     } else {
         term.print("\nReady\n");
 
