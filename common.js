@@ -25,6 +25,10 @@ function hueToRgb(p, q, t) {
     return p;
 }
 
+export function getParameter(name) {
+    return decodeURIComponent((new RegExp("[?|&]" + name + "=" + "([^&;]+?)(&|#|;|$)").exec(location.search) || [null, ""])[1].replace(/\+/g, "%20")) || null;
+}
+
 export function colourFromHsl(hue, saturation, luminance, alpha = 1, trigMode = basic.trigMode) {
     var colour = new canvas.Colour(0, 0, 0, alpha);
 

@@ -27,6 +27,6 @@ atto is still in development, but hopefully, it'll have the following features:
 * Rich graphics with a 640x480 resolution, full RGBA colours and turtle drawing mode
 * Accessible and inclusive to assistive technologies such as screen readers and switches
 * Music/melody programming, with text-to-speech support
-* Project link sharing to let others run the projects you make through Pastebin
+* Project link sharing to let others run the projects you make
 * API support, letting your code access external services and browser features such as WebUSB to connect to game controllers
 * Broadcasting to communicate between multiple instances of atto over WebRTC for making multiplayer projects

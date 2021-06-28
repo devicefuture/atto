@@ -1,3 +1,4 @@
+import * as common from "./common.js";
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
@@ -39,7 +40,18 @@ canvas.onReady(function() {
         term.print(" to load last session\n");
     }
 
-    term.print("\nReady\n");
+    if (common.getParameter("code") != null) {
+        basic.textToProgram(common.getParameter("code"));
+        basic.parseProgram(basic.editingProgram);
 
-    hid.startProgramInput();
+        term.print("\nLoaded shared program\n");
+
+        setTimeout(function() {
+            basic.startProgram();  
+        });
+    } else {
+        term.print("\nReady\n");
+
+        hid.startProgramInput();
+    }
 });

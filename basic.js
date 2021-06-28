@@ -935,6 +935,33 @@ export function autosave() {
     }
 }
 
+export function shareProgram() {
+    var code = programToText();
+    var url = `${window.location.href.split("?")[0]}?code=${encodeURIComponent(code)}`;
+
+    hid.hidCopy.value = url;
+    hid.hidCopy.hidden = false;
+
+    hid.hidCopy.focus();
+    hid.hidCopy.select();
+    document.execCommand("copy");
+
+    hid.hidCopy.hidden = true;
+
+    hid.hidInput.focus();
+
+    window.history.pushState("", "", url);
+    
+    term.print("Copied link to clipboard\n");
+}
+
+window.shareProgramLink = function() {
+    interruptProgram(false);
+
+    shareProgram();
+    hid.startProgramInput();
+}
+
 export function processCommand(value, movementOnly) {
     var command = value.trim().toLocaleLowerCase();
 
@@ -1074,6 +1101,13 @@ export function processCommand(value, movementOnly) {
 
     if (command == "import") {
         importFromFile();
+        hid.startProgramInput();
+
+        return;
+    }
+
+    if (command == "share") {
+        shareProgram();
         hid.startProgramInput();
 
         return;

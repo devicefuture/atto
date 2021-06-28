@@ -6,6 +6,7 @@ import * as syntax from "./syntax.js";
 export var hidLog;
 export var hidLive;
 export var hidInput;
+export var hidCopy;
 export var hidLogOutputBuffer = "";
 
 export var currentInput = null;
@@ -327,6 +328,7 @@ window.addEventListener("load", function() {
     hidLog = document.querySelector("#hidLog");
     hidLive = document.querySelector("#hidLive");
     hidInput = document.querySelector("#hidInput");
+    hidCopy = document.querySelector("#hidCopy");
 
     canvas.init();
     

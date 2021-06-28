@@ -11,7 +11,7 @@ function visitDocumentation(path) {
         document.querySelectorAll("a").forEach(function(element) {
             var destination = element.getAttribute("href") || "";
 
-            if (destination.startsWith("http://") || destination.startsWith("https://") || destination.startsWith("#")) {
+            if (destination.startsWith("http://") || destination.startsWith("https://") || destination.startsWith("javascript:") || destination.startsWith("#")) {
                 return;
             }
 
