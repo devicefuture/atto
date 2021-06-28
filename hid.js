@@ -84,6 +84,10 @@ export class Input {
         for (var i = 0; i <= this.value.length; i++) {
             var absoluteCol = this.offset + i - this.scrollColumn;
 
+            if (this.format != inputFormats.PROGRAM && (absoluteCol < this.offset || absoluteCol >= canvas.TERM_COLS)) {
+                continue;
+            }
+
             if (i < this.value.length) {
                 if (this.format == inputFormats.PROGRAM) {
                     syntax.highlight(this.value, i, absoluteCol, absoluteRow);
