@@ -960,7 +960,7 @@ window.shareProgramLink = function() {
 
     shareProgram();
     hid.startProgramInput();
-}
+};
 
 export function processCommand(value, movementOnly) {
     var command = value.trim().toLocaleLowerCase();
