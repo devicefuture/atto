@@ -4,7 +4,7 @@ Our Twitter bot is coming soon! In the meantime, feel free to post random Tweets
 
 <div class="tweetableCode"></div>
 
-Your tweet will be <strong class="tweetableCodeSize">---</strong> characters long.
+Your Tweet will be <strong class="tweetableCodeSize">---</strong> characters long.
 
 <button onclick="startTweetIntent();">Tweet</button>
 
