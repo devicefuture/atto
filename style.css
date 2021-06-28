@@ -119,6 +119,21 @@ a.card.brown {
     background-color: var(--brown);
 }
 
+button {
+    padding: 10px;
+    background-color: var(--darkBlue);
+    color: var(--white);
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    opacity: 1;
+    transition: 0.5s opacity;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
 hr {
     height: 4px;
     border: none;
@@ -285,6 +300,15 @@ h1.reference a.operators {
 
 h1.reference a.comparators {
     color: var(--darkBlue);
+}
+
+.tweetableCode {
+    padding: 10px;
+    background-color: var(--white);
+    color: var(--black);
+    border-radius: 10px;
+    white-space: pre-wrap;
+    overflow-x: auto;
 }
 
 #hidLog, #hidLive, #hidInput {

@@ -1,3 +1,8 @@
+const TWITTER_MAX_CHAR_COUNT = 280;
+const TWITTER_HANDLE = "@codeurdreams";
+
+var oldTweet = null;
+
 function visitDocumentation(path) {
     path = path.replace(/^docs\/\//g, "docs/");
 
@@ -27,9 +32,68 @@ function visitDocumentation(path) {
                 element.textContent = code; // Fallback
             }
         });
+
+        oldTweet = null;
     });
+}
+
+function toTweet(code, directHandle = true, inBase2048 = false) {
+    var tweet = "";
+
+    if (directHandle) {
+        tweet += "@codeurdreams ";
+    }
+
+    if (inBase2048) {
+        tweet += "🗜️ ";
+    }
+
+    tweet += code;
+
+    return tweet;
+}
+
+function startTweetIntent() {
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(oldTweet)}&url=`, "_blank", "noopener");
 }
 
 window.addEventListener("load", function() {
     visitDocumentation("docs/index.md");
+
+    setInterval(function() {
+        var code = basic.programToText();
+        var representedCode = code;
+        var tweet = toTweet(representedCode, true);
+
+        if (tweet.length > TWITTER_MAX_CHAR_COUNT) {
+            representedCode = base2048.encode(representedCode);
+            tweet = toTweet(representedCode, true, true);
+        }
+
+        if (tweet != oldTweet) {
+            document.querySelectorAll(".tweetableCode").forEach(function(element) {
+                element.innerHTML = "";
+
+                var handle = document.createElement("a");
+
+                handle.href = "https://twitter.com/codeurdreams";
+                handle.target = "_blank";
+                handle.textContent = "@codeurdreams";
+
+                element.append(handle);
+
+                var code = document.createElement("span");
+
+                code = tweet.replace(/^@codeurdreams /, " ");
+
+                element.append(code);
+            });
+
+            document.querySelectorAll(".tweetableCodeSize").forEach(function(element) {
+                element.textContent = tweet.length;
+            });
+
+            oldTweet = tweet;
+        }
+    });
 });
