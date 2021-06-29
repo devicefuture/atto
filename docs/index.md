@@ -11,4 +11,4 @@ Welcome to the help guide for **atto**! We'll guide you on how to use and master
 
 atto on <a href="https://github.com/James-Livesey/atto" title="James-Livesey/atto" target="_blank">GitHub</a> · <a href="https://twitter.com/codeurdreams" title="@codeurdreams" target="_blank">Twitter</a>
 
-Share your code! [Copy link](javascript:shareProgramLink();) · [Tweet it](/tweet.md)
+Share your code! [Copy link](javascript:shareProgramLink();) · [Tweet](/tweet.md)
