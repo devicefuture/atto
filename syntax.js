@@ -3,7 +3,7 @@ import * as term from "./term.js";
 import * as basic from "./basic.js";
 
 const RE_STRING_LITERAL = /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/i;
-const RE_LINE_NUMBER = /^\d+/;
+const RE_LINE_NUMBER = /^\d{1,6}/;
 const RE_COMMENT = /(?:rem\s|#)[^\n]*/i;
 const RE_NUMERIC_LITERAL_HEX = /(?<![a-z_])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
