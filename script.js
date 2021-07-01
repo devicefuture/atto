@@ -2,6 +2,7 @@ import * as common from "./common.js";
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
+import * as bot from "./bot.js";
 
 import * as basic from "./basic.js";
 window.basic = basic;
@@ -48,6 +49,10 @@ canvas.onReady(function() {
         try {
             basic.parseProgram(basic.editingProgram);
             basic.startProgram();
+
+            if (common.getParameter("bot") != null) {
+                bot.invoke(common.getParameter("bot"));
+            }
         } catch (e) {
             basic.displayError(e);
 

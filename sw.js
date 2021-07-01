@@ -8,6 +8,7 @@ self.addEventListener("install", function(event) {
             "/atto/style.css",
             "/atto/script.js",
             "/atto/basic.js",
+            "/atto/bot.js",
             "/atto/canvas.js",
             "/atto/commands.js",
             "/atto/common.js",

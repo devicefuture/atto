@@ -250,6 +250,10 @@ export function log(text) {
     hidLogOutputBuffer += text;
 }
 
+export function clearLog() {
+    hidLog.innerHTML = "";
+}
+
 export function startInput(format = inputFormats.TEXT, relativeRow = term.scrollDelta + term.row, offset = term.col) {
     hidInput.value = "";
 
