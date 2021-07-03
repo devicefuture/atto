@@ -58,6 +58,10 @@ canvas.onReady(function() {
 
             term.print("Ready\n");
             hid.startProgramInput();
+
+            if (common.getParameter("bot") != null) {
+                bot.invoke(common.getParameter("bot"));
+            }
         }
     } else {
         term.print("\nReady\n");

@@ -28,6 +28,8 @@ export function finish(id) {
 
     var request = new XMLHttpRequest();
 
+    console.log("Sending request back...");
+
     request.open("POST", `http://localhost:3000/fulfil/${id}`);
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
