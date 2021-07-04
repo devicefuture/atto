@@ -1,6 +1,6 @@
 [Guide](/index.md) 🢒 **Tweet your code**
 
-Tweet your program! If your code can fit in a Tweet, then send our Twitter bot <a href="https://twitter.com/codeurdreams" target="_blank">(@codeurdreams)</a> a Tweet containing your code, and our bot will reply with a screenshot of your running code.
+Tweet your program! If your code can fit in a Tweet, then send our Twitter bot (<a href="https://twitter.com/codeurdreams" target="_blank">@codeurdreams</a>) a Tweet containing your code, and our bot will reply with a screenshot of your running code.
 
 Below is what your current code will look like when put in a Tweet. Press the **Tweet** button to send it from your current Twitter Account!
 
