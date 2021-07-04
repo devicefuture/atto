@@ -116,8 +116,8 @@ export function gosub(lineNumber) {
         }
 
         if (labels[i] == lineNumber.value) { // Here if we end up adding textual labels
-        basic.pushStack(lineNumber.lineNumber);
-        basic.executeStatement(basic.programLabels[lineNumber.value]);
+            basic.pushStack(lineNumber.lineNumber);
+            basic.executeStatement(basic.programLabels[lineNumber.value]);
 
             return;
         }
