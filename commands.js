@@ -103,12 +103,29 @@ export function goto(lineNumber) {
 export function gosub(lineNumber) {
     expectParameters(lineNumber);
 
+    var labels = Object.keys(basic.programLabels);
+
+    for (var i = 0; i < labels.length; i++) {
+        if (!Number.isNaN(Number(labels[i]))) {
+            if (Number(labels[i]) >= Number(lineNumber.value)) {
+                basic.pushStack(lineNumber.lineNumber);
+                basic.executeStatement(basic.programLabels[labels[i]]);
+
+                return;
+            }
+        }
+
+        if (labels[i] == lineNumber.value) { // Here if we end up adding textual labels
+        basic.pushStack(lineNumber.lineNumber);
+        basic.executeStatement(basic.programLabels[lineNumber.value]);
+
+            return;
+        }
+    }
+
     if (!basic.programLabels.hasOwnProperty(lineNumber.value)) {
         throw new basic.RuntimeError(`Cannot gosub to nonexistent line ${lineNumber.value}`, lineNumber.lineNumber);
     }
-
-    basic.pushStack(lineNumber.lineNumber);
-    basic.executeStatement(basic.programLabels[lineNumber.value]);
 }
 
 export function returnFromSub() {
