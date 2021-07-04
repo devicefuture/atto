@@ -22,11 +22,11 @@ atto seeks to combine the best of both languages. BASIC has been proven to be a 
 ## Features
 atto is still in development, but hopefully, it'll have the following features:
 
-* Runs entirely in the browser, making it easy to get started with
-* Code authoring that's familiar to the BASIC users of the 80s, but with modern features such as text selection, copy and paste, syntax highlighting and multiline editing
-* Rich graphics with a 640x480 resolution, full RGBA colours and turtle drawing mode
-* Accessible and inclusive to assistive technologies such as screen readers and switches
-* Music/melody programming, with text-to-speech support
-* Project link sharing to let others run the projects you make
-* API support, letting your code access external services and browser features such as WebUSB to connect to game controllers
-* Broadcasting to communicate between multiple instances of atto over WebRTC for making multiplayer projects
+- [x] Runs entirely in the browser, making it easy to get started with
+- [x] Code authoring that's familiar to the BASIC users of the 80s, but with modern features such as text selection, copy and paste, syntax highlighting and multiline editing
+- [x] Rich graphics with a 640x480 resolution, full RGBA colours and turtle drawing mode (turtle coming soon)
+- [x] Accessible and inclusive to assistive technologies such as screen readers and switches (beta)
+- [ ] Music/melody programming, with text-to-speech support
+- [x] Project link sharing to let others run the projects you make
+- [ ] API support, letting your code access external services and browser features such as WebUSB to connect to game controllers
+- [ ] Broadcasting to communicate between multiple instances of atto over WebRTC for making multiplayer projects
