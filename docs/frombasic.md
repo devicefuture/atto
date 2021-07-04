@@ -9,7 +9,7 @@ Try running the infamous `Hello, world!` program to see what we mean by it being
 20 goto 10
 ```
 
-You'll notice that atto has syntax highlighting, which is a step up from the original BASIC langauge, and makes it much easier to read (especially for beginners)!
+You'll notice that atto has syntax highlighting, which is a step up from the original BASIC language, and makes it much easier to read (especially for beginners)! To interrupt the current program and go back to editing, press the Esc key.
 
 You can use `run` to run the program, and you can use the `list` command to list the contents of your program. Notice how you can use the arrow keys to go up and down a line to edit your code — this is what makes atto unique from BASIC, in that editing in atto is easier and similar to other programming languages.
 
