@@ -375,7 +375,7 @@ canvas.onReady(function() {
     hidInput.addEventListener("keydown", function(event) {
         setTimeout(function() {
             dispatchInputEvent(event);
-        });
+        }, 10);
     });
 
     renderLoop();
