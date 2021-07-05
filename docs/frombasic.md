@@ -15,6 +15,8 @@ You can use `run` to run the program, and you can use the `list` command to list
 
 For editing your code, the `edit` command (such as running `edit 10`) can be used to modify a line, and the `renum` command can be used to renumber each line number of your program to be a factor of 10 if you run out of in-between lines. It'll even renumber the `goto` commands for you!
 
+As with most BASIC derivatives, typing a line number on its own will delete the line. You can then type `list` to see the code again with the deleted line ommitted.
+
 Importantly, the `new` command will create a new program, which is useful for tinkering with atto to make different projects.
 
 atto supports storing strings and numbers in variables:

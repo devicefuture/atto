@@ -2,7 +2,9 @@
 
 If you can already code at an advanced level, then we're confident that you'll find atto a breeze! atto is similar to BASIC, but with modern features to make the language more relevant to today.
 
-Much like BASIC, each program line in atto must begin with a line number, otherwise atto will instead immediately execute that command in the shell. For the sake of convenient editing, it is suggested that each line number in atto should be a multiple of 10 (`10`, `20`, `30`) etc. so that lines can be added in-between. The `renum` command can be called in the shell to renumber the program in this way if you run out of lines.
+Much like BASIC, each program line in atto must begin with a line number, otherwise atto will instead immediately execute that command in the shell. For the sake of convenient editing, it is suggested that each line number in atto should be a multiple of 10 (`10`, `20`, `30`) etc. so that lines can be added in-between.
+
+The `renum` command can be called in the shell to renumber the program in multiples of 10 if you run out of lines. Lines can also be deleted by entering the line number just by itself, for example, `20`. Typing `list` will display your current code, which is useful if you've ran it and you can no longer see your code.
 
 Here is a basic demo of the infamous `Hello, world!` program:
 
