@@ -364,7 +364,6 @@ h1.reference a.comparators {
 }
 
 #docs #docsButtons button {
-    float: inline-start;
     padding: 5px;
     background-color: transparent;
     color: var(--black);
