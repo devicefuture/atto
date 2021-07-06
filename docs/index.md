@@ -1,3 +1,7 @@
+<div class="popoutOnly">
+    <h1 class="stylised"><a href="./index.html">atto</a> help guide</h1>
+</div>
+
 Welcome to the help guide for **atto**! We'll guide you on how to use and master atto depending on your experience level.
 
 <a href="/beginner.md" class="card darkGreen">I've never programmed before</a>
@@ -11,4 +15,8 @@ Welcome to the help guide for **atto**! We'll guide you on how to use and master
 
 atto on <a href="https://github.com/James-Livesey/atto" title="James-Livesey/atto" target="_blank">GitHub</a> · <a href="https://twitter.com/codeurdreams" title="@codeurdreams" target="_blank">Twitter</a>
 
-Share your code! [Copy link](javascript:shareProgramLink();) · [Tweet](/tweet.md)
+<div class="mainOnly">
+    <p>Share your code! <a href="javascript:shareProgramLink();">Copy link</a> · <a href="/tweet.md">Tweet</a></p>
+</div>
+
+<small><a href="/acknowledgements.md">Acknowledgements</a></small>

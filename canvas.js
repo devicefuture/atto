@@ -206,6 +206,10 @@ export function getPixel(x, y) {
 }
 
 function resize() {
+    if (window.inDocsPopout) {
+        return;
+    }
+
     var isFullscreen = window.innerWidth == screen.width && window.innerHeight == screen.height;
     var availableWidth = docsOpen ? window.innerWidth - 400 : window.innerWidth;
     var viewportWidth = isFullscreen ? availableWidth : availableWidth - 40;
@@ -237,6 +241,10 @@ function resize() {
 }
 
 export function init() {
+    if (window.inDocsPopout) {
+        return;
+    }
+
     element = document.querySelector("canvas");
     context = element.getContext("2d");
 
