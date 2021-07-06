@@ -28,6 +28,7 @@ body {
     padding: 20px;
     background-color: var(--white);
     color: var(--black);
+    -webkit-print-color-adjust: exact;
 }
 
 body.fullscreen {
@@ -266,6 +267,15 @@ summary {
     cursor: pointer;
 }
 
+h1.stylised {
+    font-family: "Brass Mono", monospace;
+}
+
+h1.stylised a {
+    font-family: inherit;
+    color: var(--darkBlue);
+}
+
 h1.reference {
     font-size: 20px;
     margin-bottom: 0;
@@ -303,6 +313,14 @@ h1.reference a.comparators {
     color: var(--darkBlue);
 }
 
+.popoutOnly {
+    display: none;
+}
+
+.mainOnly {
+    display: block;
+}
+
 .tweetableCode {
     padding: 10px;
     background-color: var(--white);
@@ -331,12 +349,86 @@ h1.reference a.comparators {
     right: 0;
     width: 400px;
     height: calc(100vh - 40px);
-    padding-left: 20px;
-    padding-right: 20px;
     background-color: var(--lightGrey);
     color: var(--black);
     font-size: 20px;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     overflow: auto;
+}
+
+#docs #docsButtons {
+    width: 400px;
+    padding: 5px;
+    background-color: var(--lightGray);
+}
+
+#docs #docsButtons button {
+    padding: 5px;
+    background-color: transparent;
+    color: var(--black);
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+#docs #docsButtons button img {
+    height: 24px;
+}
+
+#docs #docsContent {
+    height: calc(100vh - 88px);
+    padding-left: 20px;
+    padding-right: 20px;
+    overflow: auto;
+}
+
+#docs #docsContent > *:first-child {
+    margin-top: 0;
+}
+
+#docsPopout {
+    height: unset;
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding: 0;
+    font-size: 20px;
+}
+
+#docsPopout .popoutOnly {
+    display: block;
+}
+
+#docsPopout .mainOnly {
+    display: none;
+}
+
+#docsPopout #docsContent {
+    margin-bottom: -10px;
+    padding: 10px;
+}
+
+#docsPopout #docsContent *:first-child {
+    margin-top: 0;
+}
+
+#docsPopout #docsContent *:last-child {
+    margin-bottom: 0;
+}
+
+#docsPopout pre, #docsPopout code {
+    background-color: var(--lightGrey);
+}
+
+@media print {
+    @page {
+        margin: 0.5cm;
+    }
+
+    body {
+        margin: 1cm;
+    }
+
+    pre, blockquote {
+        break-inside: avoid;
+    }
 }

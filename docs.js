@@ -1,22 +1,29 @@
 const TWITTER_MAX_CHAR_COUNT = 280;
 const TWITTER_HANDLE = "@codeurdreams";
 
+var currentPage = null;
 var oldTweet = null;
 
 function visitDocumentation(path) {
     path = path.replace(/^docs\/\//g, "docs/");
+
+    currentPage = path;
+    
+    if (window.inDocsPopout) {
+        window.history.pushState("", "", `${window.location.href.split("?")[0]}?page=${path}`);
+    }
 
     fetch(path).then(function(response) {
         return response.text();
     }).then(function(data) {
         var converter = new showdown.Converter();
 
-        document.querySelector("#docs").innerHTML = converter.makeHtml(data);
+        document.querySelector("#docsContent").innerHTML = converter.makeHtml(data);
 
         document.querySelectorAll("a").forEach(function(element) {
             var destination = element.getAttribute("href") || "";
 
-            if (destination.startsWith("http://") || destination.startsWith("https://") || destination.startsWith("javascript:") || destination.startsWith("#")) {
+            if (destination.startsWith("http://") || destination.startsWith("https://") || destination.startsWith("./") || destination.startsWith("javascript:") || destination.startsWith("#")) {
                 return;
             }
 
@@ -35,6 +42,10 @@ function visitDocumentation(path) {
 
         oldTweet = null;
     });
+}
+
+function popOutDocumentation(path = currentPage) {
+    window.open(`docspopout.html?page=${path}`);
 }
 
 function toTweet(code, directHandle = true, inBase2048 = false) {
@@ -58,6 +69,10 @@ function startTweetIntent() {
 }
 
 window.addEventListener("load", function() {
+    if (window.inDocsPopout) {
+        return;
+    }
+
     visitDocumentation("docs/index.md");
 
     setInterval(function() {
@@ -95,5 +110,5 @@ window.addEventListener("load", function() {
 
             oldTweet = tweet;
         }
-    });
+    }, 100);
 });
