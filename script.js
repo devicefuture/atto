@@ -10,6 +10,8 @@ window.basic = basic;
 import * as syntax from "./syntax.js";
 window.syntax = syntax;
 
+window.toggleDocumentation = canvas.toggleDocs;
+
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").then(function() {
         console.log("Service worker successfully registered");

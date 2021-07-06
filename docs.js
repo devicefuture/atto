@@ -11,7 +11,7 @@ function visitDocumentation(path) {
     }).then(function(data) {
         var converter = new showdown.Converter();
 
-        document.querySelector("#docs").innerHTML = converter.makeHtml(data);
+        document.querySelector("#docsContent").innerHTML = converter.makeHtml(data);
 
         document.querySelectorAll("a").forEach(function(element) {
             var destination = element.getAttribute("href") || "";

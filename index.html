@@ -25,7 +25,17 @@
         <div aria-live="polite" tabindex="-1" id="hidLive"></div>
         <input autocapitalize="off" autocomplete="off" id="hidInput">
         <input hidden id="hidCopy">
-        <div hidden id="docs"></div>
+        <div hidden id="docs">
+            <div id="docsButtons">
+                <button onclick="toggleDocumentation();" aria-label="Close help guide" title="Close help guide">
+                    <img src="media/icons/close.svg">
+                </button>
+                <button onclick="visitDocumentation('docs/index.md');" aria-label="Visit guide home" title="Visit guide home">
+                    <img src="media/icons/home.svg">
+                </button>
+            </div>
+            <div id="docsContent"></div>
+        </div>
         <div hidden>
             <a id="fileExporter"></a>
             <input type="file" accept=".atto" id="fileImporter">

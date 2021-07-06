@@ -331,12 +331,40 @@ h1.reference a.comparators {
     right: 0;
     width: 400px;
     height: calc(100vh - 40px);
-    padding-left: 20px;
-    padding-right: 20px;
     background-color: var(--lightGrey);
     color: var(--black);
     font-size: 20px;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     overflow: auto;
+}
+
+#docsButtons {
+    width: 400px;
+    padding: 5px;
+    background-color: var(--lightGray);
+}
+
+#docsButtons button {
+    float: inline-start;
+    padding: 5px;
+    background-color: transparent;
+    color: var(--black);
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+#docsButtons button img {
+    height: 24px;
+}
+
+#docsContent {
+    height: calc(100vh - 88px);
+    padding-left: 20px;
+    padding-right: 20px;
+    overflow: auto;
+}
+
+#docsContent > *:first-child {
+    margin-top: 0;
 }
