@@ -66,7 +66,7 @@ window.addEventListener("load", function() {
         var tweet = toTweet(representedCode, true);
 
         if (tweet.length > TWITTER_MAX_CHAR_COUNT) {
-            representedCode = base2048.encode(representedCode);
+            representedCode = base2048.encode(new TextEncoder().encode(representedCode));
             tweet = toTweet(representedCode, true, true);
         }
 
