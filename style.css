@@ -382,7 +382,7 @@ h1.reference a.comparators {
     overflow: auto;
 }
 
-#docs #docsContent > *:first-child {
+#docs #docsContent > *:not(.popoutOnly):first-of-type {
     margin-top: 0;
 }
 
