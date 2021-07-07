@@ -40,6 +40,12 @@ function visitDocumentation(path) {
             }
         });
 
+        if (window.inDocsPopout) {
+            document.querySelectorAll("details").forEach(function(element) {
+                element.open = true;
+            });
+        }
+
         oldTweet = null;
     });
 }
