@@ -50,7 +50,7 @@ What you should see is that your code is running forever. Your computer is const
 
 Once you've seen your code run, press the Esc key to stop our program. You'll know that it's stopped because atto will show `Interrupt` on the screen at the bottom — because you interrupted your program.
 
-You can also delete lines in atto if you wnat to change some code in your program. Type `20` all by itself and see the result when you type `list`. You should see that line 20 is missing — when atto runs your code, it'll jump from line 10 straight to line 30!
+You can also delete lines in atto if you want to change some code in your program. Type `20` all by itself and see the result when you type `list`. You should see that line 20 is missing — when atto runs your code, it'll jump from line 10 straight to line 30!
 
 > **Note:** Wondered why it's `10`, `20`, `30` instead of `1`, `2`, `3`? That's because if we need to add in more lines, we can then go back and add lines in-between, such as `11 print "I'm a computer!"`. Try typing that in, and then type `list` to see your program's code again!
 

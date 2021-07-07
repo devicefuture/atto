@@ -1156,6 +1156,10 @@ export function discardCommand(value) {
 }
 
 window.addEventListener("load", function() {
+    if (window.inDocsPopout) {
+        return;
+    }
+
     fileExporter = document.querySelector("#fileExporter");
     fileImporter = document.querySelector("#fileImporter");
 
@@ -1175,6 +1179,10 @@ window.addEventListener("load", function() {
 });
 
 window.addEventListener("keydown", function(event) {
+    if (window.inDocsPopout) {
+        return;
+    }
+
     currentKey = event.key;
 
     if (!["Tab", "Enter"].includes(event.key)) {
