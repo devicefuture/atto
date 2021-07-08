@@ -129,3 +129,21 @@ Space is represented by `" "`, and Enter is represented by `"Enter"`. If no key 
 <code>20 goto 10</code>
 </pre>
 </details>
+
+## `heading`
+```
+heading
+```
+
+Set to the current heading angle of the turtle, clockwise from vertically upwards, in the current trigonometry mode.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 for i=1 to 10</code>
+<code>20 forward 20</code>
+<code>30 right 10</code>
+<code>40 next</code>
+<code>50 print heading</code>
+</pre>
+</details>
