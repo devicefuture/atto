@@ -198,6 +198,10 @@ code span.keyword.yellow {
     color: var(--black);
 }
 
+code span.keyword.green {
+    background-color: var(--darkGreen);
+}
+
 code span.keyword.magenta {
     background-color: var(--magenta);
 }
@@ -299,6 +303,10 @@ h1.reference a.functions {
 
 h1.reference a.lists {
     color: var(--yellow);
+}
+
+h1.reference a.turtle {
+    color: var(--darkGreen);
 }
 
 h1.reference a.constants {

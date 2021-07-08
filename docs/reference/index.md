@@ -17,6 +17,9 @@ This reference guide contains a listing of all commands, functions, constants an
 <h1 class="reference"><a href="/reference/lists.md" class="lists">List commands and syntax 🢒</a></h1>
 `dim`, `push`, `pop`, `insert`, `remove` etc.
 
+<h1 class="reference"><a href="/reference/turtle.md" class="turtle">Turtle graphics commands 🢒</a></h1>
+`forward`, `left`, `right`, `penup`, `pendown` etc.
+
 <h1 class="reference"><a href="/reference/operators.md" class="operators">Operators 🢒</a></h1>
 `+`, `-`, `*`, `/`, `^`, `div`, `mod`, `&`, `|`, `~` and `;`
 

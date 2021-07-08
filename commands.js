@@ -35,7 +35,16 @@ export var keywords = {
     "push": listPush,
     "pop": listPop,
     "insert": listInsert,
-    "remove": listRemove
+    "remove": listRemove,
+    "show": turtleShow,
+    "hide": turtleHide,
+    "forward": turtleForward,
+    "backward": turtleBackward,
+    "left": turtleLeft,
+    "right": turtleRight,
+    "penup": turtlePenUp,
+    "pendown": turtlePenDown,
+    "angle": turtleAngle
 };
 
 function expectParameters(...parameters) {
@@ -382,6 +391,7 @@ export function setForegroundColour(mode, p1, p2, p3, alpha) {
 export function graphicsMove(x, y) {
     expectParameters(x, y);
 
+    basic.setTurtleMoved(false);
     basic.setGraphicsPosition(getNumber(x), getNumber(y));
     basic.clearGraphicsPolygonPoints();
     basic.addGraphicsPolygonPoint(getNumber(x), getNumber(y));
@@ -397,6 +407,7 @@ export function graphicsDraw(x, y) {
     canvas.drawLine(basic.graphicsX, basic.graphicsY, x.value, y.value);
     canvas.resetStrokeWidth();
 
+    basic.setTurtleMoved(false);
     basic.setGraphicsPosition(getNumber(x), getNumber(y));
     basic.addGraphicsPolygonPoint(getNumber(x), getNumber(y));
 
@@ -412,6 +423,7 @@ export function graphicsStroke(width) {
 }
 
 export function graphicsFill() {
+    canvas.setColour(term.foregroundColour);
     canvas.drawPolygon(basic.graphicsPolygonPoints);
     canvas.resetStrokeWidth();
     
@@ -547,6 +559,96 @@ export function listRemove(identifier, index) {
 
     list.splice(index.value, 1);
     basic.setStore(identifier, list);
+
+    basic.executeStatement();
+}
+
+export function turtleShow() {
+    basic.setTurtleMoved();
+    basic.preTurtleRender();
+    basic.setTurtleShown(true);
+    basic.renderTurtle();
+
+    basic.executeStatement();
+}
+
+export function turtleHide() {
+    basic.setTurtleMoved();
+    basic.preTurtleRender();
+    basic.setTurtleShown(false);
+    basic.renderTurtle();
+
+    basic.executeStatement();
+}
+
+export function turtleForward(distance) {
+    expectParameters(distance);
+
+    basic.setTurtleMoved();
+    basic.preTurtleRender();
+
+    (basic.turtlePenDown ? graphicsDraw : graphicsMove)(
+        {value: basic.graphicsX + (distance.value * Math.cos(basic.turtleHeading - (Math.PI / 2)))},
+        {value: basic.graphicsY + (distance.value * Math.sin(basic.turtleHeading - (Math.PI / 2)))}
+    );
+
+    basic.renderTurtle();
+}
+
+export function turtleBackward(distance) {
+    expectParameters(distance);
+
+    basic.setTurtleMoved();
+    basic.preTurtleRender();
+
+    (basic.turtlePenDown ? graphicsDraw : graphicsMove)(
+        {value: basic.graphicsX - (distance.value * Math.cos(basic.turtleHeading - (Math.PI / 2)))},
+        {value: basic.graphicsY - (distance.value * Math.sin(basic.turtleHeading - (Math.PI / 2)))}
+    );
+
+    basic.renderTurtle();
+}
+
+export function turtleLeft(angle) {
+    expectParameters(angle);
+
+    basic.setTurtleMoved();
+    basic.preTurtleRender();
+    basic.setTurtleHeading(basic.turtleHeading - basic.trigModeToRadians(angle.value));
+    basic.renderTurtle();
+
+    basic.executeStatement();
+}
+
+export function turtleRight(angle) {
+    expectParameters(angle);
+
+    basic.setTurtleMoved();
+    basic.preTurtleRender();
+    basic.setTurtleHeading(basic.turtleHeading + basic.trigModeToRadians(angle.value));
+    basic.renderTurtle();
+
+    basic.executeStatement();
+}
+
+export function turtlePenUp() {
+    basic.setTurtlePenDown(false);
+
+    basic.executeStatement();
+}
+
+export function turtlePenDown() {
+    basic.setTurtlePenDown(true);
+
+    basic.executeStatement();
+}
+
+export function turtleAngle(angle) {
+    expectParameters(angle);
+
+    basic.preTurtleRender();
+    basic.setTurtleHeading(basic.trigModeToRadians(angle.value));
+    basic.renderTurtle();
 
     basic.executeStatement();
 }
