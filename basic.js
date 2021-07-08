@@ -519,6 +519,8 @@ export function startProgram(clearVariables = true) {
     programStack = [];
     turtleNotMoved = true;
 
+    canvas.copyToBuffer();
+
     setGraphicsPosition(0, 0);
     setGraphicsStrokeWidth(1);
     clearGraphicsPolygonPoints();
