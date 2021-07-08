@@ -14,4 +14,4 @@ Your Tweet will be <strong class="tweetableCodeSize">---</strong> characters lon
 
 ⚠️ You'll need to ensure that your Tweet is at most **280** characters long, or otherwise you won't be able to post it.
 
-🗜️ Base2048 support is coming soon, which means you'll be able to compress your code and fit up to around 100 more code characters in a single Tweet!
+🗜️ Longer Tweets are encoded in base2048, which means that your code will be compressed to fit up to around 100 more code characters in a single Tweet! Conversion to base2048 is done automatically if your original code is over 280 characters in length.
