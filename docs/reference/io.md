@@ -131,6 +131,8 @@ move x, y
 
 Positions the drawing brush at the specified location given as arguments `x` and `y`. The top left of the display is `0, 0`, and the bottom right is `639, 479`.
 
+The `move` command also sets the position of the graphical turtle, if in use.
+
 <details>
 <summary>Example</summary>
 <pre>
@@ -147,6 +149,8 @@ draw x, y
 ```
 
 Draws a line using the drawing brush from the old location to the new, specified location given as arguments `x` and `y`, using the foreground colour.
+
+The `move` command also sets the position of the graphical turtle, if in use.
 
 <details>
 <summary>Example</summary>
@@ -225,6 +229,8 @@ copy
 
 Copies the current displayed frame to a hidden buffer used for rendering advanced graphics. The stored frame can then be restored by using the [`restore`](#restore) command.
 
+The `copy` can be used to manipulate the rendering of the turtle, if in use.
+
 <details>
 <summary>Example</summary>
 <pre>
@@ -247,6 +253,8 @@ restore
 ```
 
 Restores the current displayed frame from a hidden buffer used for rendering advanced graphics. See [`copy`](#copy) for more details.
+
+The `restore` can be used to manipulate the rendering of the turtle, if in use.
 
 ## `frame`
 ```
