@@ -612,6 +612,7 @@ export function turtleBackward(distance) {
 export function turtleLeft(angle) {
     expectParameters(angle);
 
+    basic.setTurtleMoved();
     basic.preTurtleRender();
     basic.setTurtleHeading(basic.turtleHeading - basic.trigModeToRadians(angle.value));
     basic.renderTurtle();
@@ -622,6 +623,7 @@ export function turtleLeft(angle) {
 export function turtleRight(angle) {
     expectParameters(angle);
 
+    basic.setTurtleMoved();
     basic.preTurtleRender();
     basic.setTurtleHeading(basic.turtleHeading + basic.trigModeToRadians(angle.value));
     basic.renderTurtle();
