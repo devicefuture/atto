@@ -32,7 +32,10 @@ export var graphicsX = 0;
 export var graphicsY = 0;
 export var graphicsStrokeWidth = 1;
 export var graphicsPolygonPoints = [];
-export var turtleHeading = 90;
+export var turtleHeading = Math.PI / 2;
+export var turtlePenDown = true;
+export var turtleShown = true;
+export var turtleNotMoved = true;
 export var lastConditionalState = null;
 export var delayTimeout = null;
 export var currentKey = "";
@@ -514,11 +517,14 @@ export function startProgram(clearVariables = true) {
     running = true;
     currentPosition = 0;
     programStack = [];
+    turtleNotMoved = true;
 
     setGraphicsPosition(0, 0);
     setGraphicsStrokeWidth(1);
     clearGraphicsPolygonPoints();
-    setTurtleHeading(90);
+    setTurtleHeading(Math.PI / 2);
+    setTurtlePenDown(true);
+    setTurtleShown(true);
 
     if (clearVariables) {
         programVariables = {};
@@ -572,6 +578,7 @@ export function executeStatement(position = currentPosition + 1) {
 
     if (new Date().getTime() - renderHoldTime > MAX_RENDER_HOLD_TIME || renderCallDepth > MAX_RENDER_CALL_DEPTH) {
         renderCallDepth = 0;
+
         requestAnimationFrame(performExecution);
     } else {
         performExecution();
@@ -768,6 +775,14 @@ export function setConstants() {
     setVariable("col", term.col);
     setVariable("row", term.row);
     setVariable("key", currentKey);
+
+    var headingDeg = radiansToTrigMode(turtleHeading, trigModes.DEGREES) % 360;
+
+    if (headingDeg < 0) {
+        headingDeg = 360 + headingDeg;
+    }
+
+    setVariable("heading", radiansToTrigMode(trigModeToRadians(headingDeg, trigModes.DEGREES)));
 }
 
 export function getListItem(identifierName, index, lineNumber = null) {
@@ -843,6 +858,59 @@ export function addGraphicsPolygonPoint(x, y) {
 
 export function setTurtleHeading(heading) {
     turtleHeading = heading;
+}
+
+export function setTurtlePenDown(penDown) {
+    turtlePenDown = penDown;
+}
+
+export function setTurtleShown(shown) {
+    turtleShown = shown;
+}
+
+export function setTurtleMoved(fromTurtleCommand = true) {
+    if (turtleNotMoved) {
+        if (fromTurtleCommand) {
+            canvas.copyToBuffer();
+        }
+
+        setGraphicsPosition(canvas.DISP_WIDTH / 2, canvas.DISP_HEIGHT / 2);
+    }
+
+    turtleNotMoved = false;
+}
+
+export function preTurtleRender() {
+    canvas.restoreFromBuffer();
+    graphicsTakeFrame();
+}
+
+export function renderTurtle() {
+    canvas.copyToBuffer();
+
+    if (!turtleShown) {
+        return;
+    }
+
+    var points = [
+        [graphicsX, graphicsY],
+        [graphicsX - (30 * Math.cos(turtleHeading - (Math.PI / 8) - (Math.PI / 2))), graphicsY - (30 * Math.sin(turtleHeading - (Math.PI / 8) - (Math.PI / 2)))],
+        [graphicsX - (20 * Math.cos(turtleHeading - (Math.PI / 2))), graphicsY - (20 * Math.sin(turtleHeading - (Math.PI / 2)))],
+        [graphicsX - (30 * Math.cos(turtleHeading + (Math.PI / 8) - (Math.PI / 2))), graphicsY - (30 * Math.sin(turtleHeading + (Math.PI / 8) - (Math.PI / 2)))],
+        [graphicsX, graphicsY]
+    ];
+
+    canvas.setColour(new canvas.Colour(0, 0, 0));
+
+    canvas.drawPolygon(points);
+
+    canvas.setColour(new canvas.Colour(255, 255, 255));
+
+    canvas.drawLine(points[0][0], points[0][1], points[1][0], points[1][1]);
+
+    for (var i = 1; i < points.length - 1; i++) {
+        canvas.drawLine(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1]);
+    }
 }
 
 export function declareLastConditionalState(state) {
