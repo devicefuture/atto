@@ -109,7 +109,7 @@ Executes statements within the `else if` statement if the last tested condition 
 <code>10 input "How old are you? ", age%</code>
 <code>20 if age%&lt;13</code>
 <code>30 print "You're a child!"</code>
-<code>40 else if age%&lt;=18</code>
+<code>40 else if age%&lt;=19</code>
 <code>50 print "You're a teenager!"</code>
 <code>60 else</code>
 <code>70 print "You're an adult!"</code>
