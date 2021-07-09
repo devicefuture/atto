@@ -116,6 +116,8 @@ For `"rgb"` and `"hsl"`, a transparency value can be given as argument `alpha`, 
 
 If no colour is chosen, then the default foreground colour for atto is used.
 
+The `fg` command also sets the trail colour of the graphical turtle, if in use.
+
 <details>
 <summary>Example</summary>
 <pre>
