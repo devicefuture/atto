@@ -64,7 +64,7 @@ print 3+4
 
 When you press Enter, you should see the result of 3 + 4, which is 7. There are other operations too, such as subtracting (`-`), multiplying (`*`) and dividing (`/`). Play around with them to see what you can do.
 
-> **Hint:** Here, you don't need speech marks. If you do, you'll see that the computer will simply write `3+4` on the screen, and not actually do the calculation!
+> **Hint:** Here, you don't need to add speech marks. If you do, you'll see that the computer will simply write `3+4` on the screen, and not actually do the calculation!
 
 We can also store numbers for later, too! Your computer can hold data in its memory in things called **variables**. A variable is a specific location inside your computer that can hold anything you want.
 
@@ -88,7 +88,7 @@ This is all well and good, but it's not really too helpful if our program doesn'
 40 print sum
 ```
 
-> **Note:** The `%` after `first%` and `second%` tell atto to get the value the variable as a number, instead of text. Much better for adding!
+> **Note:** The `%` after `first%` and `second%` tell atto to get the contents of the variable as a number, instead of text. Much better for adding!
 
 Run your code. Your computer should be asking you for the first number. Type in a number of your choice and then press Enter. It'll then ask for the second number, which you'll enter another number. Finally, you should see the two numbers of your choice added together!
 
