@@ -271,6 +271,13 @@ summary {
     cursor: pointer;
 }
 
+img {
+    display: block;
+    max-width: 100%;
+    margin: auto;
+    border-radius: 10px;
+}
+
 h1.stylised {
     font-family: "Brass Mono", monospace;
 }
@@ -438,5 +445,9 @@ h1.reference a.comparators {
 
     pre, blockquote {
         break-inside: avoid;
+    }
+
+    details:not([open]) {
+        display: none;
     }
 }

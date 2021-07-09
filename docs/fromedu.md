@@ -72,3 +72,11 @@ As well as asking the user for text input, we can also ask the user for numbers,
 ```
 
 Here, `%` tells atto to read the variable's value as a number, which is useful for mathematical operations. We use a variable called `sum` here to store the result of adding `a%` and `b%`, but you could just write `40 print "The sum is "; a%+b%` and it'll do the same thing!
+
+---
+
+You've finished our introductory guide! Now's a great time to move onto our next guide, where you get to draw shapes and patterns to the screen.
+
+If you've used Python before, then you may find our next course similar to learning Python's `turtle` feature!
+
+<a href="/courses/turtle.md" class="card">Drawing with the turtle 🢒</a>

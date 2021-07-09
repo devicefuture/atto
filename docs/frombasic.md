@@ -38,3 +38,9 @@ The `$` suffix will cast a variable to a string, and the `%` suffix will cast a 
 ```
 
 Here, `;` is a string concatenation operator, whereas `,` is used to delimit the arguments of a command.
+
+---
+
+You've finished our introductory guide! Now's a great time to move onto our next guide, where you get to draw shapes and patterns to the screen using the turtle feature in atto. It's similar to the Logo programming language, if you've used that!
+
+<a href="/courses/turtle.md" class="card">Drawing with the turtle 🢒</a>

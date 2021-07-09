@@ -104,3 +104,9 @@ Variables can hold more than just numbers — they can hold text, too! In progra
 `$` means for atto to read the `name$` variable as a string, which is what we're storing our user's name as. Can you guess what `;` means in our code?
 
 If you guessed that it joins strings together, then you are right! Run the code with `run` to see what happens.
+
+---
+
+You've finished our introductory guide! Now's a great time to move onto our next guide, where you get to draw shapes and patterns to the screen.
+
+<a href="/courses/turtle.md" class="card">Drawing with the turtle 🢒</a>

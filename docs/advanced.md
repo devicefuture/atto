@@ -29,3 +29,9 @@ Since atto is a full programming language, variables can also unsurprisingly be 
 As you can see, variables may be suffixed with a sigil symbol to cast them to a particular type. The `$` sigil will convert a variable to a string, and the `%` sigil will convert a variable to a number. Variables are case-insensitive to aid editing for learners.
 
 This example also features the string concatenation operator (`;`), which can additionally be used at the end of a `print` command to prevent the automatic printing of a newline character at the end of a string.
+
+---
+
+You've finished our introductory guide! Now's a great time to move onto our next guide, where you get to draw shapes and patterns to the screen using the turtle feature in atto. You'll also be learning how to perform iteration in atto.
+
+<a href="/courses/turtle.md" class="card">Drawing with the turtle 🢒</a>
