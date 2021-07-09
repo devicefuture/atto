@@ -68,6 +68,8 @@ Then, use the Down arrow to go to the bottom of our code, and then type `run` an
 
 > **Hint:** Why do we tell our turtle to turn 120° instead of 90° this time? That's because when our turtle gets to the end of drawing a line, it has to turn more than 90° to draw the next line. Try entering different values other than `120` to see what happens!
 
+Try editing your code to make it draw a circle. Use the arrow keys to go back and change the numbers in your code, and then use the Down arrow to get to the last line, and type `run`.
+
 ---
 
 We can do some cool effects using the `for` loop in atto. The variable `i` in our `for` loop can be used to find how many times we've already repeated our code. Type `new` and then the following:
