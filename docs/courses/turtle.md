@@ -167,12 +167,12 @@ Here's some more commands which may help you in doing this:
 <code>320 backward 70</code>
 <code>330 right 90</code>
 <code>340 forward 20</code>
-<code>345 fg "blue"</code>
-<code>346 pendown</code>
-<code>350 for i=1 to 4</code>
-<code>360 forward 50</code>
-<code>370 left 90</code>
-<code>380 next</code>
-<code>390 hide</code>
+<code>350 fg "blue"</code>
+<code>360 pendown</code>
+<code>370 for i=1 to 4</code>
+<code>380 forward 50</code>
+<code>390 left 90</code>
+<code>400 next</code>
+<code>410 hide</code>
 </pre>
 </details>
