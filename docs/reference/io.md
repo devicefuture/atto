@@ -152,7 +152,7 @@ draw x, y
 
 Draws a line using the drawing brush from the old location to the new, specified location given as arguments `x` and `y`, using the foreground colour.
 
-The `move` command also sets the position of the graphical turtle, if in use.
+The `draw` command also sets the position of the graphical turtle, if in use.
 
 <details>
 <summary>Example</summary>
@@ -164,6 +164,15 @@ The `move` command also sets the position of the graphical turtle, if in use.
 <code>40 draw 150, 100</code>
 </pre>
 </details>
+
+## `plot`
+```
+plot x, y
+```
+
+Plots a point using the drawing brush at the specified location given as arguments `x` and `y`, using the foreground colour.
+
+The `plot` command also sets the position of the graphical turtle, if in use.
 
 ## `stroke`
 ```
