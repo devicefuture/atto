@@ -78,6 +78,10 @@ export function init() {
 }
 
 window.addEventListener("load", function() {
+    if (window.inDocsPopout) {
+        return;
+    }
+
     synth = new Tone.PolySynth().toDestination();
 
     init();
