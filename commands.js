@@ -53,7 +53,8 @@ export var keywords = {
     "bpm": audioBpm,
     "volume": audioVolume,
     "envelope": audioEnvelope,
-    "speak": audioSpeak
+    "speak": audioSpeak,
+    "voice": audioVoice
 };
 
 function expectParameters(...parameters) {
@@ -766,6 +767,22 @@ export function audioSpeak(message) {
     expectParameters(message);
 
     audio.speak(message.value);
+
+    basic.executeStatement();
+}
+
+export function audioVoice(pitch, rate) {
+    if (pitch == undefined) {
+        audio.setVoice(1, 1);
+
+        basic.executeStatement();
+
+        return;
+    }
+
+    expectParameters(pitch, rate);
+
+    audio.setVoice(getNumber(pitch), getNumber(rate));
 
     basic.executeStatement();
 }

@@ -529,8 +529,6 @@ export function startProgram(clearVariables = true) {
     setTurtlePenDown(true);
     setTurtleShown(true);
 
-    audio.init();
-
     if (clearVariables) {
         programVariables = {};
     }
