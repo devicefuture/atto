@@ -202,6 +202,10 @@ code span.keyword.green {
     background-color: var(--darkGreen);
 }
 
+code span.keyword.pink {
+    background-color: var(--pink);
+}
+
 code span.keyword.magenta {
     background-color: var(--magenta);
 }
@@ -314,6 +318,10 @@ h1.reference a.lists {
 
 h1.reference a.turtle {
     color: var(--darkGreen);
+}
+
+h1.reference a.audio {
+    color: var(--pink);
 }
 
 h1.reference a.constants {

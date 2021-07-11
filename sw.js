@@ -38,6 +38,7 @@ self.addEventListener("install", function(event) {
             "/atto/docs/reference/constants.md",
             "/atto/docs/reference/lists.md",
             "/atto/docs/reference/turtle.md",
+            "/atto/docs/reference/audio.md",
             "/atto/docs/reference/operators.md",
             "/atto/docs/reference/comparators.md",
             "/atto/lib/showdown.min.js",

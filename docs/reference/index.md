@@ -20,6 +20,9 @@ This reference guide contains a listing of all commands, functions, constants an
 <h1 class="reference"><a href="/reference/turtle.md" class="turtle">Turtle graphics commands 🢒</a></h1>
 `forward`, `left`, `right`, `penup`, `pendown` etc.
 
+<h1 class="reference"><a href="/reference/audio.md" class="audio">Audio commands 🢒</a></h1>
+`note`, `play`, `rest`, `bpm`, `speak`, `voice` etc.
+
 <h1 class="reference"><a href="/reference/operators.md" class="operators">Operators 🢒</a></h1>
 `+`, `-`, `*`, `/`, `^`, `div`, `mod`, `&`, `|`, `~` and `;`
 

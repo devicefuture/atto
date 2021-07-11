@@ -725,7 +725,7 @@ export function audioBpm(bpm) {
     }
 
     if (getNumber(bpm) <= 0) {
-        throw new basic.RuntimeError("Number of beats per minute must be positive and greater than zero", beats.lineNumber);
+        throw new basic.RuntimeError("Number of beats per minute must be greater than 0", beats.lineNumber);
     }
 
     audio.setBpm(getNumber(bpm));

@@ -184,7 +184,7 @@ Executes statements within the loop while the condition given as argument `condi
 <pre>
 <code>10 while random>0.1</code>
 <code>20 print "Rolling... "; round(random * 10)</code>
-<code>30 delay 0.5</code>
+<code>30 delay 500</code>
 <code>40 loop</code>
 <code>50 print "Finished: "; round(random * 10)</code>
 </pre>

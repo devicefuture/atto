@@ -67,6 +67,7 @@ export function speak(message) {
 
     ttsUtterance.text = message;
 
+    speechSynthesis.cancel();
     speechSynthesis.speak(ttsUtterance);
 }
 
