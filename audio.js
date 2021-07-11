@@ -25,6 +25,10 @@ export function setEnvelope(attack, decay, sustain, release) {
 
 export function setVolume(amount) {
     synth.volume.value = 20 * Math.log10(clamp(amount, 0, 1));
+
+    if (ttsUtterance != null) {
+        ttsUtterance.volume = clamp(amount, 0, 1);
+    }
 }
 
 export function setVoice(pitch, rate) {
