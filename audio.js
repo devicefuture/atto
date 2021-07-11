@@ -2,7 +2,7 @@ import * as basic from "./basic.js";
 
 export var synth;
 export var currentBpm;
-export var ttsUtterance = new SpeechSynthesisUtterance();
+export var ttsUtterance = "speechSynthesis" in window ? new SpeechSynthesisUtterance() : null;
 
 function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -28,6 +28,10 @@ export function setVolume(amount) {
 }
 
 export function setVoice(pitch, rate) {
+    if (ttsUtterance == null) {
+        return;
+    }
+
     ttsUtterance.pitch = pitch;
     ttsUtterance.rate = rate;
 }
@@ -53,7 +57,7 @@ export function quiet() {
 }
 
 export function speak(message) {
-    if (!("speechSynthesis" in window)) {
+    if (ttsUtterance == null) {
         return;
     }
 
