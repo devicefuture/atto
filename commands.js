@@ -3,6 +3,7 @@ import * as basic from "./basic.js";
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
+import * as audio from "./audio.js";
 
 export var keywords = {
     "print": print,
@@ -45,13 +46,22 @@ export var keywords = {
     "right": turtleRight,
     "penup": turtlePenUp,
     "pendown": turtlePenDown,
-    "angle": turtleAngle
+    "angle": turtleAngle,
+    "note": audioNote,
+    "play": audioPlay,
+    "rest": audioRest,
+    "quiet": audioQuiet,
+    "bpm": audioBpm,
+    "volume": audioVolume,
+    "envelope": audioEnvelope,
+    "speak": audioSpeak,
+    "voice": audioVoice
 };
 
 function expectParameters(...parameters) {
     for (var i = 0; i < parameters.length; i++) {
         if (parameters[i] == undefined) {
-            throw new basic.RuntimeError(parameters.length > 1 ? `Expected ${parameters.length} parameters`: `Expected 1 parameter`);
+            throw new basic.RuntimeError(parameters.length > 1 ? `Expected ${parameters.length} parameters`: `Expected 1 parameter`, basic.findLineNumberByPosition(basic.currentPosition));
         }
     }
 }
@@ -494,7 +504,7 @@ export function graphicsGetPixel(mode, x, y, p1, p2, p3) {
         basic.setStore(p2, hsl.saturation);
         basic.setStore(p3, hsl.luminance);
     } else {
-        throw new basic.RuntimeError(`Colour space \`${chosenMode}\` does not exist`);
+        throw new basic.RuntimeError(`Colour space \`${chosenMode}\` does not exist`, mode.lineNumber);
     }
 
     basic.executeStatement();
@@ -554,7 +564,7 @@ export function listInsert(value, identifier, index) {
     expectParameters(value, identifier, index);
 
     if (typeof(identifier.value) != "object") {
-        throw new basic.RuntimeError("Cannot insert into non-list variable");
+        throw new basic.RuntimeError("Cannot insert into non-list variable", identifier.lineNumber);
     }
 
     var list = [...identifier.value];
@@ -605,8 +615,8 @@ export function turtleForward(distance) {
     basic.preTurtleRender();
 
     (basic.turtlePenDown ? graphicsDraw : graphicsMove)(
-        {value: basic.graphicsX + (distance.value * Math.cos(basic.turtleHeading - (Math.PI / 2)))},
-        {value: basic.graphicsY + (distance.value * Math.sin(basic.turtleHeading - (Math.PI / 2)))}
+        {value: basic.graphicsX + (getNumber(distance) * Math.cos(basic.turtleHeading - (Math.PI / 2)))},
+        {value: basic.graphicsY + (getNumber(distance) * Math.sin(basic.turtleHeading - (Math.PI / 2)))}
     );
 
     basic.renderTurtle();
@@ -619,8 +629,8 @@ export function turtleBackward(distance) {
     basic.preTurtleRender();
 
     (basic.turtlePenDown ? graphicsDraw : graphicsMove)(
-        {value: basic.graphicsX - (distance.value * Math.cos(basic.turtleHeading - (Math.PI / 2)))},
-        {value: basic.graphicsY - (distance.value * Math.sin(basic.turtleHeading - (Math.PI / 2)))}
+        {value: basic.graphicsX - (getNumber(distance) * Math.cos(basic.turtleHeading - (Math.PI / 2)))},
+        {value: basic.graphicsY - (getNumber(distance) * Math.sin(basic.turtleHeading - (Math.PI / 2)))}
     );
 
     basic.renderTurtle();
@@ -631,7 +641,7 @@ export function turtleLeft(angle) {
 
     basic.setTurtleMoved();
     basic.preTurtleRender();
-    basic.setTurtleHeading(basic.turtleHeading - basic.trigModeToRadians(angle.value));
+    basic.setTurtleHeading(basic.turtleHeading - basic.trigModeToRadians(getNumber(angle)));
     basic.renderTurtle();
 
     basic.executeStatement();
@@ -642,7 +652,7 @@ export function turtleRight(angle) {
 
     basic.setTurtleMoved();
     basic.preTurtleRender();
-    basic.setTurtleHeading(basic.turtleHeading + basic.trigModeToRadians(angle.value));
+    basic.setTurtleHeading(basic.turtleHeading + basic.trigModeToRadians(getNumber(angle)));
     basic.renderTurtle();
 
     basic.executeStatement();
@@ -664,8 +674,132 @@ export function turtleAngle(angle) {
     expectParameters(angle);
 
     basic.preTurtleRender();
-    basic.setTurtleHeading(basic.trigModeToRadians(angle.value));
+    basic.setTurtleHeading(basic.trigModeToRadians(getNumber(angle)));
     basic.renderTurtle();
+
+    basic.executeStatement();
+}
+
+export function audioNote(note, beats) {
+    expectParameters(note, beats);
+
+    try {
+        audio.play(note.value, getNumber(beats));
+    } catch (e) {
+        e.lineNumber = note.lineNumber;
+
+        throw e;
+    }
+
+    basic.setDelayTimeout(
+        setTimeout(function() {
+            if (basic.running) {
+                basic.executeStatement();
+            }
+        }, audio.beatsToMilliseconds() * getNumber(beats))
+    );
+}
+
+export function audioPlay(note, beats) {
+    expectParameters(note, beats);
+
+    try {
+        audio.play(note.value, getNumber(beats));
+    } catch (e) {
+        e.lineNumber = note.lineNumber;
+
+        throw e;
+    }
+
+    basic.executeStatement();
+}
+
+export function audioRest(beats) {
+    expectParameters(beats);
+
+    basic.setDelayTimeout(
+        setTimeout(function() {
+            if (basic.running) {
+                basic.executeStatement();
+            }
+        }, audio.beatsToMilliseconds() * getNumber(beats))
+    );
+}
+
+export function audioQuiet() {
+    audio.quiet();
+
+    basic.executeStatement();
+}
+
+export function audioBpm(bpm) {
+    if (bpm == undefined) {
+        audio.setBpm(120);
+
+        basic.executeStatement();
+
+        return;
+    }
+
+    if (getNumber(bpm) <= 0) {
+        throw new basic.RuntimeError("Number of beats per minute must be greater than 0", beats.lineNumber);
+    }
+
+    audio.setBpm(getNumber(bpm));
+
+    basic.executeStatement();
+}
+
+export function audioVolume(volume) {
+    if (volume == undefined) {
+        audio.setVolume(1);
+
+        basic.executeStatement();
+
+        return;
+    }
+
+    audio.setVolume(getNumber(volume));
+
+    basic.executeStatement();
+}
+
+export function audioEnvelope(attack, decay, sustain, release) {
+    if (attack == undefined) {
+        audio.setEnvelope(100, 200, 0.5, 800);
+
+        basic.executeStatement();
+
+        return;
+    }
+
+    expectParameters(attack, decay, sustain, release);
+
+    audio.setEnvelope(getNumber(attack), getNumber(decay), getNumber(sustain), getNumber(release));
+
+    basic.executeStatement();
+}
+
+export function audioSpeak(message) {
+    expectParameters(message);
+
+    audio.speak(message.value);
+
+    basic.executeStatement();
+}
+
+export function audioVoice(pitch, rate) {
+    if (pitch == undefined) {
+        audio.setVoice(1, 1);
+
+        basic.executeStatement();
+
+        return;
+    }
+
+    expectParameters(pitch, rate);
+
+    audio.setVoice(getNumber(pitch), getNumber(rate));
 
     basic.executeStatement();
 }

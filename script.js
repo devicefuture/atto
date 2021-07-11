@@ -10,6 +10,9 @@ window.basic = basic;
 import * as syntax from "./syntax.js";
 window.syntax = syntax;
 
+import * as audio from "./audio.js";
+window.audio = audio;
+
 window.inDocsPopout = false;
 window.toggleDocumentation = canvas.toggleDocs;
 
