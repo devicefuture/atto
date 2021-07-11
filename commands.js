@@ -24,6 +24,7 @@ export var keywords = {
     "fg": setForegroundColour,
     "move": graphicsMove,
     "draw": graphicsDraw,
+    "plot": graphicsPlot,
     "stroke": graphicsStroke,
     "fill": graphicsFill,
     "text": graphicsDrawText,
@@ -404,11 +405,27 @@ export function graphicsDraw(x, y) {
 
     canvas.setColour(term.foregroundColour);
     canvas.setStrokeWidth(basic.graphicsStrokeWidth, "round");
-    canvas.drawLine(basic.graphicsX, basic.graphicsY, x.value, y.value);
+    canvas.drawLine(basic.graphicsX, basic.graphicsY, getNumber(x), getNumber(y));
     canvas.resetStrokeWidth();
 
     basic.setTurtleMoved(false);
     basic.setGraphicsPosition(getNumber(x), getNumber(y));
+    basic.addGraphicsPolygonPoint(getNumber(x), getNumber(y));
+
+    basic.executeStatement();
+}
+
+export function graphicsPlot(x, y) {
+    expectParameters(x, y);
+
+    canvas.setColour(term.foregroundColour);
+    canvas.setStrokeWidth(basic.graphicsStrokeWidth, "round");
+    canvas.drawLine(getNumber(x), getNumber(y), getNumber(x), getNumber(y));
+    canvas.resetStrokeWidth();
+
+    basic.setTurtleMoved(false);
+    basic.setGraphicsPosition(getNumber(x), getNumber(y));
+    basic.clearGraphicsPolygonPoints();
     basic.addGraphicsPolygonPoint(getNumber(x), getNumber(y));
 
     basic.executeStatement();
