@@ -52,7 +52,8 @@ export var keywords = {
     "quiet": audioQuiet,
     "bpm": audioBpm,
     "volume": audioVolume,
-    "envelope": audioEnvelope
+    "envelope": audioEnvelope,
+    "speak": audioSpeak
 };
 
 function expectParameters(...parameters) {
@@ -757,6 +758,14 @@ export function audioEnvelope(attack, decay, sustain, release) {
     expectParameters(attack, decay, sustain, release);
 
     audio.setEnvelope(getNumber(attack), getNumber(decay), getNumber(sustain), getNumber(release));
+
+    basic.executeStatement();
+}
+
+export function audioSpeak(message) {
+    expectParameters(message);
+
+    audio.speak(message.value);
 
     basic.executeStatement();
 }

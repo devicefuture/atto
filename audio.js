@@ -42,6 +42,16 @@ export function play(note, beats = 1) {
 
 export function quiet() {
     synth.releaseAll();
+
+    speechSynthesis.cancel();
+}
+
+export function speak(message) {
+    if (!("speechSynthesis" in window)) {
+        return;
+    }
+
+    speechSynthesis.speak(new SpeechSynthesisUtterance(message));
 }
 
 export function init() {
