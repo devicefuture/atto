@@ -1,4 +1,4 @@
-const cacheName = "atto-cv6"; // Increment for every major change
+const cacheName = "atto-cv7"; // Increment for every major change
 
 self.addEventListener("install", function(event) {
     event.waitUntil(caches.open(cacheName).then(function(cache) {
@@ -8,6 +8,7 @@ self.addEventListener("install", function(event) {
             "/atto/docspopout.html",
             "/atto/style.css",
             "/atto/script.js",
+            "/atto/audio.js",
             "/atto/basic.js",
             "/atto/bot.js",
             "/atto/canvas.js",
@@ -41,6 +42,7 @@ self.addEventListener("install", function(event) {
             "/atto/docs/reference/comparators.md",
             "/atto/lib/showdown.min.js",
             "/atto/lib/base2048.js",
+            "/atto/lib/tone.js",
             "/atto/media/logo.svg",
             "/atto/media/logo.png",
             "/atto/media/maskable.svg",

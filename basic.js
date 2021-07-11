@@ -1,6 +1,7 @@
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
+import * as audio from "./audio.js";
 import * as syntax from "./syntax.js";
 import * as commands from "./commands.js";
 
@@ -228,7 +229,7 @@ export function setTrigMode(value) {
     trigMode = value;
 }
 
-function findLineNumberByPosition(position) {
+export function findLineNumberByPosition(position) {
     return Number(Object.keys(programLabels).find((i) => programLabels[i] == position && !Number.isNaN(Number(programLabels[i]))));
 }
 
@@ -528,6 +529,8 @@ export function startProgram(clearVariables = true) {
     setTurtlePenDown(true);
     setTurtleShown(true);
 
+    audio.init();
+
     if (clearVariables) {
         programVariables = {};
     }
@@ -617,6 +620,7 @@ export function interruptProgram(byUser = true) {
         delayTimeout = null;
     }
 
+    audio.quiet();
     hid.unfocusInput();
 
     if (byUser) {
