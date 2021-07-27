@@ -338,7 +338,11 @@ export class Function extends Token {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        if (["log", "ln", "sqrt"].includes(this.code.toLocaleLowerCase()) && this.expression.value <= 0) {
+        if (["log", "ln"].includes(this.code.toLocaleLowerCase()) && this.expression.value <= 0) {
+            throw new basic.RuntimeError("Maths error", this.lineNumber);
+        }
+
+        if (this.code.toLocaleLowerCase() == "sqrt" && this.expression.value < 0) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
