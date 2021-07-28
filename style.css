@@ -277,7 +277,7 @@ summary {
 
 img {
     display: block;
-    max-width: 100%;
+    max-width: 400px;
     margin: auto;
     border-radius: 10px;
 }
@@ -409,6 +409,10 @@ h1.reference a.comparators {
     margin-top: 0;
 }
 
+#docs #docsContent img {
+    max-width: 100%;
+}
+
 #docsPopout {
     height: unset;
     margin-top: 0;
@@ -440,6 +444,12 @@ h1.reference a.comparators {
 
 #docsPopout pre, #docsPopout code {
     background-color: var(--lightGrey);
+}
+
+@media (max-width: 500px) {
+    img {
+        max-width: 100%;
+    }
 }
 
 @media print {
