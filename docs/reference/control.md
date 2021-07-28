@@ -29,15 +29,15 @@ Branches program execution to the line number given as argument `line`, where ex
 <summary>Example</summary>
 <pre>
 <code>10 diameter=5</code>
-<code>20 gosub 100</code>
+<code>20 gosub 80</code>
 <code>30 print area</code>
 <code>40 diameter=12</code>
-<code>50 gosub 100</code>
+<code>50 gosub 80</code>
 <code>60 print area</code>
-<code>70 end</code>
-<code>100 print "The area of a circle of diameter "; diameter; " is: ";</code>
-<code>110 area = pi*(diameter/2)^2</code>
-<code>120 return</code>
+<code>70 stop</code>
+<code>80 print "The area of a circle of diameter "; diameter; " is: ";</code>
+<code>90 area = pi*(diameter/2)^2</code>
+<code>100 return</code>
 </pre>
 </details>
 
@@ -164,9 +164,9 @@ Executes statements within the loop once, and continues looping if the loop term
 <code>10 i=1</code>
 <code>20 repeat</code>
 <code>30 print "This value is "; 5*i</code>
-<code>10 i=i+1</code>
-<code>20 input "Type yes to continue: ", cont$</code>
-<code>30 while cont$="yes"</code>
+<code>40 i=i+1</code>
+<code>50 input "Type yes to continue: ", cont$</code>
+<code>60 while cont$="yes"</code>
 </pre>
 </details>
 
