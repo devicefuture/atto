@@ -258,10 +258,10 @@ export function init() {
 
     resize();
 
-    setColour(new Colour(238, 238, 238));
+    setColour(colourScheme[COLOUR_NAMES[theme.isDarkMode() ? "black" : "lightgrey"]]);
     clear();
 
-    setColour(new Colour(0, 0, 0));
+    setColour(colourScheme[COLOUR_NAMES[theme.isDarkMode() ? "white" : "black"]]);
     setStrokeWidth(1);
 
     resetStrokeWidth();
