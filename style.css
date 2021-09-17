@@ -32,8 +32,8 @@ body {
 }
 
 body.fullscreen {
-    background-color: var(--black);
-    color: var(--white);
+    background-color: black;
+    color: white;
 }
 
 body.notSupported {
