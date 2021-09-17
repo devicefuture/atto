@@ -452,7 +452,7 @@ h1.reference a.comparators {
     }
 }
 
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
     :root {
         --black: rgb(255, 255, 255);
         --lightGrey: rgb(32, 32, 32);
