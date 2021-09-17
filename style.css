@@ -452,6 +452,22 @@ h1.reference a.comparators {
     }
 }
 
+@media screen and (prefers-color-scheme: dark) {
+    :root {
+        --black: rgb(255, 255, 255);
+        --lightGrey: rgb(32, 32, 32);
+        --white: rgb(16, 16, 16);
+    }
+
+    a.card {
+        color: var(--dark);
+    }
+
+    #docs #docsButtons button img {
+        filter: invert(1);
+    }
+}
+
 @media print {
     @page {
         margin: 0.5cm;

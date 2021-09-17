@@ -1,3 +1,5 @@
+import * as theme from "./theme.js";
+
 export const DISP_WIDTH = 640;
 export const DISP_HEIGHT = 480;
 export const DISP_SCALE_FACTOR = 2;
@@ -258,10 +260,10 @@ export function init() {
 
     resize();
 
-    setColour(new Colour(238, 238, 238));
+    setColour(colourScheme[COLOUR_NAMES[theme.isDarkMode() ? "black" : "lightgrey"]]);
     clear();
 
-    setColour(new Colour(0, 0, 0));
+    setColour(colourScheme[COLOUR_NAMES[theme.isDarkMode() ? "white" : "black"]]);
     setStrokeWidth(1);
 
     resetStrokeWidth();
