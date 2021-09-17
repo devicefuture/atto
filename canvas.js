@@ -1,3 +1,5 @@
+import * as theme from "./theme.js";
+
 export const DISP_WIDTH = 640;
 export const DISP_HEIGHT = 480;
 export const DISP_SCALE_FACTOR = 2;

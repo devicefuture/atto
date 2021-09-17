@@ -1,5 +1,5 @@
 function detectIsDarkMode() {
-    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
 }
 
 const IS_DARK_MODE = detectIsDarkMode();

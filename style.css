@@ -15,8 +15,6 @@
     --pink: rgb(255, 71, 191);
     --yellow: rgb(252, 218, 63);
     --white: rgb(255, 255, 255);
-
-    --almostBlack: rgb(16, 16, 16);
 }
 
 * {
@@ -31,13 +29,6 @@ body {
     background-color: var(--white);
     color: var(--black);
     -webkit-print-color-adjust: exact;
-}
-
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: var(--almostBlack);
-        color: var(--white);
-    }
 }
 
 body.fullscreen {
@@ -62,12 +53,6 @@ canvas {
     position: absolute;
     background-color: #eeeeee;
     border-radius: 10px;
-}
-
-@media (prefers-color-scheme: dark) {
-    canvas {
-        background-color: var(--black);
-    }
 }
 
 body.fullscreen canvas {
@@ -464,6 +449,22 @@ h1.reference a.comparators {
 @media (max-width: 500px) {
     img {
         max-width: 100%;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --black: rgb(255, 255, 255);
+        --lightGrey: rgb(32, 32, 32);
+        --white: rgb(16, 16, 16);
+    }
+
+    a.card {
+        color: var(--dark);
+    }
+
+    #docs #docsButtons button img {
+        filter: invert(1);
     }
 }
 
