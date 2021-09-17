@@ -15,6 +15,8 @@
     --pink: rgb(255, 71, 191);
     --yellow: rgb(252, 218, 63);
     --white: rgb(255, 255, 255);
+    --keywordBlack: black;
+    --keywordWhite: white;
 }
 
 * {
@@ -181,7 +183,7 @@ code span.comment {
 }
 
 code span.keyword {
-    color: var(--white);
+    color: var(--keywordWhite);
     border-radius: 5px;
 }
 
@@ -195,7 +197,7 @@ code span.keyword.purple {
 
 code span.keyword.yellow {
     background-color: var(--yellow);
-    color: var(--black);
+    color: var(--keywordBlack);
 }
 
 code span.keyword.green {
@@ -212,13 +214,13 @@ code span.keyword.magenta {
 
 code span.function {
     background-color: var(--magenta);
-    color: var(--white);
+    color: var(--keywordWhite);
     border-radius: 5px;
 }
 
 code span.constant {
     background-color: var(--lightBlue);
-    color: var(--white);
+    color: var(--keywordWhite);
     border-radius: 5px;
 }
 
