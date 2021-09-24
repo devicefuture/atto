@@ -129,13 +129,13 @@ export function print(text, notifyHid = true, wrap = true) {
                 canvas.setColour(backgroundColour);
                 canvas.fillRect(col * canvas.CHAR_WIDTH, row * canvas.CHAR_HEIGHT, (col + 1) * canvas.CHAR_WIDTH, (row + 1) * canvas.CHAR_HEIGHT);
                 canvas.setColour(foregroundColour);
-                textCharsToDraw.push([text[i], col * canvas.CHAR_WIDTH, row * canvas.CHAR_HEIGHT]);
+                canvas.drawText(text[i], col * canvas.CHAR_WIDTH, row * canvas.CHAR_HEIGHT);
                 right(wrap);
                 break;
         }
     }
 
-    textCharsToDraw.forEach((charArgs) => canvas.drawText(...charArgs));
+    // textCharsToDraw.forEach((charArgs) => canvas.drawText(...charArgs));
 
     if (notifyHid) {
         hid.log(text);

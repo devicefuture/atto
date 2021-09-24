@@ -7,7 +7,7 @@ export const TERM_COLS = 40;
 export const TERM_ROWS = 20;
 export const CHAR_WIDTH = DISP_WIDTH / TERM_COLS;
 export const CHAR_HEIGHT = DISP_HEIGHT / TERM_ROWS;
-export const CHAR_HEIGHT_SCALE_FACTOR_EMOJI = 0.8;
+export const CHAR_HEIGHT_SCALE_FACTOR_EMOJI = 0.65;
 
 var element;
 var buffer;
