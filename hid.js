@@ -53,6 +53,10 @@ export class Input {
         this.discarderCallback = function() {};
     }
 
+    get valueChars() {
+        return Array.from(this.value);
+    }
+
     bindCallback(callback) {
         this.callback = callback;
     }
@@ -81,23 +85,23 @@ export class Input {
             this.scrollColumn = 0;
         }
 
-        for (var i = 0; i <= this.value.length; i++) {
+        for (var i = 0; i <= this.valueChars.length; i++) {
             var absoluteCol = this.offset + i - this.scrollColumn;
 
             if (this.format != inputFormats.PROGRAM && (absoluteCol < this.offset || absoluteCol >= canvas.TERM_COLS)) {
                 continue;
             }
 
-            if (i < this.value.length) {
+            if (i < this.valueChars.length) {
                 if (this.format == inputFormats.PROGRAM) {
                     syntax.highlight(this.value, i, absoluteCol, absoluteRow);
                 } else {
                     term.goto(absoluteCol, absoluteRow);
-                    term.print(this.value[i], false, false);
+                    term.print(this.valueChars[i], false, false);
                 }
             }
 
-            if (annotations && i == this.caretPosition) {    
+            if (annotations && i == this.caretPosition) {
                 canvas.setColour(caretColour);
                 canvas.fillRoundedRect(
                     (absoluteCol * canvas.CHAR_WIDTH) + 1,
@@ -139,8 +143,8 @@ export class Input {
     resume(caretPosition = 0) {
         this.discarderCallback(this.value);
 
-        if (caretPosition > this.value.length) {
-            caretPosition = this.value.length;
+        if (caretPosition > this.valueChars.length) {
+            caretPosition = this.valueChars.length;
         }
 
         hidInput.value = this.value;
@@ -239,8 +243,33 @@ export class Input {
         }
 
         this.value = hidInput.value;
-        this.caretPosition = hidInput.selectionStart;
-        this.selectionEndPosition = hidInput.selectionEnd;
+
+        var startOffset = 0;
+        var startChars = hidInput.selectionStart;
+
+        for (var i = 0; i < this.valueChars.length && hidInput.selectionStart > 0; i++) {
+            startOffset -= this.valueChars[i].length - 1;
+            startChars -= this.valueChars[i].length;
+
+            if (startChars == 0) {
+                break;
+            }
+        }
+
+        var endOffset = 0;
+        var endChars = hidInput.selectionEnd;
+
+        for (var i = 0; i < this.valueChars.length && hidInput.selectionEnd > 0; i++) {
+            endOffset -= this.valueChars[i].length - 1;
+            endChars -= this.valueChars[i].length;
+
+            if (endChars == 0) {
+                break;
+            }
+        }
+
+        this.caretPosition = hidInput.selectionStart + startOffset;
+        this.selectionEndPosition = hidInput.selectionEnd + endOffset;
 
         this.render();
     }

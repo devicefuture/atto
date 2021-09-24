@@ -678,6 +678,7 @@ export function highlight(code, index, col, row) {
     var defaultBackground = term.backgroundColour;
     var defaultForeground = term.foregroundColour;
     var match;
+    var codeChars = Array.from(code);
 
     function useForeground(name, alpha = 1) {
         var foregroundColour = canvas.colourScheme[canvas.COLOUR_NAMES[name]].clone();
@@ -694,13 +695,29 @@ export function highlight(code, index, col, row) {
     term.setColours(new canvas.Colour(0, 0, 0, 0), defaultForeground);
 
     term.goto(col, row);
-    term.print(code[index], false, false);
+    term.print(codeChars[index], false, false);
 
     var bracketLevel = 0;
 
     while (match = RE_ALL.exec(code)) {
         var start = match.index;
         var length = match[0].length;
+        var startOriginal = start;
+        var codePos = 0;
+
+        // console.log(code, codeChars, start);
+        // debugger;
+
+        for (var i = 0; i < codeChars.length; i++) {
+            if (codePos > startOriginal) {
+                break;
+            }
+
+            var extraCodepoints = codeChars[i].length - 1;
+
+            codePos += extraCodepoints + 1;
+            start -= extraCodepoints;
+        }
 
         if (index < start || index >= start + length) {
             if (match == "(") {
@@ -777,7 +794,7 @@ export function highlight(code, index, col, row) {
         }
 
         term.goto(col, row);
-        term.print(code[index], false, false);
+        term.print(codeChars[index], false, false);
     }
 
     term.setColours(defaultBackground, defaultForeground);

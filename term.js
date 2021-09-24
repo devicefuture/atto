@@ -98,7 +98,9 @@ export function clear() {
 }
 
 export function print(text, notifyHid = true, wrap = true) {
-    text = String(text);
+    text = Array.from(text);
+
+    var textCharsToDraw = [];
 
     for (var i = 0; i < text.length; i++) {
         switch (text[i]) {
@@ -127,11 +129,13 @@ export function print(text, notifyHid = true, wrap = true) {
                 canvas.setColour(backgroundColour);
                 canvas.fillRect(col * canvas.CHAR_WIDTH, row * canvas.CHAR_HEIGHT, (col + 1) * canvas.CHAR_WIDTH, (row + 1) * canvas.CHAR_HEIGHT);
                 canvas.setColour(foregroundColour);
-                canvas.drawText(text[i], col * canvas.CHAR_WIDTH, row * canvas.CHAR_HEIGHT);
+                textCharsToDraw.push([text[i], col * canvas.CHAR_WIDTH, row * canvas.CHAR_HEIGHT]);
                 right(wrap);
                 break;
         }
     }
+
+    textCharsToDraw.forEach((charArgs) => canvas.drawText(...charArgs));
 
     if (notifyHid) {
         hid.log(text);
