@@ -19,6 +19,24 @@ export const inputFormats = {
     TEXT: 1
 };
 
+const inputBuffer = [];
+
+function clearInputBuffer() {
+    inputBuffer.length = 0;
+}
+
+function appendInputBufferKey(key) {
+    inputBuffer.push(key);
+}
+
+export function peekInputBufferKey() {
+    return inputBuffer.length !== 0 ? inputBuffer[0] : "";
+}
+
+export function getInputBufferKey() {
+    return inputBuffer.shift() || "";
+}
+
 function getCaretFormatColourInsensitive(format) {
     switch (format) {
         case inputFormats.PROGRAM:
@@ -305,6 +323,8 @@ export function startInput(format = inputFormats.TEXT, relativeRow = term.scroll
 }
 
 export function startProgramInput(lineValue = "", immediateEdit = true, relativeRow = term.scrollDelta + term.row, rendering = true) {
+    clearInputBuffer();
+
     hidInput.value = lineValue;
 
     var newProgramInput = new Input(inputFormats.PROGRAM, relativeRow, lineValue);
@@ -348,6 +368,8 @@ function dispatchInputEvent(event) {
 
     if (focusedInput != null) {
         focusedInput.readKey(event);
+    } else {
+        appendInputBufferKey(event.key);
     }
 }
 

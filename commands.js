@@ -56,7 +56,9 @@ export var keywords = {
     "volume": audioVolume,
     "envelope": audioEnvelope,
     "speak": audioSpeak,
-    "voice": audioVoice
+    "voice": audioVoice,
+    "readkey": readKey,
+    "getkey": getKey
 };
 
 function expectParameters(...parameters) {
@@ -803,4 +805,41 @@ export function audioVoice(pitch, rate) {
     audio.setVoice(getNumber(pitch), getNumber(rate));
 
     basic.executeStatement();
+}
+
+export function readKey(identifier) {
+    expectParameters(identifier);
+
+    basic.setStore(identifier, hid.getInputBufferKey());
+
+    basic.executeStatement();
+}
+
+export function getKey(identifier) {
+    expectParameters(identifier);
+
+    var key;
+    var waitKey = function() {
+        basic.setDelayTimeout(
+            setTimeout(function() {
+                if (basic.running) {
+                    key = hid.getInputBufferKey();
+                    if (key === "") {
+                        waitKey();
+                    } else {
+                        basic.setStore(identifier, key);
+                        basic.executeStatement();
+                    }
+                }
+            }, 10)
+        );
+    };
+
+    key = hid.getInputBufferKey();
+    if (key !== "") {
+        basic.setStore(identifier, key);
+        basic.executeStatement();
+    } else {
+        waitKey();
+    }
 }
