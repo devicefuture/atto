@@ -6,7 +6,7 @@
 import * as canvas from "./canvas.js";
 import * as hid from "./hid.js";
 
-export const EXECUTION_WAIT_TIME = 5 * 1000; // 5 seconds
+export const EXECUTION_WAIT_TIME = 10 * 1000; // 10 seconds
 
 export function invoke(id) {
     hid.clearLog();

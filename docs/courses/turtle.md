@@ -176,3 +176,9 @@ Here's some more commands which may help you in doing this:
 <code>410 hide</code>
 </pre>
 </details>
+
+---
+
+Completed the course? Move onto the next one!
+
+<a href="/courses/chatbot.md" class="card">Making an interactive chatbot 🢒</a>

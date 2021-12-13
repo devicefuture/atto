@@ -1,3 +1,5 @@
+import * as theme from "./theme.js";
+
 export const DISP_WIDTH = 640;
 export const DISP_HEIGHT = 480;
 export const DISP_SCALE_FACTOR = 2;
@@ -5,6 +7,7 @@ export const TERM_COLS = 40;
 export const TERM_ROWS = 20;
 export const CHAR_WIDTH = DISP_WIDTH / TERM_COLS;
 export const CHAR_HEIGHT = DISP_HEIGHT / TERM_ROWS;
+export const CHAR_HEIGHT_SCALE_FACTOR_EMOJI = 0.65;
 
 var element;
 var buffer;
@@ -112,12 +115,17 @@ export function resetStrokeWidth() {
 }
 
 export function drawText(text, x, y, scaleFactor = 1) {
-    context.font = `${CHAR_HEIGHT * DISP_SCALE_FACTOR * scaleFactor}px "Brass Mono", monospace`;
+    text = Array.from(text);
+
     context.textBaseline = "middle";
     context.textAlign = "center";
 
     for (var i = 0; i < text.length; i++) {
-        context.fillText(text[i], (x + ((i + 0.5) * CHAR_WIDTH * scaleFactor)) * DISP_SCALE_FACTOR, ((y + ((CHAR_HEIGHT * scaleFactor) / 2)) + 2) * DISP_SCALE_FACTOR);
+        var adjustedHeight = CHAR_HEIGHT * (text[i].match(/\p{Extended_Pictographic}/u) ? CHAR_HEIGHT_SCALE_FACTOR_EMOJI : 1);
+
+        context.font = `${adjustedHeight * DISP_SCALE_FACTOR * scaleFactor}px "Brass Mono", monospace`;
+
+        context.fillText(text[i], (x + ((i + 0.5) * CHAR_WIDTH * scaleFactor)) * DISP_SCALE_FACTOR, ((y + ((adjustedHeight * scaleFactor) / 2)) + 2) * DISP_SCALE_FACTOR);
     }
 }
 
@@ -258,10 +266,10 @@ export function init() {
 
     resize();
 
-    setColour(new Colour(238, 238, 238));
+    setColour(colourScheme[COLOUR_NAMES[theme.isDarkMode() ? "black" : "lightgrey"]]);
     clear();
 
-    setColour(new Colour(0, 0, 0));
+    setColour(colourScheme[COLOUR_NAMES[theme.isDarkMode() ? "white" : "black"]]);
     setStrokeWidth(1);
 
     resetStrokeWidth();

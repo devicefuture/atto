@@ -6,3 +6,8 @@ atto offers multiple course lessons which are great for further learning after m
 This course introduces you to turtle graphics, which let you draw shapes, patterns, artwork and more!
 
 Skills learnt in this course: sequencing, repetition/iteration, debugging skills
+
+<h1 class="reference"><a href="/courses/chatbot.md">Making an interactive chatbot 🢒</a></h1>
+This course shows you how to ask for user input, and respond to input with a spoken answer!
+
+Skills learnt in this course: input/output, selection, user experience design

@@ -1,18 +1,22 @@
+import * as theme from "./theme.js";
 import * as canvas from "./canvas.js";
 import * as hid from "./hid.js";
 
-export var backgroundColour = canvas.colourScheme[canvas.COLOUR_NAMES.lightgrey];
-export var foregroundColour = canvas.colourScheme[canvas.COLOUR_NAMES.black];
+const defaultBackgroundColourName = theme.isDarkMode() ? "black" : "lightgrey";
+const defaultForegroundColourName = theme.isDarkMode() ? "white" : "black";
+
+export var backgroundColour = canvas.colourScheme[canvas.COLOUR_NAMES[defaultBackgroundColourName]];
+export var foregroundColour = canvas.colourScheme[canvas.COLOUR_NAMES[defaultForegroundColourName]];
 
 export var col = 0;
 export var row = 0;
 export var scrollDelta = 0;
 
-export function background(colourName = "lightgrey") {
+export function background(colourName = defaultBackgroundColourName) {
     backgroundColour = canvas.colourScheme[canvas.COLOUR_NAMES[colourName]];
 }
 
-export function foreground(colourName = "black") {
+export function foreground(colourName = defaultForegroundColourName) {
     foregroundColour = canvas.colourScheme[canvas.COLOUR_NAMES[colourName]];
 }
 
@@ -94,7 +98,9 @@ export function clear() {
 }
 
 export function print(text, notifyHid = true, wrap = true) {
-    text = String(text);
+    text = Array.from(text);
+
+    var textCharsToDraw = [];
 
     for (var i = 0; i < text.length; i++) {
         switch (text[i]) {
@@ -128,6 +134,8 @@ export function print(text, notifyHid = true, wrap = true) {
                 break;
         }
     }
+
+    // textCharsToDraw.forEach((charArgs) => canvas.drawText(...charArgs));
 
     if (notifyHid) {
         hid.log(text);

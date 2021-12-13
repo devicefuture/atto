@@ -95,7 +95,7 @@ Inserts the item given as argument `item` into the list given as argument `items
 remove items, index
 ```
 
-Removes the item at the index given as argument `index` from the list given as argument `item`. All items after that index will be shifted down to fill the empty space.
+Removes the item at the index given as argument `index` from the list given as argument `items`. All items after that index will be shifted down to fill the empty space.
 
 <details>
 <summary>Example</summary>

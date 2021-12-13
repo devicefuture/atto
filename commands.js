@@ -4,6 +4,7 @@ import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
 import * as audio from "./audio.js";
+import * as theme from "./theme.js";
 
 export var keywords = {
     "print": print,
@@ -340,7 +341,7 @@ export function delay(milliseconds) {
 }
 
 export function setBackgroundColour(mode, p1, p2, p3, alpha) {
-    var chosenMode = String(mode != undefined ? mode.value : "grey").toLocaleLowerCase();
+    var chosenMode = String(mode != undefined ? mode.value : (theme.isDarkMode() ? "black" : "grey")).toLocaleLowerCase();
 
     if (canvas.COLOUR_NAMES.hasOwnProperty(chosenMode)) {
         term.background(chosenMode);
@@ -370,7 +371,7 @@ export function setBackgroundColour(mode, p1, p2, p3, alpha) {
 }
 
 export function setForegroundColour(mode, p1, p2, p3, alpha) {
-    var chosenMode = String(mode != undefined ? mode.value : "black").toLocaleLowerCase();
+    var chosenMode = String(mode != undefined ? mode.value : (theme.isDarkMode() ? "white" : "black")).toLocaleLowerCase();
 
     if (canvas.COLOUR_NAMES.hasOwnProperty(chosenMode)) {
         term.foreground(chosenMode);

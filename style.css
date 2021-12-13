@@ -15,6 +15,8 @@
     --pink: rgb(255, 71, 191);
     --yellow: rgb(252, 218, 63);
     --white: rgb(255, 255, 255);
+    --keywordBlack: black;
+    --keywordWhite: white;
 }
 
 * {
@@ -32,8 +34,8 @@ body {
 }
 
 body.fullscreen {
-    background-color: var(--black);
-    color: var(--white);
+    background-color: black;
+    color: white;
 }
 
 body.notSupported {
@@ -181,7 +183,7 @@ code span.comment {
 }
 
 code span.keyword {
-    color: var(--white);
+    color: var(--keywordWhite);
     border-radius: 5px;
 }
 
@@ -195,7 +197,7 @@ code span.keyword.purple {
 
 code span.keyword.yellow {
     background-color: var(--yellow);
-    color: var(--black);
+    color: var(--keywordBlack);
 }
 
 code span.keyword.green {
@@ -212,13 +214,13 @@ code span.keyword.magenta {
 
 code span.function {
     background-color: var(--magenta);
-    color: var(--white);
+    color: var(--keywordWhite);
     border-radius: 5px;
 }
 
 code span.constant {
     background-color: var(--lightBlue);
-    color: var(--white);
+    color: var(--keywordWhite);
     border-radius: 5px;
 }
 
@@ -277,7 +279,7 @@ summary {
 
 img {
     display: block;
-    max-width: 100%;
+    max-width: 400px;
     margin: auto;
     border-radius: 10px;
 }
@@ -409,6 +411,10 @@ h1.reference a.comparators {
     margin-top: 0;
 }
 
+#docs #docsContent img {
+    max-width: 100%;
+}
+
 #docsPopout {
     height: unset;
     margin-top: 0;
@@ -440,6 +446,28 @@ h1.reference a.comparators {
 
 #docsPopout pre, #docsPopout code {
     background-color: var(--lightGrey);
+}
+
+@media (max-width: 500px) {
+    img {
+        max-width: 100%;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    :root {
+        --black: rgb(255, 255, 255);
+        --lightGrey: rgb(32, 32, 32);
+        --white: rgb(16, 16, 16);
+    }
+
+    a.card {
+        color: var(--dark);
+    }
+
+    #docs #docsButtons button img {
+        filter: invert(1);
+    }
 }
 
 @media print {
