@@ -58,9 +58,8 @@ Set to the current number of milliseconds since midnight, 1 January 1970 (UNIX e
 <details>
 <summary>Example</summary>
 <pre>
-<code>10 repeat</code>
-<code>20 print "Current epoch: "; epoch</code>
-<code>30 goto 10</code>
+<code>10 print "Current epoch: "; epoch</code>
+<code>20 goto 10</code>
 </pre>
 </details>
 
