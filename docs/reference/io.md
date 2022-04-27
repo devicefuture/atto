@@ -308,3 +308,59 @@ Gets the colour of the pixel at the position specified by arguments `x` and `y`.
 <code>80 print luminance*100; "% luminance"</code>
 </pre>
 </details>
+
+## `getkey`
+```
+getkey k
+```
+
+Waits for a key and sets `k` to the its key code.
+
+<details>
+<summary>Example 1: Show key codes</summary>
+<pre>
+<code>10 getkey x</code>
+<code>20 print x</code>
+<code>30 goto 10</code>
+</pre>
+</details>
+
+<details>
+<summary>Example 2: Move turtle</summary>
+<pre>
+<code>10 cls</code>
+<code>20 print "Use W,A,S,D to move! Hit ESC to stop."</code>
+<code>30 left 90</code>
+<code>40 getkey x</code>
+<code>50 if x = "w"</code>
+<code>60 forward 10</code>
+<code>70 else if x = "s"</code>
+<code>80 backward 10</code>
+<code>90 else if x = "a"</code>
+<code>100 left 10</code>
+<code>110 else if x = "d"</code>
+<code>120 right 10</code>
+<code>130 end</code>
+<code>140 goto 40</code>
+</pre>
+</details>
+
+## `readkey`
+```
+readkey k
+```
+
+Like `getkey`, but does not wait for a key. It returns what's already available or else an empty string (`""`).
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 readkey x</code>
+<code>20 if x != ""</code>
+<code>30 print x</code>
+<code>40 else</code>
+<code>50 print ".";</code>
+<code>60 end</code>
+<code>70 goto 10</code>
+</pre>
+</details>
