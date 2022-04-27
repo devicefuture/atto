@@ -47,7 +47,7 @@ Sets the current trigonometry mode to measure angles in gradians. One full sine 
 
 ## `turn`
 ```
-gon
+turn
 ```
 
 Sets the current trigonometry mode to measure angles in revolutions. One full sine wave should have a wavelength of 1 turn.
