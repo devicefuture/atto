@@ -11,7 +11,8 @@ const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=div|mod|and|or|xor|not)|(?<![a-z_][a-z0-9_]*))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
 const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|forward|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|plot|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove|show|hide|forward|backward|left|right|penup|pendown|angle|note|play|rest|quiet|bpm|volume|envelope|speak|voice)/i;
 const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|last|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|chr\$)/i;
-const RE_CONSTANT = /(?<![a-z0-9_])(?:pi|e|phi|epoch|random|col|row|key|heading)(?![a-z0-9_])/i;
+const RE_CONSTANT = /(?<![a-z0-9_])(?:true|false|pi|e|phi|epoch|random|col|row|key|heading)(?![a-z0-9_])/i;
+const RE_ASSIGNMENT = /=/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])(?:div|mod)(?![a-z_])|&|\||~|;/i;
 const RE_COMPARATOR = /!=|<=|>=|=|<|>/i;
 const RE_LOGICAL_OPERATOR = /(?<![a-z_])(?<![a-z_][0-9]+)(?:and|or|xor|not)/i;
@@ -35,6 +36,7 @@ const RE_ALL = new RegExp([
     RE_KEYWORD.source,
     RE_FUNCTION_NAME.source,
     RE_CONSTANT.source,
+    RE_ASSIGNMENT.source,
     RE_OPERATOR.source,
     RE_COMPARATOR.source,
     RE_LOGICAL_OPERATOR.source,
@@ -153,9 +155,8 @@ export class ParameterSeperator extends Token {}
 export class StatementEnd extends Token {}
 export class ExecutionLabel extends Token {}
 export class Keyword extends Token {}
+export class Assignment extends Token {}
 export class Operator extends Token {}
-export class Comparator extends Token {}
-export class LogicalOperator extends Token {}
 export class StringConcat extends Token {}
 
 export class ExpressionBracket extends Token {
@@ -379,8 +380,8 @@ export class Function extends Token {
             case "lower$": return String(this.expression.value).toLocaleLowerCase();
             case "upper$": return String(this.expression.value).toLocaleUpperCase();
             case "trim$": return String(this.expression.value).trim();
-            case "ltrim$": return String(this.expression.value).trimLeft();
-            case "rtrim$": return String(this.expression.value).trimRight();
+            case "ltrim$": return String(this.expression.value).trimStart();
+            case "rtrim$": return String(this.expression.value).trimEnd();
             case "chr$": return String.fromCharCode(this.expression.value);
             case "bin$": return Number(this.expression.value).toString(2);
             case "oct$": return Number(this.expression.value).toString(8);
@@ -405,7 +406,7 @@ export class Function extends Token {
 
 export class StringConcatExpression extends Expression {
     constructor(tokens, lineNumber = null) {
-        super(tokens, new Operator(";"), SubtractionExpression, lineNumber);
+        super(tokens, new Operator(";"), LogicalOrExpression, lineNumber);
     }
 
     parse() {
@@ -539,6 +540,106 @@ export class StringConcatExpression extends Expression {
         }
 
         return value;
+    }
+}
+
+export class LogicalOrExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("or"), LogicalXorExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return a || b ? 1 : 0;
+    }
+}
+
+export class LogicalXorExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("xor"), LogicalAndExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return Boolean(a) ^ Boolean(b) ? 1 : 0;
+    }
+}
+
+export class LogicalAndExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("and"), LogicalNotExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return a && b ? 1 : 0;
+    }
+}
+
+export class LogicalNotExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("not"), EqualComparisonExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return !b ? 1 : 0;
+    }
+}
+
+export class EqualComparisonExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("="), LessThanComparisonExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return basic.getValueComparative(a) == basic.getValueComparative(b) ? 1 : 0;
+    }
+}
+
+export class LessThanComparisonExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("<"), GreaterThanComparisonExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return basic.getValueComparative(a) < basic.getValueComparative(b) ? 1 : 0;
+    }
+}
+
+export class GreaterThanComparisonExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator(">"), LessThanOrEqualComparisonExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return basic.getValueComparative(a) > basic.getValueComparative(b) ? 1 : 0;
+    }
+}
+
+export class LessThanOrEqualComparisonExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("<="), GreaterThanOrEqualComparisonExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return basic.getValueComparative(a) <= basic.getValueComparative(b) ? 1 : 0;
+    }
+}
+
+export class GreaterThanOrEqualComparisonExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator(">="), NotEqualComparisonExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return basic.getValueComparative(a) >= basic.getValueComparative(b) ? 1 : 0;
+    }
+}
+
+export class NotEqualComparisonExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("!="), SubtractionExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return basic.getValueComparative(a) != basic.getValueComparative(b) ? 1 : 0;
     }
 }
 
@@ -705,9 +806,6 @@ export function highlight(code, index, col, row) {
         var startOriginal = start;
         var codePos = 0;
 
-        // console.log(code, codeChars, start);
-        // debugger;
-
         for (var i = 0; i < codeChars.length; i++) {
             if (codePos > startOriginal) {
                 break;
@@ -806,6 +904,7 @@ export function tokeniseLine(code, lineNumber = null) {
     var expressionTokens = [];
     var commentMatch;
     var match;
+    var assignmentAllowed = true;
 
     if (commentMatch = RE_COMMENT.exec(code.replace(new RegExp(RE_STRING_LITERAL, "g"), function(matchedString) {
         return "\0".repeat(matchedString.length);
@@ -846,12 +945,18 @@ export function tokeniseLine(code, lineNumber = null) {
             computeExpressionTokens();
             tokens.push(new Keyword(lineSymbols[i], lineNumber));
 
+            if (lineSymbols[i] != "for") {
+                assignmentAllowed = false;
+            }
+
             continue;
         }
 
         if (RE_STATEMENT_SEPERATOR.exec(lineSymbols[i])) {
             computeExpressionTokens();
             tokens.push(new StatementEnd(lineSymbols[i], lineNumber));
+
+            assignmentAllowed = true;
 
             continue;
         }
@@ -863,16 +968,11 @@ export function tokeniseLine(code, lineNumber = null) {
             continue;
         }
 
-        if (RE_COMPARATOR.exec(lineSymbols[i])) {
+        if (assignmentAllowed && RE_ASSIGNMENT.exec(lineSymbols[i])) {
             computeExpressionTokens();
-            tokens.push(new Comparator(lineSymbols[i], lineNumber));
+            tokens.push(new Assignment(lineSymbols[i], lineNumber));
 
-            continue;
-        }
-
-        if (RE_LOGICAL_OPERATOR.exec(lineSymbols[i])) {
-            computeExpressionTokens();
-            tokens.push(new LogicalOperator(lineSymbols[i], lineNumber));
+            assignmentAllowed = false;
 
             continue;
         }
@@ -894,7 +994,7 @@ export function tokeniseLine(code, lineNumber = null) {
             continue;
         }
 
-        if (RE_OPERATOR.exec(lineSymbols[i])) {
+        if (RE_OPERATOR.exec(lineSymbols[i]) || RE_COMPARATOR.exec(lineSymbols[i]) || RE_LOGICAL_OPERATOR.exec(lineSymbols[i])) {
             expressionTokens.push(new Operator(lineSymbols[i], lineNumber));
 
             continue;
