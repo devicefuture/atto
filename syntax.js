@@ -380,8 +380,8 @@ export class Function extends Token {
             case "lower$": return String(this.expression.value).toLocaleLowerCase();
             case "upper$": return String(this.expression.value).toLocaleUpperCase();
             case "trim$": return String(this.expression.value).trim();
-            case "ltrim$": return String(this.expression.value).trimLeft();
-            case "rtrim$": return String(this.expression.value).trimRight();
+            case "ltrim$": return String(this.expression.value).trimStart();
+            case "rtrim$": return String(this.expression.value).trimEnd();
             case "chr$": return String.fromCharCode(this.expression.value);
             case "bin$": return Number(this.expression.value).toString(2);
             case "oct$": return Number(this.expression.value).toString(8);
