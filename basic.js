@@ -598,6 +598,8 @@ export function setVariable(identifierName, value, lineNumber = null) {
 }
 
 export function setConstants() {
+    setVariable("true", 1);
+    setVariable("false", 0);
     setVariable("pi", Math.PI);
     setVariable("e", Math.E);
     setVariable("phi", (1 + Math.sqrt(5)) / 2);
