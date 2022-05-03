@@ -225,7 +225,7 @@ export function parseProgram(program) {
 
             identifier = tokens[i];
 
-            expect(++i, (x) => x instanceof syntax.Comparator && x.code == "=");
+            expect(++i, (x) => x instanceof syntax.Assignment);
             expect(++i, (x) => x instanceof syntax.Expression);
 
             start = tokens[i];

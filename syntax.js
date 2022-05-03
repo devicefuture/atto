@@ -945,7 +945,9 @@ export function tokeniseLine(code, lineNumber = null) {
             computeExpressionTokens();
             tokens.push(new Keyword(lineSymbols[i], lineNumber));
 
-            assignmentAllowed = false;
+            if (lineSymbols[i] != "for") {
+                assignmentAllowed = false;
+            }
 
             continue;
         }
