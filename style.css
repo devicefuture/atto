@@ -17,6 +17,9 @@
     --white: rgb(255, 255, 255);
     --keywordBlack: black;
     --keywordWhite: white;
+    --keyBackground: rgb(238, 238, 238);
+    --keyBorder: rgb(214, 214, 214);
+    --keyForeground: rgb(0, 0, 0);
 }
 
 * {
@@ -256,6 +259,20 @@ code span.statementSeperator {
     color: var(--darkBlue);
 }
 
+kbd {
+    margin-top: -2px;
+    margin-bottom: -2px;
+    padding: 2px;
+    padding-inline-start: 4px;
+    padding-inline-end: 4px;
+    font-family: "Brass Mono", monospace;
+    background-color: var(--keyBackground);
+    color: var(--keyForeground);
+    border: 2px solid var(--keyBorder);
+    box-shadow: 0 3px 0 2px var(--keyBorder);
+    border-radius: 5px;
+}
+
 blockquote {
     margin-inline-start: 0;
     margin-inline-end: 0;
@@ -300,6 +317,10 @@ h1.reference {
 
 h1.reference + p {
     margin-top: 0;
+}
+
+h1.reference a.shell {
+    color: var(--black);
 }
 
 h1.reference a.control {
