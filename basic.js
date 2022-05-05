@@ -1102,6 +1102,7 @@ window.addEventListener("keydown", function(event) {
 
     if (event.key == "F5") {
         hid.unfocusInput();
+        hid.clearProgramInputs();
 
         try {
             parseProgram(editingProgram);
