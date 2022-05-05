@@ -940,6 +940,8 @@ export function processCommand(value, movementOnly) {
     if (command == "new") {
         editingProgram = [];
 
+        hid.clearProgramInputs();
+
         term.print("Created new program\n");
         autosave();
         hid.startProgramInput();
@@ -948,6 +950,8 @@ export function processCommand(value, movementOnly) {
     }
 
     if (command == "run") {
+        hid.clearProgramInputs();
+
         try {
             parseProgram(editingProgram);
         } catch (e) {

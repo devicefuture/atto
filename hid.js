@@ -325,6 +325,10 @@ export function startProgramInput(lineValue = "", immediateEdit = true, relative
     }
 }
 
+export function clearProgramInputs() {
+    programInputs = [];
+}
+
 export function getFocusedInput() {
     if (currentInput != null) {
         return currentInput;

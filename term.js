@@ -100,8 +100,6 @@ export function clear() {
 export function print(text, notifyHid = true, wrap = true) {
     text = Array.from(text);
 
-    var textCharsToDraw = [];
-
     for (var i = 0; i < text.length; i++) {
         switch (text[i]) {
             case "\n":
@@ -134,8 +132,6 @@ export function print(text, notifyHid = true, wrap = true) {
                 break;
         }
     }
-
-    // textCharsToDraw.forEach((charArgs) => canvas.drawText(...charArgs));
 
     if (notifyHid) {
         hid.log(text);
