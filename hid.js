@@ -220,14 +220,16 @@ export class Input {
             return;
         }
 
-        if (event.key == "ArrowLeft" || event.key == "Backspace") {
-            if (this.caretPosition - this.scrollColumn <= 2) {
-                this.scrollColumn = this.caretPosition - Math.floor((canvas.TERM_COLS - this.offset) / 2);
-            }
-        } else {    
-            if (this.selectionEndPosition - this.scrollColumn >= canvas.TERM_COLS - this.offset - 2) {
-                this.scrollColumn = this.selectionEndPosition - Math.floor((canvas.TERM_COLS - this.offset) / 2);
-            }
+        var scrollOffset = Math.floor((canvas.TERM_COLS - this.offset) / 2);
+
+        if (event.key == "Home") {
+            this.scrollColumn = 0;
+        } else if (event.key == "End" && this.value.length - this.scrollColumn >= canvas.TERM_COLS - this.offset - 2) {
+            this.scrollColumn = this.value.length - scrollOffset;
+        } else if (["ArrowLeft", "Backspace"].includes(event.key) && this.caretPosition - this.scrollColumn <= 2) {
+            this.scrollColumn = this.caretPosition - scrollOffset;
+        } else if (this.selectionEndPosition - this.scrollColumn >= canvas.TERM_COLS - this.offset - 2) {
+            this.scrollColumn = this.selectionEndPosition - scrollOffset;
         }
 
         if (this.format == inputFormats.PROGRAM) {
