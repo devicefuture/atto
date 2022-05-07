@@ -1,3 +1,7 @@
+> **Don't forget:** atto will be moving to a new home under the DeviceFuture organisation soon! [Learn more](https://github.com/James-Livesey/atto/issues/31)
+
+---
+
 <p align="center">
 <img src="media/promo.png" alt="Screenshot of atto showing code to print the Fibonacci Sequence" width="60%">
 </p>
