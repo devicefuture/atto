@@ -50,7 +50,7 @@ canvas.onReady(function() {
         term.print(" to load last session\n");
     }
 
-    if (common.getParameter("code") != null) {
+    if (common.getParameter("code") != null && common.getParameter("runmode") != "list") {
         basic.textToProgram(common.getParameter("code"));
 
         term.print("\nLoaded shared program\n");
@@ -73,6 +73,20 @@ canvas.onReady(function() {
             }
         }
     } else {
+        if (common.getParameter("code") != null && common.getParameter("runmode") == "list") {
+            term.print("\n");
+
+            basic.textToProgram(common.getParameter("code"));
+
+            basic.listLines();
+
+            term.print("\nType ");
+            term.foreground("magenta");
+            term.print("run");
+            term.foreground();
+            term.print(" to run the program");
+        }
+
         term.print("\nReady\n");
 
         hid.startProgramInput();

@@ -1,3 +1,4 @@
+import * as common from "./common.js";
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as basic from "./basic.js";
@@ -414,5 +415,8 @@ canvas.onReady(function() {
     });
 
     renderLoop();
-    hidInput.focus();
+
+    if (!common.getParameter("embed")) {
+        hidInput.focus();
+    }
 });
