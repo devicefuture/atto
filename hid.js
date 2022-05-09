@@ -399,7 +399,7 @@ window.addEventListener("load", function() {
 
         lines = lines.filter((i) => i.replace(/\u2028/g, "").trim() != "");
 
-        hidLive.textContent = lines[lines.length - 1];
+        hidLive.textContent = lines[lines.length - 1].join("");
     }, 1000);
 });
 
