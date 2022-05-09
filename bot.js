@@ -1,6 +1,6 @@
 /*
     Used for communications with Twitter bot server code.
-    See https://github.com/James-Livesey/atto-twitter for more details.
+    See https://github.com/devicefuture/atto-twitter for more details.
 */
 
 import * as canvas from "./canvas.js";

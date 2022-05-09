@@ -14,7 +14,7 @@ Welcome to the help guide for **atto**! We'll guide you on how to use and master
 
 ---
 
-atto on <a href="https://github.com/James-Livesey/atto" title="James-Livesey/atto" target="_blank">GitHub</a> · <a href="https://twitter.com/codeurdreams" title="@codeurdreams" target="_blank">Twitter</a>
+atto on <a href="https://github.com/devicefuture/atto" title="devicefuture/atto" target="_blank">GitHub</a> · <a href="https://twitter.com/codeurdreams" title="@codeurdreams" target="_blank">Twitter</a>
 
 <div class="mainOnly">
     <p>Share your code! <a href="javascript:shareProgramLink();">Copy link</a> · <a href="/tweet.md">Tweet</a></p>
