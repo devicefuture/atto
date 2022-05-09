@@ -1,14 +1,10 @@
-> **Don't forget:** atto will be moving to a new home under the DeviceFuture organisation soon! [Learn more](https://github.com/James-Livesey/atto/issues/31)
-
----
-
 <p align="center">
 <img src="media/promo.png" alt="Screenshot of atto showing code to print the Fibonacci Sequence" width="60%">
 </p>
 
 <h1 align="center"><code>atto</code></h1>
 <p align="center"><strong>The new BASIC computer that runs in your browser!</strong></p>
-<p align="center">Try it live: <a href="https://jamesl.me/atto" target="_blank">jamesl.me/atto</a></p>
+<p align="center">Try it live: <a href="https://atto.devicefuture.org" target="_blank">atto.devicefuture.org</a></p>
 
 ## What is atto?
 atto is a virtual fantasy computer system that's designed to teach people coding through a BASIC-like programming language.

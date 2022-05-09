@@ -25,6 +25,12 @@ if ("serviceWorker" in navigator) {
     console.log("Service workers not supported in this browser");
 }
 
+if (common.getParameter("lsp") != null) {
+    localStorage.setItem("atto_lastSessionProgram", common.getParameter("lsp"));
+
+    window.location.replace("/");
+}
+
 canvas.onReady(function() {
     term.print("Welcome to ");
     term.foreground("blue");

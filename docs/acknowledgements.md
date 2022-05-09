@@ -1,6 +1,6 @@
 [Guide](/index.md) 🢒 **Acknowledgements**
 
-atto is designed and developed by James Livesey, with contributions made by various open-source contributors. Copyright &copy; James Livesey. All Rights Reserved.
+atto is designed and developed by James Livesey, with contributions made by various open-source contributors. Copyright &copy; DeviceFuture Authors and Contributors. All Rights Reserved.
 
 atto is licensed under the <a href="https://github.com/James-Livesey/atto/blob/main/LICENCE.md" target="_blank">MIT License</a>, which gives users permission to freely modify and distibute atto's source code.
 
