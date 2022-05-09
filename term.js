@@ -134,6 +134,6 @@ export function print(text, notifyHid = true, wrap = true) {
     }
 
     if (notifyHid) {
-        hid.log(text);
+        hid.log(text.join(""));
     }
 }
