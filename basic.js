@@ -756,6 +756,41 @@ export function setDelayTimeout(timeout) {
     delayTimeout = timeout;
 }
 
+export function listLines(startLimit = null, endLimit = null) {
+    if (startLimit != null && !Number.isNaN(Number(startLimit))) {
+        startLimit = Number(startLimit);
+    } else {
+        startLimit = 0;
+    }
+
+    if (endLimit != null && !Number.isNaN(Number(endLimit))) {
+        endLimit = Math.min(Number(endLimit), editingProgram.length);
+    } else {
+        endLimit = editingProgram.length;
+    }
+
+    var listingLength = editingProgram.filter((element, i) => typeof(element) == "string" && i >= startLimit && i <= endLimit).length;
+    var editingProgramAddedLines = 0;
+
+    for (var i = 0; i < editingProgram.length; i++) {
+        if (i < startLimit) {
+            continue;
+        }
+
+        if (i > endLimit) {
+            break;
+        }
+
+        if (typeof(editingProgram[i]) != "string") {
+            continue;
+        }
+
+        editingProgramAddedLines++;
+
+        hid.startProgramInput(editingProgram[i], false, term.scrollDelta + term.row, editingProgramAddedLines + canvas.TERM_ROWS > listingLength);
+    }
+}
+
 export function renumberLines() {
     var newProgram = [];
     var newLineNumber = 10;
@@ -899,38 +934,7 @@ export function processCommand(value, movementOnly) {
         var startLimit = command.substring(4).split("-")[0].trim();
         var endLimit = (command.substring(4).split("-")[1] || "").trim();
 
-        if (startLimit != "" && !Number.isNaN(Number(startLimit))) {
-            startLimit = Number(startLimit);
-        } else {
-            startLimit = 0;
-        }
-
-        if (endLimit != "" && !Number.isNaN(Number(endLimit))) {
-            endLimit = Math.min(Number(endLimit), editingProgram.length);
-        } else {
-            endLimit = editingProgram.length;
-        }
-
-        var listingLength = editingProgram.filter((element, i) => typeof(element) == "string" && i >= startLimit && i <= endLimit).length;
-        var editingProgramAddedLines = 0;
-
-        for (var i = 0; i < editingProgram.length; i++) {
-            if (i < startLimit) {
-                continue;
-            }
-
-            if (i > endLimit) {
-                break;
-            }
-
-            if (typeof(editingProgram[i]) != "string") {
-                continue;
-            }
-
-            editingProgramAddedLines++;
-
-            hid.startProgramInput(editingProgram[i], false, term.scrollDelta + term.row, editingProgramAddedLines + canvas.TERM_ROWS > listingLength);
-        }
+        listLines(startLimit || null, endLimit || null);
 
         hid.startProgramInput();
 
