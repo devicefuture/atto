@@ -1,3 +1,4 @@
+import * as common from "./common.js";
 import * as theme from "./theme.js";
 
 export const DISP_WIDTH = 640;
@@ -281,11 +282,13 @@ export function init() {
 };
 
 export function toggleDocs() {
-    if (docsOpen = !docsOpen) {
-        document.querySelector("#docs").hidden = false;
-    } else {
-        document.querySelector("#docs").hidden = true;
+    if (!!common.getParameter("embed")) {
+        window.open("/docspopout.html");
+
+        return;
     }
+
+    document.querySelector("#docs").hidden = !(docsOpen = !docsOpen); // Toggles help docs show state
 
     resize();
 }
