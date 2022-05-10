@@ -9,8 +9,8 @@ const RE_NUMERIC_LITERAL_HEX = /(?<![a-z_])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=div|mod|and|or|xor|not)|(?<![a-z_][a-z0-9_]*))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
-const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|forward|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|plot|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove|show|hide|forward|backward|left|right|penup|pendown|angle|note|play|rest|quiet|bpm|volume|envelope|speak|voice)/i;
-const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|last|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|chr\$)/i;
+const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|forward|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|plot|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove|show|hide|forward|backward|left(?!\$)|right(?!\$)|penup|pendown|angle|note|play|rest|quiet|bpm|volume|envelope|speak|voice)/i;
+const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|last|split|join\$|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|left\$|right\$|mid\$|chr\$)/i;
 const RE_CONSTANT = /(?<![a-z0-9_])(?:true|false|pi|e|phi|epoch|random|col|row|key|heading)(?![a-z0-9_])/i;
 const RE_ASSIGNMENT = /=/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])(?:div|mod)(?![a-z_])|&|\||~|;/i;
@@ -331,37 +331,58 @@ export class Function extends Token {
     }
 
     get value() {
-        var argument = (index) => this.expressions[index]?.value || 0;
+        var thisScope = this;
 
-        if (this.code.toLocaleLowerCase() == "tan" && argument(0) % 90 == 0 && argument(0) % 180 != 0) {
+        var name = this.code.toLocaleLowerCase();
+        var argument = function(index, defaultValue = null) {
+            if (index >= thisScope.expressions.length) {
+                if (defaultValue != null) {
+                    return defaultValue;
+                }
+
+                throw new basic.RuntimeError("Expected another argument to function", thisScope.lineNumber);
+            }
+
+            return thisScope.expressions[index].value;
+        }
+
+        if (name == "tan" && argument(0) % 90 == 0 && argument(0) % 180 != 0) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        if (["asin", "acos", "atan"].includes(this.code.toLocaleLowerCase()) && (argument(0) < -1 || argument(0) > 1)) {
+        if (["asin", "acos", "atan"].includes(name) && (argument(0) < -1 || argument(0) > 1)) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        if (["log", "ln"].includes(this.code.toLocaleLowerCase()) && argument(0) <= 0) {
+        if (["log", "ln"].includes(name) && argument(0) <= 0) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        if (this.code.toLocaleLowerCase() == "sqrt" && argument(0) < 0) {
+        if (name == "sqrt" && argument(0) < 0) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        if (this.code.toLocaleLowerCase() == "last" && typeof(argument(0)) != "object") {
+        if (name == "last" && typeof(argument(0)) != "object") {
             throw new basic.RuntimeError("Cannot get last item of non-list value", this.lineNumber);
         }
 
-        if (this.code.toLocaleLowerCase() == "chr$" && Number.isNaN(Number(argument(0)))) {
+        if (["left$", "right$"].includes(name) && Number.isNaN(Number(argument(1)))) {
             throw new basic.RuntimeError("Type conversion error", this.lineNumber);
         }
 
-        if (["bin$", "oct$", "hex$"].includes(this.code.toLocaleLowerCase()) && Number.isNaN(Number(argument(0)))) {
+        if (name == "mid$" && (Number.isNaN(Number(argument(1)) || Number.isNaN(Number(argument(2)))))) {
+            throw new basic.RuntimeError("Type conversion error", this.lineNumber);
+        }
+
+        if (name == "chr$" && Number.isNaN(Number(argument(0)))) {
+            throw new basic.RuntimeError("Type conversion error", this.lineNumber);
+        }
+
+        if (["bin$", "oct$", "hex$"].includes(name) && Number.isNaN(Number(argument(0)))) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        switch (this.code.toLocaleLowerCase()) {
+        switch (name) {
             case "sin": return Math.sin(basic.trigModeToRadians(argument(0)));
             case "cos": return Math.cos(basic.trigModeToRadians(argument(0)));
             case "tan": return Math.tan(basic.trigModeToRadians(argument(0)));
@@ -382,6 +403,9 @@ export class Function extends Token {
             case "lower$": return String(argument(0)).toLocaleLowerCase();
             case "upper$": return String(argument(0)).toLocaleUpperCase();
             case "trim$": return String(argument(0)).trim();
+            case "left$": return String(argument(0)).substring(0, argument(1));
+            case "right$": return String(argument(0)).substring(String(argument(0)).length - argument(1));
+            case "mid$": return String(argument(0)).substring(argument(1), argument(1) + argument(2));
             case "ltrim$": return String(argument(0)).trimStart();
             case "rtrim$": return String(argument(0)).trimEnd();
             case "chr$": return String.fromCharCode(argument(0));
@@ -402,6 +426,22 @@ export class Function extends Token {
                 }
 
                 return argument(0)[argument(0).length - 1];
+
+            case "split":
+                var delimeter = argument(1, "");
+
+                if (delimeter == "") {
+                    return [...String(argument(0))]; // To allow for Unicode multi-byte characters to be split nicely
+                }
+
+                return String(argument(0)).split(delimeter);
+
+            case "join$":
+                if (typeof(argument(0)) != "object") {
+                    throw new basic.RuntimeError("Cannot join non-list value");
+                }
+
+                return argument(0).join(String(argument(1, "")));
         }
     }
 }

@@ -369,6 +369,10 @@ function renderLoop() {
 }
 
 window.addEventListener("load", function() {
+    if (window.inDocsPopout) {
+        return;
+    }
+
     hidLog = document.querySelector("#hidLog");
     hidLive = document.querySelector("#hidLive");
     hidInput = document.querySelector("#hidInput");
