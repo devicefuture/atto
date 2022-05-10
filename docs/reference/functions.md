@@ -412,12 +412,50 @@ Finds the last item in the list given as argument `x`. If `x` is empty, then an 
 </pre>
 </details>
 
-## `lower$`
+## `split`
 ```
-lower$(x)
+split(str$, delim$)
+split(str$)
 ```
 
-Converts the string expression given as argument `x` to a lower case string.
+Converts the string expression given as argument `str$` into a list, with the string split by the delimeter given as argument `delim$`. If `delim$` is not present or is set to `""`, then `str$` will be split into its constituent characters.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 print "My shopping list:"</code>
+<code>20 shopping=split("apple,orange,banana", ",")</code>
+<code>30 for i=0 to len(shopping)-1</code>
+<code>40 print shopping[i]</code>
+<code>50 next</code>
+</pre>
+</details>
+
+## `join$`
+```
+join$(items, delim$)
+join$(items)
+```
+
+Convers the list given as argument `items` into a string, with the list joined by the delimeter given as argument `delim$`. If `delim$` is not present, then the list will be joined by no delimeter.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 dim shopping</code>
+<code>20 push "apple", shopping</code>
+<code>30 push "orange", shopping</code>
+<code>40 push "banana", shopping</code>
+<code>50 print join$(shopping, "; ")</code>
+</pre>
+</details>
+
+## `lower$`
+```
+lower$(str$)
+```
+
+Converts the string expression given as argument `str$` to a lower case string.
 
 <details>
 <summary>Example</summary>
@@ -428,10 +466,10 @@ Converts the string expression given as argument `x` to a lower case string.
 
 ## `upper$`
 ```
-upper$(x)
+upper$(str$)
 ```
 
-Converts the string expression given as argument `x` to an upper case string.
+Converts the string expression given as argument `str$` to an upper case string.
 
 <details>
 <summary>Example</summary>
@@ -440,12 +478,54 @@ Converts the string expression given as argument `x` to an upper case string.
 </pre>
 </details>
 
-## `trim$`
+## `left$`
 ```
-trim$(x)
+left$(str$, a)
 ```
 
-Removes leading and trailing whitespace characters on the string expression given as argument `x`.
+Returns the first `a` characters of the string expression given as argument `str$`.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 print left$("Hello, world!", 5)</code>
+</pre>
+</details>
+
+## `right$`
+```
+right$(str$, a)
+```
+
+Returns the last `a` characters of the string expression given as argument `str$`.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 print right$("Hello, world!", 6)</code>
+</pre>
+</details>
+
+## `mid$`
+```
+right$(str$, a, b)
+```
+
+Returns a portion of the string expression given as argument `str$`, where the start is given as argument `a`, and the length is given as argument `b`.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 print mid$("Hello, world!", 1, 4)</code>
+</pre>
+</details>
+
+## `trim$`
+```
+trim$(str$)
+```
+
+Removes leading and trailing whitespace characters on the string expression given as argument `str$`.
 
 <details>
 <summary>Example</summary>
@@ -456,10 +536,10 @@ Removes leading and trailing whitespace characters on the string expression give
 
 ## `ltrim$`
 ```
-ltrim$(x)
+ltrim$(str$)
 ```
 
-Removes leading whitespace characters on the string expression given as argument `x`.
+Removes leading whitespace characters on the string expression given as argument `str$`.
 
 <details>
 <summary>Example</summary>
@@ -470,10 +550,10 @@ Removes leading whitespace characters on the string expression given as argument
 
 ## `rtrim$`
 ```
-rtrim$(x)
+rtrim$(str$)
 ```
 
-Removes trailing whitespace characters on the string expression given as argument `x`.
+Removes trailing whitespace characters on the string expression given as argument `str$`.
 
 <details>
 <summary>Example</summary>

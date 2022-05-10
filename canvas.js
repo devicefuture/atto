@@ -1,4 +1,4 @@
-import * as common from "./common.js";
+import * as core from "./core.js";
 import * as theme from "./theme.js";
 
 export const DISP_WIDTH = 640;
@@ -93,6 +93,10 @@ function twoPointsToPointSize(x1, y1, x2, y2) {
 }
 
 export function onReady(callback) {
+    if (window.inDocsPopout) {
+        return;
+    }
+
     readyListeners.push(callback);
 }
 
@@ -282,7 +286,7 @@ export function init() {
 };
 
 export function toggleDocs() {
-    if (!!common.getParameter("embed")) {
+    if (!!core.getParameter("embed")) {
         window.open("/docspopout.html");
 
         return;
