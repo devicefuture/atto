@@ -320,89 +320,93 @@ export class Expression extends Token {
 }
 
 export class Function extends Token {
-    constructor(code, lineNumber = null, expression = null) {
+    constructor(code, lineNumber = null, expressions = null) {
         super(code, lineNumber);
 
-        this.expression = expression;
+        this.expressions = expressions;
     }
 
     parse() {
-        this.expression.parse();
+        this.expressions.map((i) => i.parse());
     }
 
     get value() {
-        if (this.code.toLocaleLowerCase() == "tan" && this.expression.value % 90 == 0 && this.expression.value % 180 != 0) {
+        var argument = (index) => this.expressions[index]?.value || 0;
+
+        if (this.code.toLocaleLowerCase() == "tan" && argument(0) % 90 == 0 && argument(0) % 180 != 0) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        if (["asin", "acos", "atan"].includes(this.code.toLocaleLowerCase()) && (this.expression.value < -1 || this.expression.value > 1)) {
+        if (["asin", "acos", "atan"].includes(this.code.toLocaleLowerCase()) && (argument(0) < -1 || argument(0) > 1)) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        if (["log", "ln"].includes(this.code.toLocaleLowerCase()) && this.expression.value <= 0) {
+        if (["log", "ln"].includes(this.code.toLocaleLowerCase()) && argument(0) <= 0) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        if (this.code.toLocaleLowerCase() == "sqrt" && this.expression.value < 0) {
+        if (this.code.toLocaleLowerCase() == "sqrt" && argument(0) < 0) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
-        if (this.code.toLocaleLowerCase() == "last" && typeof(this.expression.value) != "object") {
+        if (this.code.toLocaleLowerCase() == "last" && typeof(argument(0)) != "object") {
             throw new basic.RuntimeError("Cannot get last item of non-list value", this.lineNumber);
         }
 
-        if (this.code.toLocaleLowerCase() == "chr$" && Number.isNaN(Number(this.expression.value))) {
+        if (this.code.toLocaleLowerCase() == "chr$" && Number.isNaN(Number(argument(0)))) {
             throw new basic.RuntimeError("Type conversion error", this.lineNumber);
         }
 
-        if (["bin$", "oct$", "hex$"].includes(this.code.toLocaleLowerCase()) && Number.isNaN(Number(this.expression.value))) {
+        if (["bin$", "oct$", "hex$"].includes(this.code.toLocaleLowerCase()) && Number.isNaN(Number(argument(0)))) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
         switch (this.code.toLocaleLowerCase()) {
-            case "sin": return Math.sin(basic.trigModeToRadians(this.expression.value));
-            case "cos": return Math.cos(basic.trigModeToRadians(this.expression.value));
-            case "tan": return Math.tan(basic.trigModeToRadians(this.expression.value));
-            case "asin": return basic.radiansToTrigMode(Math.asin(this.expression.value));
-            case "acos": return basic.radiansToTrigMode(Math.acos(this.expression.value));
-            case "atan": return basic.radiansToTrigMode(Math.atan(this.expression.value));
-            case "log": return Math.log10(this.expression.value);
-            case "ln": return Math.log(this.expression.value);
-            case "sqrt": return Math.sqrt(this.expression.value);
-            case "round": return Math.round(this.expression.value);
-            case "floor": return Math.floor(this.expression.value);
-            case "ceil": return Math.ceil(this.expression.value);
-            case "abs": return Math.abs(this.expression.value);
-            case "asc": return String(this.expression.value).charCodeAt(0) || 0;
-            case "bin": return Number.parseInt(this.expression.value, 2);
-            case "oct": return Number.parseInt(this.expression.value, 8);
-            case "hex": return Number.parseInt(this.expression.value, 16);
-            case "lower$": return String(this.expression.value).toLocaleLowerCase();
-            case "upper$": return String(this.expression.value).toLocaleUpperCase();
-            case "trim$": return String(this.expression.value).trim();
-            case "ltrim$": return String(this.expression.value).trimStart();
-            case "rtrim$": return String(this.expression.value).trimEnd();
-            case "chr$": return String.fromCharCode(this.expression.value);
-            case "bin$": return Number(this.expression.value).toString(2);
-            case "oct$": return Number(this.expression.value).toString(8);
-            case "hex$": return Number(this.expression.value).toString(16);
+            case "sin": return Math.sin(basic.trigModeToRadians(argument(0)));
+            case "cos": return Math.cos(basic.trigModeToRadians(argument(0)));
+            case "tan": return Math.tan(basic.trigModeToRadians(argument(0)));
+            case "asin": return basic.radiansToTrigMode(Math.asin(argument(0)));
+            case "acos": return basic.radiansToTrigMode(Math.acos(argument(0)));
+            case "atan": return basic.radiansToTrigMode(Math.atan(argument(0)));
+            case "log": return Math.log10(argument(0));
+            case "ln": return Math.log(argument(0));
+            case "sqrt": return Math.sqrt(argument(0));
+            case "round": return Math.round(argument(0));
+            case "floor": return Math.floor(argument(0));
+            case "ceil": return Math.ceil(argument(0));
+            case "abs": return Math.abs(argument(0));
+            case "asc": return String(argument(0)).charCodeAt(0) || 0;
+            case "bin": return Number.parseInt(argument(0), 2);
+            case "oct": return Number.parseInt(argument(0), 8);
+            case "hex": return Number.parseInt(argument(0), 16);
+            case "lower$": return String(argument(0)).toLocaleLowerCase();
+            case "upper$": return String(argument(0)).toLocaleUpperCase();
+            case "trim$": return String(argument(0)).trim();
+            case "ltrim$": return String(argument(0)).trimStart();
+            case "rtrim$": return String(argument(0)).trimEnd();
+            case "chr$": return String.fromCharCode(argument(0));
+            case "bin$": return Number(argument(0)).toString(2);
+            case "oct$": return Number(argument(0)).toString(8);
+            case "hex$": return Number(argument(0)).toString(16);
 
             case "len":
-                if (typeof(this.expression.value) == "object") {
-                    return this.expression.value.length;
+                if (typeof(argument(0)) == "object") {
+                    return argument(0).length;
                 }
 
-                return String(this.expression.value).length;
+                return String(argument(0)).length;
 
             case "last":
-                if (this.expression.value.length == 0) {
+                if (argument(0).length == 0) {
                     throw new basic.RuntimeError("Cannot get last item from empty list");
                 }
 
-                return this.expression.value[this.expression.value.length - 1];
+                return argument(0)[argument(0).length - 1];
         }
     }
 }
+
+export class FunctionParameterSeperator extends Token {}
 
 export class StringConcatExpression extends Expression {
     constructor(tokens, lineNumber = null) {
@@ -410,6 +414,8 @@ export class StringConcatExpression extends Expression {
     }
 
     parse() {
+        var thisScope = this;
+
         this.children = [new this.childExpressionClass([], this.lineNumber)];
 
         var bracketLevel = 0;
@@ -432,6 +438,12 @@ export class StringConcatExpression extends Expression {
                 }
             }
 
+            if (this.tokens[i] instanceof FunctionParameterSeperator) {
+                bracketTokens.push(this.tokens[i]);
+
+                continue;
+            }
+
             if ((this.tokens[i] instanceof ExpressionBracket || this.tokens[i] instanceof ListAccessBracket) && this.tokens[i].isOpening()) {
                 if (bracketLevel > 0) {
                     bracketTokens.push(this.tokens[i]);
@@ -446,14 +458,27 @@ export class StringConcatExpression extends Expression {
                 bracketLevel--;
 
                 if (bracketLevel == 0) {
-                    var expression = new this.constructor(bracketTokens, this.lineNumber);
+                    var lastExpression = new this.constructor([], this.lineNumber);
+                    var expressions = [];
+
+                    bracketTokens.forEach(function(token) {
+                        if (token instanceof FunctionParameterSeperator) {
+                            expressions.push(lastExpression);
+
+                            lastExpression = new thisScope.constructor([], thisScope.lineNumber);
+                        } else {
+                            lastExpression.tokens.push(token);
+                        }
+                    });
+
+                    expressions.push(lastExpression);
 
                     if (chosenFunction != null) {
-                        chosenFunction.expression = expression;
+                        chosenFunction.expressions = expressions;
 
                         this.children[this.children.length - 1].tokens.push(chosenFunction);
                     } else {
-                        this.children[this.children.length - 1].tokens.push(expression);
+                        this.children[this.children.length - 1].tokens.push(expressions[0]);
                     }
 
                     chosenFunction = null;
@@ -931,6 +956,7 @@ export function tokeniseLine(code, lineNumber = null) {
     var expressionTokens = [];
     var commentMatch;
     var match;
+    var bracketLevel = 0;
     var assignmentAllowed = true;
 
     if (commentMatch = RE_COMMENT.exec(code.replace(new RegExp(RE_STRING_LITERAL, "g"), function(matchedString) {
@@ -989,8 +1015,13 @@ export function tokeniseLine(code, lineNumber = null) {
         }
 
         if (RE_PARAMETER_SEPERATOR.exec(lineSymbols[i])) {
-            computeExpressionTokens();
-            tokens.push(new ParameterSeperator(lineSymbols[i], lineNumber));
+            if (bracketLevel == 0) {
+                computeExpressionTokens();
+
+                tokens.push(new ParameterSeperator(lineSymbols[i], lineNumber));
+            } else {
+                expressionTokens.push(new FunctionParameterSeperator(lineSymbols[i], lineNumber));
+            }
 
             continue;
         }
@@ -1034,7 +1065,15 @@ export function tokeniseLine(code, lineNumber = null) {
         }
 
         if (RE_EXPRESSION_BRACKET.exec(lineSymbols[i])) {
-            expressionTokens.push(new ExpressionBracket(lineSymbols[i], lineNumber));
+            var token = new ExpressionBracket(lineSymbols[i], lineNumber);
+
+            expressionTokens.push(token);
+
+            if (token.isOpening()) {
+                bracketLevel++;
+            } else {
+                bracketLevel--;
+            }
 
             continue;
         }
