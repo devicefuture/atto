@@ -950,7 +950,6 @@ export function tokeniseLine(code, lineNumber = null) {
 
         tokens.push(new StringConcatExpression(expressionTokens, lineNumber));
         tokens[tokens.length - 1].parse();
-        console.log(tokens); // TODO: Remove
 
         expressionTokens = [];
     }
