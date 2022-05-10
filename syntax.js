@@ -635,7 +635,7 @@ export class GreaterThanOrEqualComparisonExpression extends Expression {
 
 export class NotEqualComparisonExpression extends Expression {
     constructor(tokens, lineNumber = null) {
-        super(tokens, new Operator("!="), SubtractionExpression, lineNumber);
+        super(tokens, new Operator("!="), AdditionExpression, lineNumber);
     }
 
     reduce(a, b) {
@@ -643,19 +643,36 @@ export class NotEqualComparisonExpression extends Expression {
     }
 }
 
-export class SubtractionExpression extends Expression {
+export class NegationHelperExpression extends Expression {
     constructor(tokens, lineNumber = null) {
-        super(tokens, new Operator("-"), AdditionExpression, lineNumber);
+        super(tokens, new Operator("-"), MultiplicationExpression, lineNumber);
     }
 
-    reduce(a, b) {
-        return a - b;
+    get value() {
+        return -this.children[0].value;
     }
 }
 
 export class AdditionExpression extends Expression {
     constructor(tokens, lineNumber = null) {
         super(tokens, new Operator("+"), MultiplicationExpression, lineNumber);
+    }
+
+    parse() {
+        this.children = [new this.childExpressionClass([], this.lineNumber)];
+
+        for (var i = 0; i < this.tokens.length; i++) {
+            if (this.tokens[i] instanceof Operator && (
+                (this.tokens[i].code == this.operator.code) ||
+                (this.tokens[i].code == "-" && !(this.tokens[i - 1] instanceof Operator))
+            )) {
+                this.children.push(new (this.tokens[i].code == "-" ? NegationHelperExpression : this.childExpressionClass)([], this.lineNumber));
+            } else {
+                this.children[this.children.length - 1].tokens.push(this.tokens[i]);
+            }
+        }
+
+        this.children.forEach((i) => i.parse());
     }
 
     reduce(a, b) {
@@ -665,7 +682,7 @@ export class AdditionExpression extends Expression {
             return NaN;
         }
 
-        return a + b;
+        return value;
     }
 }
 
@@ -753,11 +770,21 @@ export class BitwiseOrExpression extends Expression {
 
 export class BitwiseXorExpression extends Expression {
     constructor(tokens, lineNumber = null) {
-        super(tokens, new Operator("~"), LeafExpression, lineNumber);
+        super(tokens, new Operator("~"), LiteralNegationExpression, lineNumber);
     }
 
     reduce(a, b) {
         return a ^ b;
+    }
+}
+
+export class LiteralNegationExpression extends Expression {
+    constructor(tokens, lineNumber = null) {
+        super(tokens, new Operator("-"), LeafExpression, lineNumber);
+    }
+
+    reduce(a, b) {
+        return -b;
     }
 }
 
@@ -923,6 +950,7 @@ export function tokeniseLine(code, lineNumber = null) {
 
         tokens.push(new StringConcatExpression(expressionTokens, lineNumber));
         tokens[tokens.length - 1].parse();
+        console.log(tokens); // TODO: Remove
 
         expressionTokens = [];
     }
