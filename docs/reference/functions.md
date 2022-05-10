@@ -508,7 +508,7 @@ Returns the last `a` characters of the string expression given as argument `str$
 
 ## `mid$`
 ```
-right$(str$, a, b)
+mid$(str$, a, b)
 ```
 
 Returns a portion of the string expression given as argument `str$`, where the start is given as argument `a`, and the length is given as argument `b`.
