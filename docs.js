@@ -4,12 +4,12 @@ const TWITTER_HANDLE = "@codeurdreams";
 var currentPage = null;
 var oldTweet = null;
 
-function visitDocumentation(path) {
+function visitDocumentation(path, updateUrl = true) {
     path = path.replace(/^docs\/\//g, "docs/");
 
     currentPage = path;
     
-    if (window.inDocsPopout) {
+    if (window.inDocsPopout && updateUrl) {
         window.history.pushState("", "", `${window.location.href.split("?")[0]}?page=${path}`);
     }
 
