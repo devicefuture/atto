@@ -263,6 +263,40 @@ Calculates the absolute value of the numerical expression given as argument `x`.
 </pre>
 </details>
 
+## `min`
+```
+min(a, b)
+```
+
+Finds the minimum value of the two numerical expressions given as arguments `a` and `b`.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 input "First number? ", a%</code>
+<code>20 input "Second number? ", b%</code>
+<code>30 print "The lowest number is: ";</code>
+<code>40 print min(a%, b%)</code>
+</pre>
+</details>
+
+## `max`
+```
+max(a, b)
+```
+
+Finds the maximum value of the two numerical expressions given as arguments `a` and `b`.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 input "First number? ", a%</code>
+<code>20 input "Second number? ", b%</code>
+<code>30 print "The highest number is: ";</code>
+<code>40 print max(a%, b%)</code>
+</pre>
+</details>
+
 ## `asc`
 ```
 asc(x)
@@ -437,7 +471,7 @@ join$(items, delim$)
 join$(items)
 ```
 
-Convers the list given as argument `items` into a string, with the list joined by the delimeter given as argument `delim$`. If `delim$` is not present, then the list will be joined by no delimeter.
+Converts the list given as argument `items` into a string, with the list joined by the delimeter given as argument `delim$`. If `delim$` is not present, then the list will be joined by no delimeter.
 
 <details>
 <summary>Example</summary>
@@ -447,6 +481,25 @@ Convers the list given as argument `items` into a string, with the list joined b
 <code>30 push "orange", shopping</code>
 <code>40 push "banana", shopping</code>
 <code>50 print join$(shopping, "; ")</code>
+</pre>
+</details>
+
+## `find`
+```
+find(x, a)
+```
+
+If the value given as argument `x` is a list, then the index of item `a` in that list is returned. If the value given as argument `x` is a string, then the index of where the string `a` occurs in `x` is returned. If `a` is not present in `x`, then -1 is returned.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 print find("Hello, world!", "o")</code>
+<code>20 dim shopping</code>
+<code>30 push "apple", shopping</code>
+<code>40 push "orange", shopping</code>
+<code>50 push "banana", shopping</code>
+<code>60 print find(shopping, "orange")</code>
 </pre>
 </details>
 
@@ -559,5 +612,19 @@ Removes trailing whitespace characters on the string expression given as argumen
 <summary>Example</summary>
 <pre>
 <code>10 print rtrim$("   Hello, world!   "); "|End"</code>
+</pre>
+</details>
+
+## `repeat$`
+```
+repeat$(str$, a)
+```
+
+Repeats the string expression given as argument `str$` the number of times given as argument `a`.
+
+<details>
+<summary>Example</summary>
+<pre>
+<code>10 print repeat$("Hello! ", 3)</code>
 </pre>
 </details>

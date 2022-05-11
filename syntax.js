@@ -2,6 +2,8 @@ import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as basic from "./basic.js";
 
+export const MAX_STRING_LENGTH_LIMIT = 1_000_000;
+
 const RE_STRING_LITERAL = /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/i;
 const RE_LINE_NUMBER = /^\d{1,6}/;
 const RE_COMMENT = /(?:rem\s|#)[^\n]*/i;
@@ -9,8 +11,8 @@ const RE_NUMERIC_LITERAL_HEX = /(?<![a-z_])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=div|mod|and|or|xor|not)|(?<![a-z_][a-z0-9_]*))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
-const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|forward|for|to|step|next|break|continue|stop|repeat|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|plot|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove|show|hide|forward|backward|left(?!\$)|right(?!\$)|penup|pendown|angle|note|play|rest|quiet|bpm|volume|envelope|speak|voice)/i;
-const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|last|split|join\$|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|left\$|right\$|mid\$|chr\$)/i;
+const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|forward|for|to|step|next|break|continue|stop|repeat(?!\$)|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|plot|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove|show|hide|forward|backward|left(?!\$)|right(?!\$)|penup|pendown|angle|note|play|rest|quiet|bpm|volume|envelope|speak|voice)/i;
+const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|min|max|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|last|split|join\$|find|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|left\$|right\$|mid\$|repeat\$|chr\$)/i;
 const RE_CONSTANT = /(?<![a-z0-9_])(?:true|false|pi|e|phi|epoch|random|col|row|key|heading)(?![a-z0-9_])/i;
 const RE_ASSIGNMENT = /=/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])(?:div|mod)(?![a-z_])|&|\||~|;/i;
@@ -334,7 +336,8 @@ export class Function extends Token {
         var thisScope = this;
 
         var name = this.code.toLocaleLowerCase();
-        var argument = function(index, defaultValue = null) {
+
+        function argument(index, defaultValue = null) {
             if (index >= thisScope.expressions.length) {
                 if (defaultValue != null) {
                     return defaultValue;
@@ -345,6 +348,8 @@ export class Function extends Token {
 
             return thisScope.expressions[index].value;
         }
+
+        var argIsNum = (i) => !Number.isNaN(Number(argument(i)));
 
         if (name == "tan" && argument(0) % 90 == 0 && argument(0) % 180 != 0) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
@@ -362,23 +367,27 @@ export class Function extends Token {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
+        if (["min", "max"].includes(name) && (!argIsNum(0) || !argIsNum(1))) {
+            throw new basic.RuntimeError("Type conversion error", this.lineNumber);
+        }
+
         if (name == "last" && typeof(argument(0)) != "object") {
             throw new basic.RuntimeError("Cannot get last item of non-list value", this.lineNumber);
         }
 
-        if (["left$", "right$"].includes(name) && Number.isNaN(Number(argument(1)))) {
+        if (["left$", "right$", "repeat$"].includes(name) && !argIsNum(1)) {
             throw new basic.RuntimeError("Type conversion error", this.lineNumber);
         }
 
-        if (name == "mid$" && (Number.isNaN(Number(argument(1)) || Number.isNaN(Number(argument(2)))))) {
+        if (name == "mid$" && (!argIsNum(1) || !argIsNum(2))) {
             throw new basic.RuntimeError("Type conversion error", this.lineNumber);
         }
 
-        if (name == "chr$" && Number.isNaN(Number(argument(0)))) {
+        if (name == "chr$" && !argIsNum(0)) {
             throw new basic.RuntimeError("Type conversion error", this.lineNumber);
         }
 
-        if (["bin$", "oct$", "hex$"].includes(name) && Number.isNaN(Number(argument(0)))) {
+        if (["bin$", "oct$", "hex$"].includes(name) && !argIsNum(0)) {
             throw new basic.RuntimeError("Maths error", this.lineNumber);
         }
 
@@ -396,6 +405,8 @@ export class Function extends Token {
             case "floor": return Math.floor(argument(0));
             case "ceil": return Math.ceil(argument(0));
             case "abs": return Math.abs(argument(0));
+            case "min": return Math.min(argument(0), argument(1));
+            case "max": return Math.max(argument(0), argument(1));
             case "asc": return String(argument(0)).charCodeAt(0) || 0;
             case "bin": return Number.parseInt(argument(0), 2);
             case "oct": return Number.parseInt(argument(0), 8);
@@ -442,6 +453,20 @@ export class Function extends Token {
                 }
 
                 return argument(0).join(String(argument(1, "")));
+
+            case "find":
+                if (typeof(argument(0)) == "object") {
+                    return argument(0).findIndex((item) => item == argument(1));
+                }
+
+                return String(argument(0)).indexOf(String(argument(1)));
+
+            case "repeat$":
+                if (String(argument(0)).length * argument(1) > MAX_STRING_LENGTH_LIMIT) {
+                    throw new basic.RuntimeError("Maximum string length limit reached", this.lineNumber);
+                }
+
+                return String(argument(0)).repeat(argument(1));
         }
     }
 }
@@ -600,7 +625,7 @@ export class StringConcatExpression extends Expression {
     reduce(a, b) {
         var value = basic.getValueDisplay(a, this.lineNumber) + basic.getValueDisplay(b, this.lineNumber);
 
-        if (value.length > 1_000_000) {
+        if (value.length > MAX_STRING_LENGTH_LIMIT) {
             throw new basic.RuntimeError("Maximum string length limit reached", this.lineNumber);
         }
 
