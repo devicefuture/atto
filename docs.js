@@ -20,6 +20,8 @@ function visitDocumentation(path) {
 
         document.querySelector("#docsContent").innerHTML = converter.makeHtml(data);
 
+        document.querySelector("#docsContent").scrollTo(0, 0);
+
         document.querySelectorAll("a").forEach(function(element) {
             var destination = element.getAttribute("href") || "";
 
@@ -44,6 +46,10 @@ function visitDocumentation(path) {
             document.querySelectorAll("details").forEach(function(element) {
                 element.open = true;
             });
+
+            if (window.location.hash == "") {
+                window.scrollTo(0, 0);
+            }
         }
 
         oldTweet = null;
