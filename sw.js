@@ -1,4 +1,4 @@
-const cacheName = "atto-cv9"; // Increment for every major change
+const cacheName = "atto-cv10"; // Increment for every major change
 
 self.addEventListener("install", function(event) {
     event.waitUntil(caches.open(cacheName).then(function(cache) {
