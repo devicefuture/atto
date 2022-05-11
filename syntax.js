@@ -12,7 +12,7 @@ const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=div|mod|and|or|xor|not)|(?<![a-z_][a-z0-9_]*))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
 const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|forward|for|to|step|next|break|continue|stop|repeat(?!\$)|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|plot|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove|show|hide|forward|backward|left(?!\$)|right(?!\$)|penup|pendown|angle|note|play|rest|quiet|bpm|volume|envelope|speak|voice)/i;
-const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|min|max|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|last|split|join\$|find|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|left\$|right\$|mid\$|repeat\$|chr\$)/i;
+const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|min|max|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|last|split|join\$|find|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|left\$|right\$|mid\$|repeat\$|chr\$)\b/i;
 const RE_CONSTANT = /(?<![a-z0-9_])(?:true|false|pi|e|phi|epoch|random|col|row|key|heading)(?![a-z0-9_])/i;
 const RE_ASSIGNMENT = /=/i;
 const RE_OPERATOR = /\+|-|\*|\/|\^|(?<![a-z_])(?:div|mod)(?![a-z_])|&|\||~|;/i;
