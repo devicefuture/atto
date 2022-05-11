@@ -4,12 +4,12 @@ const TWITTER_HANDLE = "@codeurdreams";
 var currentPage = null;
 var oldTweet = null;
 
-function visitDocumentation(path) {
+function visitDocumentation(path, updateUrl = true) {
     path = path.replace(/^docs\/\//g, "docs/");
 
     currentPage = path;
     
-    if (window.inDocsPopout) {
+    if (window.inDocsPopout && updateUrl) {
         window.history.pushState("", "", `${window.location.href.split("?")[0]}?page=${path}`);
     }
 
@@ -19,6 +19,8 @@ function visitDocumentation(path) {
         var converter = new showdown.Converter();
 
         document.querySelector("#docsContent").innerHTML = converter.makeHtml(data);
+
+        document.querySelector("#docsContent").scrollTo(0, 0);
 
         document.querySelectorAll("a").forEach(function(element) {
             var destination = element.getAttribute("href") || "";
@@ -44,6 +46,10 @@ function visitDocumentation(path) {
             document.querySelectorAll("details").forEach(function(element) {
                 element.open = true;
             });
+
+            if (window.location.hash == "") {
+                window.scrollTo(0, 0);
+            }
         }
 
         oldTweet = null;
