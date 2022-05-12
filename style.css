@@ -504,6 +504,10 @@ h1.reference a.comparators {
         break-inside: avoid;
     }
 
+    pre {
+        white-space: pre-wrap;
+    }
+
     details:not([open]) {
         display: none;
     }
