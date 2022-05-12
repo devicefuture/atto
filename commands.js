@@ -196,9 +196,7 @@ export function forLoop(identifier, start, end, step) {
         if (start.value <= end.value) {
             step = new syntax.LeafExpression([new syntax.NumericLiteral("1", identifier.lineNumber)], identifier.lineNumber);
         } else {
-            step = new syntax.SubtractionExpression([
-                new syntax.LeafExpression([new syntax.NumericLiteral("0", identifier.lineNumber)], identifier.lineNumber),
-                new syntax.Operator("-", identifier.lineNumber),
+            step = new syntax.NegationHelperExpression([
                 new syntax.LeafExpression([new syntax.NumericLiteral("1", identifier.lineNumber)], identifier.lineNumber)
             ], identifier.lineNumber);
 
