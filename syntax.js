@@ -488,6 +488,8 @@ export class StringConcatExpression extends Expression {
         var chosenFunction = null;
         var chosenListIdentifier = null;
 
+        console.log(this.tokens); // TODO: Remove
+
         for (var i = 0; i < this.tokens.length; i++) {
             if (this.tokens[i] instanceof Function && bracketLevel == 0) {
                 chosenFunction = this.tokens[i];
@@ -525,9 +527,18 @@ export class StringConcatExpression extends Expression {
                 if (bracketLevel == 0) {
                     var lastExpression = new this.constructor([], this.lineNumber);
                     var expressions = [];
+                    var functionBracketLevel = 0;
 
                     bracketTokens.forEach(function(token) {
-                        if (token instanceof FunctionParameterSeperator) {
+                        if (token instanceof ExpressionBracket || token instanceof ListAccessBracket) {
+                            if (token.isOpening()) {
+                                functionBracketLevel++;
+                            } else {
+                                functionBracketLevel--;
+                            }
+                        }
+
+                        if (token instanceof FunctionParameterSeperator && functionBracketLevel == 0) {
                             expressions.push(lastExpression);
 
                             lastExpression = new thisScope.constructor([], thisScope.lineNumber);
