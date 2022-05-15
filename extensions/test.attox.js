@@ -39,7 +39,7 @@ attoX.onReady(function() {
         });
     });
 
-    attoX.print("Test module loaded!\n");
+    attoX.print("Test extension loaded!\n");
 
     attoX.ready();
 });

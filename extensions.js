@@ -134,7 +134,7 @@ export function hasLoaded(extensionName) {
     return loaded[extensionName] instanceof Extension;
 }
 
-export function load(url, givenName = null) {
+export function load(url, givenName = null, printLoad = false) {
     if (!(url.startsWith("http://") || url.startsWith("https://"))) {
         url = `extensions/${url}.attox.js`;
     }
@@ -143,6 +143,11 @@ export function load(url, givenName = null) {
 
     if (hasLoaded(extensionName)) {
         return Promise.resolve(false);
+    }
+
+
+    if (printLoad) {
+        term.print(`Loading extension \`${extensionName}\`...\n`);
     }
 
     return init().then(function() {

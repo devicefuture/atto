@@ -87,7 +87,7 @@ export function extensionLoad(url, givenName) {
         }
     }
 
-    return extensions.load(url.value, givenName).then(function(loadPerformed) {
+    return extensions.load(url.value, givenName, true).then(function(loadPerformed) {
         if (!loadPerformed) {
             basic.executeStatement();
 
