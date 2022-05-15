@@ -5,8 +5,10 @@ import * as term from "./term.js";
 import * as hid from "./hid.js";
 import * as audio from "./audio.js";
 import * as theme from "./theme.js";
+import * as extensions from "./extensions.js";
 
 export var keywords = {
+    "extload": extensionLoad,
     "print": print,
     "input": input,
     "goto": goto,
@@ -69,6 +71,20 @@ function expectParameters(...parameters) {
 
 function getNumber(parameter) {
     return basic.getValueComparative(Number(parameter.value), parameter.lineNumber);
+}
+
+export function extensionLoad(url, givenName) {
+    if (url == null) {
+        throw new basic.RuntimeError("No extension location provided");
+    }
+
+    return extensions.load(url.value, givenName?.value || null).then(function() {
+        basic.executeStatement();
+    }).catch(function(error) {
+        console.error(error);
+
+        return Promise.reject(new basic.RuntimeError("Couldn't load extension"));
+    });
 }
 
 export function print(value) {
