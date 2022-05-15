@@ -1,14 +1,63 @@
+import * as basic from "./basic.js";
+import * as term from "./term.js";
+import * as hid from "./hid.js";
+import * as canvas from "./canvas.js";
+import * as theme from "./theme.js";
+
 export var loaded = {};
 
 var injectionCode = null;
+
+function wrapPromise(callback) {
+    return function() {
+        var result = callback(...arguments);
+
+        if (result instanceof Promise) {
+            return result;
+        }
+
+        return Promise.resolve(result);
+    };
+}
 
 export var apiCommands = {
     _getApiCommandList: function() {
         return Promise.resolve(Object.keys(apiCommands));
     },
-    test: function() {
-        return Promise.resolve("Works!");
-    }
+    ready: wrapPromise(function() {
+        basic.executeStatement();
+    }),
+    background: wrapPromise(term.background),
+    foreground: wrapPromise(term.foreground),
+    scrollUp: wrapPromise(term.scrollUp),
+    scrollDown: wrapPromise(term.scrollDown),
+    up: wrapPromise(term.up),
+    down: wrapPromise(term.down),
+    left: wrapPromise(term.left),
+    right: wrapPromise(term.right),
+    goto: wrapPromise(term.goto),
+    clear: wrapPromise(term.clear),
+    print: wrapPromise(term.print),
+    input: function(message = "") {
+        term.print(message);
+
+        return hid.startInput();
+    },
+    getKey: wrapPromise(() => basic.currentKey),
+    stroke: wrapPromise(canvas.setStrokeWidth),
+    resetStroke: wrapPromise(canvas.resetStrokeWidth),
+    drawText: wrapPromise(canvas.drawText),
+    drawRect: wrapPromise(canvas.drawRect),
+    fillRect: wrapPromise(canvas.fillRect),
+    drawRoundedRect: wrapPromise(canvas.drawRoundedRect),
+    fillRoundedRect: wrapPromise(canvas.fillRoundedRect),
+    drawLine: wrapPromise(canvas.drawLine),
+    drawPolygon: wrapPromise(canvas.drawPolygon),
+    copyToBuffer: wrapPromise(canvas.copyToBuffer),
+    restoreFromBuffer: wrapPromise(canvas.restoreFromBuffer),
+    getPixel: wrapPromise(canvas.getPixel),
+    toggleDocs: wrapPromise(canvas.toggleDocs),
+    isDarkMode: wrapPromise(theme.isDarkMode)
 };
 
 export class Extension {
@@ -24,17 +73,21 @@ export class Extension {
         this.commands = {};
 
         this.worker.addEventListener("message", function(event) {
-            if (event.data.mode == "call") {
-                ((apiCommands[event.data.command] || (() => Promise.reject("Unknown command")))() || Promise.resolve()).then(function(data) {
+            if (event.data.type == "registerCommand") {
+                thisScope.registerWorkerCommand(event.data.command);
+            }
+
+            if (event.data.type == "call") {
+                ((apiCommands[event.data.command] || (() => Promise.reject("Unknown command")))(...event.data.args) || Promise.resolve()).then(function(data) {
                     thisScope.worker.postMessage({
-                        mode: "reply",
+                        type: "reply",
                         id: event.data.id,
                         status: "resolve",
                         data
                     });
                 }).catch(function() {
                     thisScope.worker.postMessage({
-                        mode: "reply",
+                        type: "reply",
                         id: event.data.id,
                         status: "reject",
                         data
@@ -42,6 +95,22 @@ export class Extension {
                 });
             }
         });
+    }
+
+    unload() {
+        this.worker.terminate();
+    }
+
+    registerWorkerCommand(command) {
+        var thisScope = this;
+
+        this.commands[command] = function() {
+            thisScope.worker.postMessage({
+                type: "commandExecution",
+                command,
+                args: [...arguments].map((argument) => argument.value || null)
+            });
+        };
     }
 }
 
@@ -59,7 +128,23 @@ export function init() {
     });
 }
 
+export function hasLoaded(extensionName) {
+    extensionName = extensionName.toLowerCase();
+
+    return loaded[extensionName] instanceof Extension;
+}
+
 export function load(url, givenName = null) {
+    if (!(url.startsWith("http://") || url.startsWith("https://"))) {
+        url = `extensions/${url}.attox.js`;
+    }
+
+    var extensionName = (givenName || url.match(/([a-z_][a-z0-9_]*)\.attox\.js$/)[1] || "ext").toLowerCase();
+
+    if (hasLoaded(extensionName)) {
+        return Promise.resolve(false);
+    }
+
     return init().then(function() {
         return fetch(url);
     }).then(function(response) {
@@ -69,14 +154,22 @@ export function load(url, givenName = null) {
 
         return response.text();
     }).then(function(data) {
-        loaded[givenName] = new Extension(data);
+        loaded[extensionName] = new Extension(data);
+
+        return Promise.resolve(true);
     });
 }
 
-export function hasLoaded(extensionName) {
+export function unload(extensionName) {
     extensionName = extensionName.toLowerCase();
 
-    return loaded[extensionName] instanceof Extension;
+    if (!hasLoaded(extensionName)) {
+        return;
+    }
+
+    loaded[extensionName].unload();
+
+    delete loaded[extensionName];
 }
 
 export function getCommand(commandName) {

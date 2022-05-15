@@ -1,6 +1,7 @@
 (function() {
     var messageQueue = {};
     var readyCallbacks = [];
+    var commandCallbacks = {};
 
     self.attoX = {
         onReady: function(callback) {
@@ -8,19 +9,19 @@
         }
     };
 
-    function _call(command, args) {
+    function _call(command, ...args) {
         return new Promise(function(resolve, reject) {
             var id = Math.random();
 
             self.postMessage({
-                mode: "call",
+                type: "call",
                 id,
                 command,
                 args
             });
     
             var interval = setInterval(function() {
-                if (messageQueue[id]?.mode == "reply") {
+                if (messageQueue[id]?.type == "reply") {
                     (messageQueue[id].status == "reject" ? reject : resolve)(messageQueue[id].data);
 
                     delete messageQueue[id];
@@ -35,8 +36,25 @@
         callback();
     }
 
+    function registerCommand(command, callback) {
+        commandCallbacks[command] = callback;
+
+        self.postMessage({
+            type: "registerCommand",
+            command
+        });
+    }
+
     self.addEventListener("message", function(event) {
-        messageQueue[event.data.id] = event.data;
+        if (event.data.type == "commandExecution") {
+            (commandCallbacks[event.data.command](...event.data.args) || Promise.resolve()).then(function() {
+                _call("ready");
+            });
+        }
+
+        if (event.data.type == "reply") {
+            messageQueue[event.data.id] = event.data;
+        }
     });
 
     return _call("_getApiCommandList").then(function(commandList) {
@@ -44,11 +62,11 @@
 
         commandList.forEach(function(command) {
             commands[command] = function() {
-                return _call(command, [...arguments]);
+                return _call(command, ...arguments);
             };
         });
 
-        return Promise.resolve({attoX: {_call, onReady, ...commands}, readyCallbacks});
+        return Promise.resolve({attoX: {_call, onReady, registerCommand, ...commands}, readyCallbacks});
     });
 })().then(function({attoX, readyCallbacks}) {
     self.attoX = Object.freeze(attoX);

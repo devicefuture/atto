@@ -9,6 +9,7 @@ import * as extensions from "./extensions.js";
 
 export var keywords = {
     "extload": extensionLoad,
+    "extunload": extensionUnload,
     "print": print,
     "input": input,
     "goto": goto,
@@ -78,13 +79,35 @@ export function extensionLoad(url, givenName) {
         throw new basic.RuntimeError("No extension location provided");
     }
 
-    return extensions.load(url.value, givenName?.value || null).then(function() {
-        basic.executeStatement();
+    if (givenName != null) {
+        givenName = basic.getValueDisplay(givenName.value, givenName.lineNumber);
+
+        if (!givenName.match(/^[a-z_][a-z0-9_]*$/)) {
+            throw new basic.RuntimeError("Invalid extension name");
+        }
+    }
+
+    return extensions.load(url.value, givenName).then(function(loadPerformed) {
+        if (!loadPerformed) {
+            basic.executeStatement();
+
+            return Promise.resolve();
+        }
     }).catch(function(error) {
         console.error(error);
 
         return Promise.reject(new basic.RuntimeError("Couldn't load extension"));
     });
+}
+
+export function extensionUnload(extensionName) {
+    if (extensionName == null) {
+        throw new basic.RuntimeError("No extension name provided");
+    }
+
+    extensions.unload(basic.getValueDisplay(extensionName.value, extensionName.lineNumber));
+
+    basic.executeStatement();
 }
 
 export function print(value) {

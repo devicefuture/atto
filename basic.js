@@ -174,6 +174,7 @@ export function parseProgram(program) {
                 x instanceof syntax.ExtensionKeyword
             ))
         ) { // Command
+            var keyword = tokens[i];
             var commandName = tokens[i].code;
             var parameters = [];
 
@@ -193,7 +194,7 @@ export function parseProgram(program) {
                 }
             }
 
-            if (tokens[i] instanceof syntax.ExtensionKeyword) {
+            if (keyword instanceof syntax.ExtensionKeyword) {
                 (function(commandName, i) {
                     var extensionName = commandName.split(".")[0];
 
@@ -212,9 +213,7 @@ export function parseProgram(program) {
                             );
                         }
 
-                        extensions.getCommand(commandName)(...arguments).then(function() {
-                            executeStatement();
-                        });
+                        extensions.getCommand(commandName)(...arguments);
                     }, parameters));
                 })(commandName, i);
             } else {
