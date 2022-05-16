@@ -9,6 +9,8 @@ export var loaded = {};
 
 var injectionCode = null;
 var lastCommandArgs = [];
+var lastCommandError = null;
+var lastCommandFinished = false;
 
 function wrapPromise(callback) {
     return function() {
@@ -26,12 +28,22 @@ export var apiCommands = {
     _getApiCommandList: function() {
         return Promise.resolve(Object.keys(apiCommands));
     },
+    _finishExecution: function(error) {
+        lastCommandError = error;
+        lastCommandFinished = true;
+    },
     ready: wrapPromise(function() {
         basic.executeStatement();
     }),
     setArgValue: function(argIndex, argValue) {
         if (!(lastCommandArgs[argIndex] instanceof syntax.Expression)) {
             return Promise.resolve();
+        }
+
+        if (argValue == null || argValue == undefined || argValue == NaN) {
+            argValue = 0;
+        } else if (typeof(argValue) == "boolean") {
+            argValue = argValue ? 1 : 0;
         }
 
         basic.setStore(lastCommandArgs[argIndex], argValue);
@@ -117,11 +129,29 @@ export class Extension {
 
         this.commands[command] = function() {
             lastCommandArgs = [...arguments];
+            lastCommandError = null;
+            lastCommandFinished = false;
 
             thisScope.worker.postMessage({
                 type: "commandExecution",
                 command,
                 args: [...arguments].map((argument) => argument.value || null)
+            });
+
+            return new Promise(function(resolve, reject) {
+                var interval = setInterval(function() {
+                    if (lastCommandFinished) {
+                        clearInterval(interval);
+
+                        if (lastCommandError == null) {
+                            basic.executeStatement();
+
+                            resolve();
+                        } else {
+                            reject(lastCommandError);
+                        }
+                    }
+                });
             });
         };
     }

@@ -48,7 +48,9 @@
     self.addEventListener("message", function(event) {
         if (event.data.type == "commandExecution") {
             (commandCallbacks[event.data.command](...event.data.args) || Promise.resolve()).then(function() {
-                _call("ready");
+                _call("_finishExecution", null);
+            }).catch(function(error) {
+                _call("_finishExecution", error);
             });
         }
 

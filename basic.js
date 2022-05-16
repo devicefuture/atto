@@ -213,7 +213,7 @@ export function parseProgram(program) {
                             );
                         }
 
-                        extensions.getCommand(commandName)(...arguments);
+                        return extensions.getCommand(commandName)(...arguments);
                     }, parameters));
                 })(commandName, i);
             } else {
@@ -436,7 +436,13 @@ export function executeStatement(position = currentPosition + 1) {
             var result = parsedProgram[currentPosition].call();
 
             if (result instanceof Promise) {
-                result.catch(handleError);
+                result.catch(function(error) {
+                    if (error instanceof BasicError) {
+                        return error;
+                    }
+
+                    handleError(new RuntimeError(error?.message || String(error) || "Error", findLineNumberByPosition(currentPosition)));
+                });
             }
         } catch (e) {
             handleError(e);

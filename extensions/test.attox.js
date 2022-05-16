@@ -43,6 +43,10 @@ attoX.onReady(function() {
         });
     });
 
+    attoX.registerCommand("error", function() {
+        return Promise.reject("Some error");
+    });
+
     attoX.print("Test extension loaded!\n");
 
     attoX.ready();
