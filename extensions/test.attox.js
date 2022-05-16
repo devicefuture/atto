@@ -9,7 +9,11 @@ attoX.onReady(function() {
 
     attoX.registerCommand("askquestion", function(defaultName) {
         return attoX.input("What's your name? ").then(function(name) {
-            attoX.print("Your name is " + (name || defaultName || "something") + "!\n");
+            name = name || defaultName || "something";
+
+            attoX.print("Your name is " + name + "!\n");
+
+            attoX.setArgValue(1, name);
         });
     });
 

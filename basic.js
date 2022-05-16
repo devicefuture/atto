@@ -692,7 +692,7 @@ export function setStore(store, value) {
         return;
     }
 
-    throw new RuntimeError("Expected variable name", identifier.lineNumber);
+    throw new RuntimeError("Expected variable name", identifier?.lineNumber);
 }
 
 export function pushStack(lineNumber, position = currentPosition) {

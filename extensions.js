@@ -1,3 +1,4 @@
+import * as syntax from "./syntax.js";
 import * as basic from "./basic.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
@@ -7,6 +8,7 @@ import * as theme from "./theme.js";
 export var loaded = {};
 
 var injectionCode = null;
+var lastCommandArgs = [];
 
 function wrapPromise(callback) {
     return function() {
@@ -27,6 +29,15 @@ export var apiCommands = {
     ready: wrapPromise(function() {
         basic.executeStatement();
     }),
+    setArgValue: function(argIndex, argValue) {
+        if (!(lastCommandArgs[argIndex] instanceof syntax.Expression)) {
+            return Promise.resolve();
+        }
+
+        basic.setStore(lastCommandArgs[argIndex], argValue);
+
+        return Promise.resolve();
+    },
     background: wrapPromise(term.background),
     foreground: wrapPromise(term.foreground),
     scrollUp: wrapPromise(term.scrollUp),
@@ -105,6 +116,8 @@ export class Extension {
         var thisScope = this;
 
         this.commands[command] = function() {
+            lastCommandArgs = [...arguments];
+
             thisScope.worker.postMessage({
                 type: "commandExecution",
                 command,

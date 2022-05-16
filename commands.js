@@ -121,10 +121,16 @@ export function input(p1, p2) {
 
     term.print(p2 == undefined ? "" : basic.getValueDisplay(p1.value, p1.lineNumber));
 
-    hid.startInput().then(function(value) {
-        basic.setStore(p2 == undefined ? p1 : p2, value);
+    return hid.startInput().then(function(value) {
+        try {
+            basic.setStore(p2 == undefined ? p1 : p2, value);
+        } catch (e) {
+            return Promise.reject(e);
+        }
 
         basic.executeStatement();
+
+        return Promise.resolve();
     });
 }
 
