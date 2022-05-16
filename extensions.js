@@ -165,16 +165,24 @@ export function load(url, givenName = null, printLoad = false) {
     });
 }
 
-export function unload(extensionName) {
+export function unload(extensionName, printUnload = false) {
     extensionName = extensionName.toLowerCase();
 
     if (!hasLoaded(extensionName)) {
+        if (printUnload) {
+            term.print(`Extension \`${extensionName}\` was not loaded\n`);
+        }
+
         return;
     }
 
     loaded[extensionName].unload();
 
     delete loaded[extensionName];
+
+    if (printUnload) {
+        term.print(`Unloaded extension \`${extensionName}\`\n`);
+    }
 }
 
 export function getCommand(commandName) {

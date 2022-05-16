@@ -105,7 +105,7 @@ export function extensionUnload(extensionName) {
         throw new basic.RuntimeError("No extension name provided");
     }
 
-    extensions.unload(basic.getValueDisplay(extensionName.value, extensionName.lineNumber));
+    extensions.unload(basic.getValueDisplay(extensionName.value, extensionName.lineNumber), true);
 
     basic.executeStatement();
 }
