@@ -1,7 +1,6 @@
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as basic from "./basic.js";
-import * as extensions from "./extensions.js";
 
 export const MAX_STRING_LENGTH_LIMIT = 1_000_000;
 
