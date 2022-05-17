@@ -82,19 +82,19 @@ export var apiCommands = {
     getPixel: wrapPromise(canvas.getPixel),
     toggleDocs: wrapPromise(canvas.toggleDocs),
     isDarkMode: wrapPromise(theme.isDarkMode),
-    hostBroadcast: function(channelName) {
+    hostBroadcast: function(channel) {
         var broadcast = new broadcasting.Broadcast();
         var id = broadcasting.broadcasts.length - 1;
 
-        return broadcast.host(channelName).then(function(channelId) {
-            return Promise.resolve({broadcastId: id, channelId});
+        return broadcast.host(channel).then(function(channel) {
+            return Promise.resolve({broadcastId: id, channel});
         });
     },
-    joinBroadcast: function(channelName) {
+    joinBroadcast: function(channel) {
         var broadcast = new broadcasting.Broadcast();
         var id = broadcasting.broadcasts.length - 1;
 
-        return broadcast.join(channelName).then(function() {
+        return broadcast.join(channel).then(function() {
             return Promise.resolve({broadcastId: id});
         });
     },
@@ -138,7 +138,7 @@ export class Extension {
                         type: "reply",
                         id: event.data.id,
                         status: "reject",
-                        error
+                        data: error
                     });
                 });
             }

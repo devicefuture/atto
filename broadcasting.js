@@ -1,4 +1,63 @@
+export const DFWS_URL = "https://webservices.james-livesey.repl.co";
+export const DFWS_PING_DELAY = 3_000;
+
 export var broadcasts = [];
+
+export function waitForDfws() {
+    console.log("Pinging DFWS server...");
+
+    return fetch(DFWS_URL).then(function(response) {
+        if (response.status == 202) {
+            console.log("DFWS server is waking; will retry soon");
+
+            return new Promise(function(resolve, reject) {
+                setTimeout(function() {
+                   waitForDfws().then(resolve); 
+                }, DFWS_PING_DELAY);
+            });
+        }
+
+        return response.json();
+    }).then(function(data) {
+        if (data?.status == "ok") {
+            console.log("DFWS server is active");
+
+            return Promise.resolve();
+        }
+
+        return Promise.reject(data);
+    });
+}
+
+export function channelToId(channel) {
+    return waitForDfws().then(function() {
+        return fetch(`${DFWS_URL}/broadcasting/${encodeURI(channel)}`);
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        if (data?.status == "ok") {
+            return Promise.resolve(data?.id);
+        }
+
+        return Promise.reject(data);
+    });
+}
+
+export function createChannel(channel, id) {
+    return waitForDfws().then(function() {
+        return fetch(`${DFWS_URL}/broadcasting/${encodeURI(channel)}?id=${encodeURIComponent(id)}`, {method: "POST"});
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        if (data?.status == "ok") {
+            return Promise.resolve();
+        }
+
+        return Promise.reject(data);
+    });
+}
+
+console.log(channelToId, createChannel);
 
 export class Broadcast {
     constructor() {
@@ -19,17 +78,23 @@ export class Broadcast {
         broadcasts.push(this);
     }
 
-    host() {
+    host(channelName = null) {
         var thisScope = this;
 
         this.isHost = true;
         thisScope.isConnected = true;
 
+        if (channelName == null) {
+            channelName = String(Math.round(Math.random() * 1e8)).padStart(8, "0");
+        }
+
         return new Promise(function(resolve, reject) {
             thisScope.peer = new Peer(null, {debug: 2});
 
             thisScope.peer.on("open", function(id) {
-                resolve(id);
+                createChannel(channelName, id).then(function() {
+                    resolve(channelName);
+                }).catch(reject);
             });
 
             thisScope.peer.on("connection", function(connection) {
@@ -62,39 +127,41 @@ export class Broadcast {
         });
     }
     
-    join(channelName) {
+    join(channel) {
         var thisScope = this;
 
         this.isHost = false;
-        
-        return new Promise(function(resolve, reject) {
-            thisScope.peer = new Peer();
 
-            thisScope.peer.on("open", function() {
-                thisScope.hostConnection = thisScope.peer.connect(`${channelName}`, {reliable: true});
-
-                thisScope.hostConnection.on("open", function() {
-                    console.log("Opened connection:", thisScope.hostConnection.peer);
-
-                    resolve();
-                });
-
-                thisScope.hostConnection.on("data", function(data) {
-                    thisScope.dataCallbacks.forEach((callback) => callback(data));
-                });
-
-                thisScope.peer.on("error", function(error) {
-                    reject(error);
-                });
-
-                thisScope.peer.on("disconnected", function() {
-                    thisScope.isConnected = false;
-                    thisScope.hostConnection = null;
-                });
-
-                thisScope.hostConnection.on("close", function() {
-                    thisScope.isConnected = false;
-                    thisScope.hostConnection = null;
+        return channelToId(channel).then(function(id) {
+            return new Promise(function(resolve, reject) {
+                thisScope.peer = new Peer();
+    
+                thisScope.peer.on("open", function() {
+                    thisScope.hostConnection = thisScope.peer.connect(id, {reliable: true});
+    
+                    thisScope.hostConnection.on("open", function() {
+                        console.log("Opened connection:", thisScope.hostConnection.peer);
+    
+                        resolve();
+                    });
+    
+                    thisScope.hostConnection.on("data", function(data) {
+                        thisScope.dataCallbacks.forEach((callback) => callback(data));
+                    });
+    
+                    thisScope.peer.on("error", function(error) {
+                        reject(error);
+                    });
+    
+                    thisScope.peer.on("disconnected", function() {
+                        thisScope.isConnected = false;
+                        thisScope.hostConnection = null;
+                    });
+    
+                    thisScope.hostConnection.on("close", function() {
+                        thisScope.isConnected = false;
+                        thisScope.hostConnection = null;
+                    });
                 });
             });
         });
