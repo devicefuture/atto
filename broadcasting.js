@@ -12,7 +12,7 @@ export function waitForDfws() {
 
             return new Promise(function(resolve, reject) {
                 setTimeout(function() {
-                   waitForDfws().then(resolve); 
+                   waitForDfws().then(resolve).catch(reject); 
                 }, DFWS_PING_DELAY);
             });
         }
@@ -26,6 +26,15 @@ export function waitForDfws() {
         }
 
         return Promise.reject(data);
+    }).catch(function(error) {
+        console.warn(error);
+
+        // Might be CORS which is the issue; try pinging again until it works
+        return new Promise(function(resolve, reject) {
+            setTimeout(function() {
+               waitForDfws().then(resolve).catch(reject); 
+            }, DFWS_PING_DELAY);
+        });
     });
 }
 
@@ -56,8 +65,6 @@ export function createChannel(channel, id) {
         return Promise.reject(data);
     });
 }
-
-console.log(channelToId, createChannel);
 
 export class Broadcast {
     constructor() {
