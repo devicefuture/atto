@@ -4,6 +4,7 @@ import * as term from "./term.js";
 import * as hid from "./hid.js";
 import * as canvas from "./canvas.js";
 import * as theme from "./theme.js";
+import * as broadcasting from "./broadcasting.js";
 
 export var loaded = {};
 
@@ -80,7 +81,31 @@ export var apiCommands = {
     restoreFromBuffer: wrapPromise(canvas.restoreFromBuffer),
     getPixel: wrapPromise(canvas.getPixel),
     toggleDocs: wrapPromise(canvas.toggleDocs),
-    isDarkMode: wrapPromise(theme.isDarkMode)
+    isDarkMode: wrapPromise(theme.isDarkMode),
+    hostBroadcast: function(channel) {
+        var broadcast = new broadcasting.Broadcast();
+        var id = broadcasting.broadcasts.length - 1;
+
+        return broadcast.host(channel).then(function(channel) {
+            return Promise.resolve({broadcastId: id, channel});
+        });
+    },
+    joinBroadcast: function(channel) {
+        var broadcast = new broadcasting.Broadcast();
+        var id = broadcasting.broadcasts.length - 1;
+
+        return broadcast.join(channel).then(function() {
+            return Promise.resolve({broadcastId: id});
+        });
+    },
+    broadcastSend: function(id, data) {
+        broadcasting.broadcasts[id].sendData(data);
+
+        return Promise.resolve();
+    },
+    broadcastRead: function(id) {
+        return Promise.resolve(broadcasting.broadcasts[id].readBuffer());
+    }
 };
 
 export class Extension {
@@ -108,12 +133,12 @@ export class Extension {
                         status: "resolve",
                         data
                     });
-                }).catch(function() {
+                }).catch(function(error) {
                     thisScope.worker.postMessage({
                         type: "reply",
                         id: event.data.id,
                         status: "reject",
-                        data
+                        data: error
                     });
                 });
             }
