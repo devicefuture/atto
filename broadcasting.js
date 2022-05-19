@@ -12,7 +12,7 @@ export function waitForDfws() {
 
             return new Promise(function(resolve, reject) {
                 setTimeout(function() {
-                   waitForDfws().then(resolve).catch(reject); 
+                   waitForDfws().then(resolve).catch(reject);
                 }, DFWS_PING_DELAY);
             });
         }
@@ -32,7 +32,7 @@ export function waitForDfws() {
         // Might be CORS which is the issue; try pinging again until it works
         return new Promise(function(resolve, reject) {
             setTimeout(function() {
-               waitForDfws().then(resolve).catch(reject); 
+               waitForDfws().then(resolve).catch(reject);
             }, DFWS_PING_DELAY);
         });
     });

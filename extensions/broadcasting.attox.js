@@ -12,6 +12,7 @@ attoX.onReady(function() {
             console.error(error);
 
             return Promise.reject({message: {
+                "broadcastingInvalidChannelName": "Invalid channel name",
                 "broadcastingChannelExists": "Channel already exists"
             }[error.code] || "Could not host broadcast"});
         });
@@ -31,6 +32,7 @@ attoX.onReady(function() {
             }
 
             return Promise.reject({message: {
+                "broadcastingInvalidChannelName": "Invalid channel name",
                 "broadcastingChannelNotFotFound": "Unknown channel"
             }[error.code] || "Could not resolve channel"});
         });
