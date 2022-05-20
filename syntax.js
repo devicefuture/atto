@@ -488,8 +488,6 @@ export class StringConcatExpression extends Expression {
         var chosenFunction = null;
         var chosenListIdentifier = null;
 
-        console.log(this.tokens); // TODO: Remove
-
         for (var i = 0; i < this.tokens.length; i++) {
             if (this.tokens[i] instanceof Function && bracketLevel == 0) {
                 chosenFunction = this.tokens[i];
