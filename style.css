@@ -389,6 +389,13 @@ h1.reference a.comparators {
     opacity: 0;
 }
 
+#hidInput {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    pointer-events: none;
+}
+
 #docs {
     position: absolute;
     top: 20px;
