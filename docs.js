@@ -1,13 +1,16 @@
 const TWITTER_MAX_CHAR_COUNT = 280;
 const TWITTER_HANDLE = "@codeurdreams";
 
+const REMOVED_ELEMENTS = ["script", "link", "style"];
+
 var currentPage = null;
 var oldTweet = null;
 
 function visitDocumentation(path, updateUrl = true) {
     path = path.replace(/^docs\/\//g, "docs/");
-
     currentPage = path;
+
+    var isExternalResource = path.startsWith("http://") || path.startsWith("https://");
     
     if (window.inDocsPopout && updateUrl) {
         window.history.pushState("", "", `${window.location.href.split("?")[0]}?page=${path}`);
@@ -17,8 +20,27 @@ function visitDocumentation(path, updateUrl = true) {
         return response.text();
     }).then(function(data) {
         var converter = new showdown.Converter();
+        var container = document.createElement("div");
 
-        document.querySelector("#docsContent").innerHTML = converter.makeHtml(data);
+        container.innerHTML = data;
+
+        container.querySelectorAll(REMOVED_ELEMENTS.join(", ")).forEach((element) => element.remove());
+
+        container.querySelectorAll("*").forEach(function(element) {
+            if (element.matches(REMOVED_ELEMENTS.join(", "))) {
+                element.remove();
+
+                return;
+            }
+
+            [...element.attributes].forEach(function(attribute) {
+                if (attribute.name.startsWith("on")) {
+                    element.setAttribute(attribute.name, null);
+                }
+            });
+        });
+
+        document.querySelector("#docsContent").innerHTML = converter.makeHtml(container.innerHTML);
 
         document.querySelector("#docsContent").scrollTo(0, 0);
 
@@ -26,10 +48,28 @@ function visitDocumentation(path, updateUrl = true) {
             var destination = element.getAttribute("href") || "";
 
             if (destination.startsWith("http://") || destination.startsWith("https://") || destination.startsWith("./") || destination.startsWith("javascript:") || destination.startsWith("#")) {
+                if (isExternalResource && (destination.startsWith("http://") || destination.startsWith("https://"))) {
+                    element.setAttribute("target", "_blank");
+                }
+
+                if (isExternalResource && destination.startsWith("javascript:")) {
+                    element.setAttribute("href", "javascript:void(0);");
+                }
+
                 return;
             }
 
-            element.setAttribute("href", `javascript:visitDocumentation("docs/${destination.replace(/\^\//, "")}");`);
+            if (isExternalResource) {
+                element.setAttribute("href", `javascript:void(0);`);
+
+                element.addEventListener("click", function() {
+                    visitDocumentation(new URL(".", path) + "/" + destination);
+                });
+
+                return;
+            }
+
+            element.setAttribute("href", `javascript:visitDocumentation("docs/${destination.replace(/^\//, "")}");`);
         });
 
         document.querySelectorAll("code").forEach(function(element) {

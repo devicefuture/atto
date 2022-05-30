@@ -190,6 +190,10 @@ code span.keyword {
     border-radius: 5px;
 }
 
+code span.keyword.darkgrey {
+    background-color: var(--darkGrey);
+}
+
 code span.keyword.blue {
     background-color: var(--darkBlue);
 }

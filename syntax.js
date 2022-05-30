@@ -1218,6 +1218,10 @@ export function renderDocumentationSyntaxHighlighting(code) {
             addHighlight(["stringLiteral"], match[0]);
         } else if (RE_COMMENT.exec(match)) {
             addHighlight(["comment"], match[0]);
+        } else if (RE_EXTENSION_KEYWORD.exec(match)) {
+            var keyword = match.toString().toLocaleLowerCase();
+
+            addHighlight(["keyword", "darkgrey"], match[0]);
         } else if (RE_KEYWORD.exec(match)) {
             var keyword = match.toString().toLocaleLowerCase();
 
