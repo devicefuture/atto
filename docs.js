@@ -40,7 +40,7 @@ function visitDocumentation(path, updateUrl = true) {
             });
         });
 
-        document.querySelector("#docsContent").innerHTML = converter.makeHtml(container.innerHTML);
+        document.querySelector("#docsContent").innerHTML = converter.makeHtml(container.innerHTML.replace(/&gt;/, ">"));
 
         document.querySelector("#docsContent").scrollTo(0, 0);
 
