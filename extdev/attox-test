@@ -1,0 +1,13 @@
+#!/bin/bash
+
+file=${1:-test.attox.js}
+
+if [ ! -f $file ]; then
+    echo "$0: $file: No such file or directory"
+    exit 1
+fi
+
+code=$(base64 ${1:-test.attox.js})
+
+echo "Launching atto instance for testing extension \`${2:-test}\` in default browser..."
+xdg-open "${3:-"http://atto.devicefuture.org"}?exttestcode=$code&exttestname=${2:-test}"
