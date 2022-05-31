@@ -437,7 +437,7 @@ export function executeStatement(position = currentPosition + 1) {
 
             if (result instanceof Promise) {
                 result.catch(function(error) {
-                    if (error instanceof BasicError) {
+                    if (!(error instanceof BasicError)) {
                         return error;
                     }
 
