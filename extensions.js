@@ -1,9 +1,11 @@
+import * as common from "./common.js";
 import * as syntax from "./syntax.js";
 import * as basic from "./basic.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
 import * as canvas from "./canvas.js";
 import * as theme from "./theme.js";
+import * as audio from "./audio.js";
 import * as broadcasting from "./broadcasting.js";
 
 export var loaded = {};
@@ -36,6 +38,49 @@ export var apiCommands = {
     ready: wrapPromise(function() {
         basic.executeStatement();
     }),
+    visitDocs: wrapPromise(function(path = "docs/index.md", popOut = false) {
+        if (popOut) {
+            popOutDocumentation(String(path));
+        } else {
+            canvas.setDocsVisibility(true);
+
+            visitDocumentation(String(path));
+        }
+    }),
+    closeDocs: wrapPromise(function() {
+        canvas.setDocsVisibility(false);
+    }),
+    openExternalUrl: wrapPromise(function(url) {        
+        window.open(String(url));
+    }),
+    isEmbedded: wrapPromise(() => !!common.getParameter("embed")),
+    runCommand: wrapPromise(function(command) {
+        basic.processCommand(String(command));
+    }),
+    setProgram: wrapPromise(function(program) {
+        basic.textToProgram(String(program));
+    }),
+    getProgram: wrapPromise(() => basic.programToText()),
+    renumberProgram: wrapPromise(function() {
+        basic.renumberLines();
+    }),
+    runProgram: wrapPromise(function() {
+        basic.processCommand("run");
+
+        return new Promise(function(resolve, reject) {
+            var interval = setInterval(function() {
+                if (!basic.running) {
+                    clearInterval(interval);
+
+                    resolve();
+                }
+            });
+        });
+    }),
+    interruptProgram: wrapPromise(function() {
+        basic.interruptProgram();
+    }),
+    isRunningProgram: wrapPromise(() => basic.running),
     setArgValue: function(argIndex, argValue) {
         if (!(lastCommandArgs[argIndex] instanceof syntax.Expression)) {
             return Promise.resolve();
@@ -51,6 +96,12 @@ export var apiCommands = {
 
         return Promise.resolve();
     },
+    getTrigMode: wrapPromise(() => ({
+        0: "deg",
+        1: "rad",
+        2: "gon",
+        3: "turn"
+    }[basic.trigMode])),
     background: wrapPromise(term.background),
     foreground: wrapPromise(term.foreground),
     scrollUp: wrapPromise(term.scrollUp),
@@ -82,6 +133,30 @@ export var apiCommands = {
     getPixel: wrapPromise(canvas.getPixel),
     toggleDocs: wrapPromise(canvas.toggleDocs),
     isDarkMode: wrapPromise(theme.isDarkMode),
+    setEnvelope: wrapPromise(function(attack, decay, sustain, release) {
+        audio.setEnvelope(Number(attack) ?? 100, Number(decay) ?? 200, Number(sustain) ?? 0.5, Number(release) ?? 800);
+    }),
+    setVoice: wrapPromise(function(pitch, rate) {
+        audio.setVoice(Number(pitch) ?? 1, Number(rate) ?? 1);
+    }),
+    getBpm: wrapPromise(() => audio.currentBpm),
+    setBpm: wrapPromise(function(value) {
+        audio.setBpm(Number(value) ?? 120);
+    }),
+    beatsToMilliseconds: wrapPromise((bpm) => audio.beatsToMilliseconds(Number(bpm) ?? undefined)),
+    getVolume: wrapPromise(() => audio.currentVolume),
+    setVolume: wrapPromise(function(value) {
+        audio.setVolume(Number(value) ?? 1);
+    }),
+    playNote: wrapPromise(function(note, beats) {
+        audio.play(note, Number(beats) ?? 1);
+    }),
+    quiet: wrapPromise(function() {
+        audio.quiet();
+    }),
+    speak: wrapPromise(function(message) {
+        audio.speak(String(message));
+    }),
     hostBroadcast: function(channel) {
         var broadcast = new broadcasting.Broadcast();
         var id = broadcasting.broadcasts.length - 1;

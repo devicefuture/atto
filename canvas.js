@@ -285,6 +285,13 @@ export function init() {
     readyListeners.forEach((i) => i());
 };
 
+export function setDocsVisibility(visible) {
+    document.querySelector("#docs").hidden = !visible;
+    docsOpen = visible;
+
+    resize();
+}
+
 export function toggleDocs() {
     if (!!core.getParameter("embed")) {
         window.open("/docspopout.html");
@@ -292,9 +299,7 @@ export function toggleDocs() {
         return;
     }
 
-    document.querySelector("#docs").hidden = !(docsOpen = !docsOpen); // Toggles help docs show state
-
-    resize();
+    setDocsVisibility(docsOpen = !docsOpen); // Toggles help docs show state
 }
 
 window.addEventListener("resize", resize);

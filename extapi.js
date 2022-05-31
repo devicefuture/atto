@@ -17,7 +17,7 @@
                 type: "call",
                 id,
                 command,
-                args
+                args: args.map((arg) => JSON.parse(JSON.stringify(arg)))
             });
     
             var interval = setInterval(function() {
