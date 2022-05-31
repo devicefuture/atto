@@ -437,10 +437,6 @@ export function executeStatement(position = currentPosition + 1) {
 
             if (result instanceof Promise) {
                 result.catch(function(error) {
-                    if (!(error instanceof BasicError)) {
-                        return error;
-                    }
-
                     handleError(new RuntimeError(error?.message || String(error) || "Error", findLineNumberByPosition(currentPosition)));
                 });
             }
