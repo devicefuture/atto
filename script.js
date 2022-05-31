@@ -2,6 +2,7 @@ import * as common from "./common.js";
 import * as canvas from "./canvas.js";
 import * as term from "./term.js";
 import * as hid from "./hid.js";
+import * as extensions from "./extensions.js";
 import * as bot from "./bot.js";
 
 import * as basic from "./basic.js";
@@ -48,6 +49,10 @@ canvas.onReady(function() {
         term.print("load");
         term.foreground();
         term.print(" to load last session\n");
+    }
+
+    if (common.getParameter("exttestcode") != null) {
+        extensions.load(`data:script/javascript;base64,${common.getParameter("exttestcode")}`, common.getParameter("exttestname") || "test", true);
     }
 
     if (common.getParameter("code") != null && common.getParameter("runmode") != "list") {
