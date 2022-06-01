@@ -50,6 +50,7 @@ export var apiCommands = {
     closeDocs: wrapPromise(function() {
         canvas.setDocsVisibility(false);
     }),
+    toggleDocs: wrapPromise(canvas.toggleDocs),
     openExternalUrl: wrapPromise(function(url) {        
         window.open(String(url));
     }),
@@ -131,7 +132,6 @@ export var apiCommands = {
     copyToBuffer: wrapPromise(canvas.copyToBuffer),
     restoreFromBuffer: wrapPromise(canvas.restoreFromBuffer),
     getPixel: wrapPromise(canvas.getPixel),
-    toggleDocs: wrapPromise(canvas.toggleDocs),
     isDarkMode: wrapPromise(theme.isDarkMode),
     setEnvelope: wrapPromise(function(attack, decay, sustain, release) {
         audio.setEnvelope(Number(attack) ?? 100, Number(decay) ?? 200, Number(sustain) ?? 0.5, Number(release) ?? 800);

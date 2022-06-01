@@ -197,6 +197,6 @@ export class Broadcast {
     }
 
     readBuffer() {
-        return this.dataBuffer.shift() || null;
+        return this.dataBuffer.shift() ?? null;
     }
 }
