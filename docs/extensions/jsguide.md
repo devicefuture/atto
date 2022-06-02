@@ -211,6 +211,13 @@ attoX.right();
 
 Moves the terminal's cursor up/down/left/right by one.
 
+### `attoX.input`
+```javascript
+attoX.input(message = ""); // -> String
+```
+
+Prompts the user with the text given as argument `message`, and resolves with the entered response.
+
 ### `attoX.getKey`
 ```javascript
 attoX.getKey(); // -> String
