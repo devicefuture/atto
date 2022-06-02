@@ -12,6 +12,8 @@ Here's a few extensions you can choose from:
 * [Broadcasting](/extensions/builtin/broadcasting.md)
 * [HTTP](/extensions/builtin/http.md)
 
+If you've got an extension you'd like us to add, [let us know](https://github.com/devicefuture/atto/issues) so that we can further expand our list!
+
 ## How are extensions made?
 Extensions are written in JavaScript and make use of the attoX API for interacting with atto. This lets extensions do things like adding new commands to atto and controlling atto's state (such as whether a program is running).
 
