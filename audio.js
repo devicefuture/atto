@@ -2,6 +2,7 @@ import * as basic from "./basic.js";
 
 export var synth;
 export var currentBpm;
+export var currentVolume;
 export var ttsUtterance = "speechSynthesis" in window ? new SpeechSynthesisUtterance() : null;
 
 function clamp(value, min, max) {
@@ -24,6 +25,7 @@ export function setEnvelope(attack, decay, sustain, release) {
 }
 
 export function setVolume(amount) {
+    currentVolume = amount;
     synth.volume.value = 20 * Math.log10(clamp(amount, 0, 1));
 
     if (ttsUtterance != null) {
@@ -74,6 +76,7 @@ export function speak(message) {
 export function init() {
     setEnvelope(100, 200, 0.5, 800);
     setVolume(1);
+    setVoice(1, 1);
     setBpm(120);
 }
 

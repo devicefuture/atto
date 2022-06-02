@@ -4,6 +4,7 @@ import * as hid from "./hid.js";
 import * as audio from "./audio.js";
 import * as syntax from "./syntax.js";
 import * as commands from "./commands.js";
+import * as extensions from "./extensions.js";
 
 export const MAX_STACK_SIZE = 100;
 export const MAX_RENDER_HOLD_TIME = 10;
@@ -62,7 +63,7 @@ export class Command {
     }
 
     call() {
-        this.callable(...this.parameters);
+        return this.callable(...this.parameters);
     }
 }
 
@@ -167,7 +168,13 @@ export function parseProgram(program) {
             continue;
         }
 
-        if (condition(i, (x) => x instanceof syntax.Keyword && Object.keys(commands.keywords).includes(x.code.toLocaleLowerCase()))) { // Command
+        if (
+            condition(i, (x) => x instanceof syntax.Keyword && (
+                Object.keys(commands.keywords).includes(x.code.toLocaleLowerCase()) ||
+                x instanceof syntax.ExtensionKeyword
+            ))
+        ) { // Command
+            var keyword = tokens[i];
             var commandName = tokens[i].code;
             var parameters = [];
 
@@ -187,7 +194,31 @@ export function parseProgram(program) {
                 }
             }
 
-            parsedProgram.push(new Command(commands.keywords[commandName.toLocaleLowerCase()], parameters));
+            if (keyword instanceof syntax.ExtensionKeyword) {
+                (function(commandName, i) {
+                    var extensionName = commandName.split(".")[0];
+
+                    parsedProgram.push(new Command(function() {
+                        if (!extensions.hasLoaded(extensionName)) {
+                            throw new RuntimeError(
+                                `Extension \`${commandName.split(".")[0]}\` has not been loaded`,
+                                tokens[i].lineNumber
+                            );
+                        }
+        
+                        if (!(extensions.getCommand(commandName) instanceof Function)) {
+                            throw new RuntimeError(
+                                `Extension \`${commandName.split(".")[0]}\` has no command \`${commandName.split(".")[1]}\``,
+                                tokens[i].lineNumber
+                            );
+                        }
+
+                        return extensions.getCommand(commandName)(...arguments);
+                    }, parameters));
+                })(commandName, i);
+            } else {
+                parsedProgram.push(new Command(commands.keywords[commandName.toLocaleLowerCase()], parameters));
+            }
 
             i++;
         } else if (condition(i, (x) => x instanceof syntax.Expression && x.getPrimaryIdentifier() != null)) { // Assignment
@@ -391,16 +422,26 @@ export function executeStatement(position = currentPosition + 1) {
     
             return;
         }
-    
-        try {
-            parsedProgram[currentPosition].call();
-        } catch (e) {
-            displayError(e);
+
+        function handleError(error) {
+            displayError(error);
 
             running = false;
 
             term.print("Ready\n");
             hid.startProgramInput();
+        }
+    
+        try {
+            var result = parsedProgram[currentPosition].call();
+
+            if (result instanceof Promise) {
+                result.catch(function(error) {
+                    handleError(new RuntimeError(error?.message || String(error) || "Error", findLineNumberByPosition(currentPosition)));
+                });
+            }
+        } catch (e) {
+            handleError(e);
 
             return;
         }
@@ -653,7 +694,7 @@ export function setStore(store, value) {
         return;
     }
 
-    throw new RuntimeError("Expected variable name", identifier.lineNumber);
+    throw new RuntimeError("Expected variable name", identifier?.lineNumber);
 }
 
 export function pushStack(lineNumber, position = currentPosition) {

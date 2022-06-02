@@ -11,7 +11,8 @@ const RE_NUMERIC_LITERAL_HEX = /(?<![a-z_])0(?:x|X)[0-9a-fA-F]+/;
 const RE_NUMERIC_LITERAL_BIN = /(?<![a-z_])0(?:b|B)[01]+/;
 const RE_NUMERIC_LITERAL_OCT = /(?<![a-z_])0(?:o|O)[0-7]+/;
 const RE_NUMERIC_LITERAL_SCI = /(?:(?<=div|mod|and|or|xor|not)|(?<![a-z_][a-z0-9_]*))(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?(?!\.)/;
-const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:print|input|goto|gosub|return|if|else|end|forward|for|to|step|next|break|continue|stop|repeat(?!\$)|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|plot|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove|show|hide|forward|backward|left(?!\$)|right(?!\$)|penup|pendown|angle|note|play|rest|quiet|bpm|volume|envelope|speak|voice)/i;
+const RE_EXTENSION_KEYWORD = /[a-z_][a-z0-9_]*\.[a-z_][a-z0-9_]*/i;
+const RE_KEYWORD = /(?<![a-z_])(?<![a-z_][0-9]+)(?:extload|extunload|print|input|goto|gosub|return|if|else|end|forward|for|to|step|next|break|continue|stop|repeat(?!\$)|while|until|loop|deg|rad|gon|turn|pos|cls|delay|bg|fg|move|draw|plot|stroke|fill|text|copy|restore|frame|getpixel|dim|push|pop|insert|remove|show|hide|forward|backward|left(?!\$)|right(?!\$)|penup|pendown|angle|note|play|rest|quiet|bpm|volume|envelope|speak|voice)/i;
 const RE_FUNCTION_NAME = /(?<![a-z_])(?<![a-z_][0-9]+)(?:sin|cos|tan|asin|acos|atan|log|ln|sqrt|round|floor|ceil|abs|min|max|asc|bin\$|oct\$|hex\$|bin|oct|hex|len|last|split|join\$|find|lower\$|upper\$|trim\$|ltrim\$|rtrim\$|left\$|right\$|mid\$|repeat\$|chr\$)(?![a-zA-Z0-9_])/i;
 const RE_CONSTANT = /(?<![a-z0-9_])(?:true|false|pi|e|phi|epoch|random|col|row|key|heading)(?![a-z0-9_])/i;
 const RE_ASSIGNMENT = /=/i;
@@ -35,6 +36,7 @@ const RE_ALL = new RegExp([
     RE_NUMERIC_LITERAL_BIN.source,
     RE_NUMERIC_LITERAL_OCT.source,
     RE_NUMERIC_LITERAL_SCI.source,
+    RE_EXTENSION_KEYWORD.source,
     RE_KEYWORD.source,
     RE_FUNCTION_NAME.source,
     RE_CONSTANT.source,
@@ -51,6 +53,8 @@ const RE_ALL = new RegExp([
 ].join(RE_OR.source), "gi");
 
 const KEYWORD_COLOURS = {
+    "extload": {background: "darkgrey", foreground: "white"},
+    "extunload": {background: "darkgrey", foreground: "white"},
     "print": {background: "purple", foreground: "white"},
     "input": {background: "purple", foreground: "white"},
     "goto": {background: "blue", foreground: "white"},
@@ -157,6 +161,7 @@ export class ParameterSeperator extends Token {}
 export class StatementEnd extends Token {}
 export class ExecutionLabel extends Token {}
 export class Keyword extends Token {}
+export class ExtensionKeyword extends Keyword {}
 export class Assignment extends Token {}
 export class Operator extends Token {}
 export class StringConcat extends Token {}
@@ -961,6 +966,13 @@ export function highlight(code, index, col, row) {
             useForeground("green");
         } else if (RE_COMMENT.exec(match)) {
             useForeground("darkgrey");
+        } else if (RE_EXTENSION_KEYWORD.exec(match)) {
+            if (index == start) {
+                setColourByName("darkgrey");
+                renderBackgroundHighlight(length, col, row);
+            }
+
+            term.foreground("white");
         } else if (RE_KEYWORD.exec(match)) {
             var keyword = match.toString().toLocaleLowerCase();
 
@@ -1064,6 +1076,13 @@ export function tokeniseLine(code, lineNumber = null) {
 
         if (RE_STRING_LITERAL.exec(lineSymbols[i])) {
             expressionTokens.push(new StringLiteral(lineSymbols[i], lineNumber));
+
+            continue;
+        }
+
+        if (RE_EXTENSION_KEYWORD.exec(lineSymbols[i])) {
+            computeExpressionTokens();
+            tokens.push(new ExtensionKeyword(lineSymbols[i], lineNumber));
 
             continue;
         }
@@ -1199,6 +1218,10 @@ export function renderDocumentationSyntaxHighlighting(code) {
             addHighlight(["stringLiteral"], match[0]);
         } else if (RE_COMMENT.exec(match)) {
             addHighlight(["comment"], match[0]);
+        } else if (RE_EXTENSION_KEYWORD.exec(match)) {
+            var keyword = match.toString().toLocaleLowerCase();
+
+            addHighlight(["keyword", "darkgrey"], match[0]);
         } else if (RE_KEYWORD.exec(match)) {
             var keyword = match.toString().toLocaleLowerCase();
 

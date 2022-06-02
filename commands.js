@@ -5,8 +5,11 @@ import * as term from "./term.js";
 import * as hid from "./hid.js";
 import * as audio from "./audio.js";
 import * as theme from "./theme.js";
+import * as extensions from "./extensions.js";
 
 export var keywords = {
+    "extload": extensionLoad,
+    "extunload": extensionUnload,
     "print": print,
     "input": input,
     "goto": goto,
@@ -71,6 +74,42 @@ function getNumber(parameter) {
     return basic.getValueComparative(Number(parameter.value), parameter.lineNumber);
 }
 
+export function extensionLoad(url, givenName) {
+    if (url == null) {
+        throw new basic.RuntimeError("No extension location provided");
+    }
+
+    if (givenName != null) {
+        givenName = basic.getValueDisplay(givenName.value, givenName.lineNumber);
+
+        if (!givenName.match(/^[a-z_][a-z0-9_]*$/)) {
+            throw new basic.RuntimeError("Invalid extension name");
+        }
+    }
+
+    return extensions.load(url.value, givenName, true).then(function(loadPerformed) {
+        if (!loadPerformed) {
+            basic.executeStatement();
+
+            return Promise.resolve();
+        }
+    }).catch(function(error) {
+        console.error(error);
+
+        return Promise.reject(new basic.RuntimeError("Couldn't load extension"));
+    });
+}
+
+export function extensionUnload(extensionName) {
+    if (extensionName == null) {
+        throw new basic.RuntimeError("No extension name provided");
+    }
+
+    extensions.unload(basic.getValueDisplay(extensionName.value, extensionName.lineNumber), true);
+
+    basic.executeStatement();
+}
+
 export function print(value) {
     term.print((value == undefined ? "" : basic.getValueDisplay(value.value, value.lineNumber)) + (value == undefined || !value.postConcat ? "\n" : ""));
 
@@ -82,10 +121,16 @@ export function input(p1, p2) {
 
     term.print(p2 == undefined ? "" : basic.getValueDisplay(p1.value, p1.lineNumber));
 
-    hid.startInput().then(function(value) {
-        basic.setStore(p2 == undefined ? p1 : p2, value);
+    return hid.startInput().then(function(value) {
+        try {
+            basic.setStore(p2 == undefined ? p1 : p2, value);
+        } catch (e) {
+            return Promise.reject(e);
+        }
 
         basic.executeStatement();
+
+        return Promise.resolve();
     });
 }
 
