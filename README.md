@@ -28,5 +28,5 @@ atto is still in development, but hopefully, it'll have the following features:
 - [x] Accessible and inclusive to assistive technologies such as screen readers and switches (beta)
 - [x] Music/melody programming, with text-to-speech support
 - [x] Project link sharing to let others run the projects you make
-- [ ] API support, letting your code access external services and browser features such as WebUSB to connect to game controllers
-- [ ] Broadcasting to communicate between multiple instances of atto over WebRTC for making multiplayer projects
+- [ ] API support, letting your code access external services and browser features such as WebUSB to connect to game controllers (partially implemented)
+- [x] Broadcasting to communicate between multiple instances of atto over WebRTC for making multiplayer projects
