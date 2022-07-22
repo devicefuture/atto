@@ -66,8 +66,8 @@ Broadcasts the data given as argument `data` to all other connected computers.
 ## `broadcasting.receive`
 ```
 broadcasting.receive data
-broadcasting.receive data timestamp
-broadcasting.receive data timestamp ishost
+broadcasting.receive data, timestamp
+broadcasting.receive data, timestamp, ishost
 ```
 
 Receives data from other connected computers and stores the data in the variable given as argument `data`. If there is no data to be received, the `data` variable will be set to `0`.
