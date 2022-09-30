@@ -22,7 +22,7 @@ function visitDocumentation(path, updateUrl = true) {
         var converter = new showdown.Converter();
         var container = document.createElement("div");
 
-        container.innerHTML = data;
+        container.innerHTML = converter.makeHtml(data.replace(/&gt;/, ">"));
 
         container.querySelectorAll(REMOVED_ELEMENTS.join(", ")).forEach((element) => element.remove());
 
@@ -40,7 +40,7 @@ function visitDocumentation(path, updateUrl = true) {
             });
         });
 
-        document.querySelector("#docsContent").innerHTML = converter.makeHtml(container.innerHTML.replace(/&gt;/, ">"));
+        document.querySelector("#docsContent").innerHTML = container.innerHTML;
 
         document.querySelector("#docsContent").scrollTo(0, 0);
 
