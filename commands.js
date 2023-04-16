@@ -446,10 +446,13 @@ export function setForegroundColour(mode, p1, p2, p3, alpha) {
 export function graphicsMove(x, y) {
     expectParameters(x, y);
 
+    var xValue = getNumber(x);
+    var yValue = getNumber(y);
+
     basic.setTurtleMoved(false);
-    basic.setGraphicsPosition(getNumber(x), getNumber(y));
+    basic.setGraphicsPosition(xValue, yValue);
     basic.clearGraphicsPolygonPoints();
-    basic.addGraphicsPolygonPoint(getNumber(x), getNumber(y));
+    basic.addGraphicsPolygonPoint(xValue, yValue);
 
     basic.executeStatement();
 }
@@ -457,14 +460,17 @@ export function graphicsMove(x, y) {
 export function graphicsDraw(x, y) {
     expectParameters(x, y);
 
+    var xValue = getNumber(x);
+    var yValue = getNumber(y);
+
     canvas.setColour(term.foregroundColour);
     canvas.setStrokeWidth(basic.graphicsStrokeWidth, "round");
-    canvas.drawLine(basic.graphicsX, basic.graphicsY, getNumber(x), getNumber(y));
+    canvas.drawLine(basic.graphicsX, basic.graphicsY, xValue, yValue);
     canvas.resetStrokeWidth();
 
     basic.setTurtleMoved(false);
-    basic.setGraphicsPosition(getNumber(x), getNumber(y));
-    basic.addGraphicsPolygonPoint(getNumber(x), getNumber(y));
+    basic.setGraphicsPosition(xValue, yValue);
+    basic.addGraphicsPolygonPoint(xValue, yValue);
 
     basic.executeStatement();
 }
@@ -472,15 +478,18 @@ export function graphicsDraw(x, y) {
 export function graphicsPlot(x, y) {
     expectParameters(x, y);
 
+    var xValue = getNumber(x);
+    var yValue = getNumber(y);
+
     canvas.setColour(term.foregroundColour);
     canvas.setStrokeWidth(basic.graphicsStrokeWidth, "round");
-    canvas.drawLine(getNumber(x), getNumber(y), getNumber(x), getNumber(y));
+    canvas.drawLine(xValue, yValue, xValue, yValue);
     canvas.resetStrokeWidth();
 
     basic.setTurtleMoved(false);
-    basic.setGraphicsPosition(getNumber(x), getNumber(y));
+    basic.setGraphicsPosition(xValue, yValue);
     basic.clearGraphicsPolygonPoints();
-    basic.addGraphicsPolygonPoint(getNumber(x), getNumber(y));
+    basic.addGraphicsPolygonPoint(xValue, yValue);
 
     basic.executeStatement();
 }
@@ -655,12 +664,14 @@ export function turtleHide() {
 export function turtleForward(distance) {
     expectParameters(distance);
 
+    var distanceValue = getNumber(distance);
+
     basic.setTurtleMoved();
     basic.preTurtleRender();
 
     (basic.turtlePenDown ? graphicsDraw : graphicsMove)(
-        {value: basic.graphicsX + (getNumber(distance) * Math.cos(basic.turtleHeading - (Math.PI / 2)))},
-        {value: basic.graphicsY + (getNumber(distance) * Math.sin(basic.turtleHeading - (Math.PI / 2)))}
+        {value: basic.graphicsX + (distanceValue * Math.cos(basic.turtleHeading - (Math.PI / 2)))},
+        {value: basic.graphicsY + (distanceValue * Math.sin(basic.turtleHeading - (Math.PI / 2)))}
     );
 
     basic.renderTurtle();
@@ -669,12 +680,14 @@ export function turtleForward(distance) {
 export function turtleBackward(distance) {
     expectParameters(distance);
 
+    var distanceValue = getNumber(distance);
+
     basic.setTurtleMoved();
     basic.preTurtleRender();
 
     (basic.turtlePenDown ? graphicsDraw : graphicsMove)(
-        {value: basic.graphicsX - (getNumber(distance) * Math.cos(basic.turtleHeading - (Math.PI / 2)))},
-        {value: basic.graphicsY - (getNumber(distance) * Math.sin(basic.turtleHeading - (Math.PI / 2)))}
+        {value: basic.graphicsX - (distanceValue * Math.cos(basic.turtleHeading - (Math.PI / 2)))},
+        {value: basic.graphicsY - (distanceValue * Math.sin(basic.turtleHeading - (Math.PI / 2)))}
     );
 
     basic.renderTurtle();
@@ -727,8 +740,10 @@ export function turtleAngle(angle) {
 export function audioNote(note, beats) {
     expectParameters(note, beats);
 
+    var beatsValue = getNumber(beats);
+
     try {
-        audio.play(note.value, getNumber(beats));
+        audio.play(note.value, beatsValue);
     } catch (e) {
         e.lineNumber = note.lineNumber;
 
@@ -740,7 +755,7 @@ export function audioNote(note, beats) {
             if (basic.running) {
                 basic.executeStatement();
             }
-        }, audio.beatsToMilliseconds() * getNumber(beats))
+        }, audio.beatsToMilliseconds() * beatsValue)
     );
 }
 
