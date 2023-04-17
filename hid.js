@@ -248,8 +248,6 @@ export class Input {
             }
         }
 
-        console.log(this.caretPosition, oldCaretPosition);
-
         if (!seekedInput) {
             if (event.key == "ArrowUp") {
                 this.caretPosition = 0;
