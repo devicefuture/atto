@@ -1029,7 +1029,16 @@ export function processCommand(value, movementOnly) {
     }
 
     if (command == "renum") {
-        renumberLines();
+        try {
+            renumberLines();
+        } catch (e) {
+            if (e instanceof ParsingSyntaxError) {
+                displayError(e);
+            } else {
+                throw e;
+            }
+        }
+
         autosave();
         hid.startProgramInput();
 
