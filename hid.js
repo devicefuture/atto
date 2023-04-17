@@ -186,9 +186,11 @@ export class Input {
 
                 currentInput.resume(currentCaretPosition);
 
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
     seekNextProgramInput() {
@@ -208,9 +210,11 @@ export class Input {
 
                 currentInput.resume(currentCaretPosition);
 
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
     readKey(event) {
@@ -233,16 +237,29 @@ export class Input {
             this.scrollColumn = this.selectionEndPosition - scrollOffset;
         }
 
+        var oldCaretPosition = this.caretPosition;
+        var seekedInput = false;
+
         if (this.format == inputFormats.PROGRAM) {
             if (event.key == "ArrowUp") {
-                this.seekPreviousProgramInput();
-
-                return;
+                seekedInput = this.seekPreviousProgramInput();
             } else if (event.key == "ArrowDown") {
-                this.seekNextProgramInput();
-
-                return;
+                seekedInput = this.seekNextProgramInput();
             }
+        }
+
+        console.log(this.caretPosition, oldCaretPosition);
+
+        if (!seekedInput) {
+            if (event.key == "ArrowUp") {
+                this.caretPosition = 0;
+                this.scrollColumn = 0;
+            } else if (event.key == "ArrowDown") {
+                this.caretPosition = this.valueChars.length - 1;
+                this.scrollColumn = this.caretPosition - scrollOffset;
+            }
+        } else {
+            return;
         }
 
         this.value = hidInput.value;
