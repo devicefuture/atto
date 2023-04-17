@@ -237,7 +237,6 @@ export class Input {
             this.scrollColumn = this.selectionEndPosition - scrollOffset;
         }
 
-        var oldCaretPosition = this.caretPosition;
         var seekedInput = false;
 
         if (this.format == inputFormats.PROGRAM) {
