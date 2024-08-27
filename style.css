@@ -36,6 +36,18 @@ body {
     -webkit-print-color-adjust: exact;
 }
 
+body.lightTheme {
+    --black: rgb(0, 0, 0)!important;
+    --lightGrey: rgb(238, 238, 238)!important;
+    --white: rgb(255, 255, 255)!important;
+}
+
+body.darkTheme {
+    --black: rgb(255, 255, 255)!important;
+    --lightGrey: rgb(32, 32, 32)!important;
+    --white: rgb(16, 16, 16)!important;
+}
+
 body.fullscreen {
     background-color: black;
     color: white;
