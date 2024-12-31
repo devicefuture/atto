@@ -18,7 +18,7 @@ Create a new file called `hello.attox.js` in the project folder, and enter the f
 ```javascript
 attoX.onReady(function() {
     attoX.registerCommand("greet", function(name) {
-        if (data) {
+        if (name) {
             attoX.print("Hello, " + name + "\n");
         } else {
             attoX.print("Hello, world!\n");
