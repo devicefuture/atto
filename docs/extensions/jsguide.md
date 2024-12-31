@@ -101,7 +101,7 @@ Opens the webpage at the URL given as argument `url` in a new tab.
 
 ### `attoX.isEmbedded`
 ```javascript
-attoX.isEmbedded(); // -> Boolean embedded
+attoX.isEmbedded(); // -> Boolean
 ```
 
 Determines whether the instance of atto has been embedded into an external webpage or not.
@@ -122,7 +122,7 @@ Sets the program that will be executed when `run` is entered into atto to the co
 
 ### `attoX.getProgram`
 ```javascript
-attoX.getProgram(program); // -> String
+attoX.getProgram(); // -> String
 ```
 
 Gets the code of the program that will be executed when `run` is entered into atto.
