@@ -76,7 +76,7 @@ Tells atto that the extension has now fully-loaded (for example, that the necess
 attoX.visitDocs(path = "docs/index.md", popOut = false);
 ```
 
-Opens the documentation panel to the side of atto, showing the documentation at the path given as argument `path` (this can be a URL to an external Markdown file). If `popout` is `true`, then the documentation will be opened in a new tab instead.
+Opens the documentation panel to the side of atto, showing the documentation at the path given as argument `path` (this can be a URL to an external Markdown file). If `popOut` is `true`, then the documentation will be opened in a new tab instead.
 
 ### `attoX.closeDocs`
 ```javascript
