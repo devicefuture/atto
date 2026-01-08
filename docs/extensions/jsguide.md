@@ -49,7 +49,7 @@ Run the program with `run`. You should see that our `hello` extension is all wor
 When you make changes, ensure that you run the `attox-test` command again — if you try and refresh an already-open instance of atto, only your previous changes will load.
 
 ## `attox-test` command format
-The format for the `./atto-test` command is the following:
+The format for the `./attox-test` command is the following:
 
 ```
 ./attox-test [extfile] [extname] [attourl]
