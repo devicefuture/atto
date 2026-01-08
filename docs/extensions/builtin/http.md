@@ -16,8 +16,8 @@ extload "http"
 <code>10 extload "http"</code>
 <code>20 extload "json"</code>
 <code>30 http.get "https://ipapi.co/json", data</code>
-<code>50 json.parse data, "city", city$</code>
-<code>60 print "We think you're in "; city$</code>
+<code>40 json.parse data, "city", city$</code>
+<code>50 print "We think you're in "; city$</code>
 </pre>
 </details>
 
